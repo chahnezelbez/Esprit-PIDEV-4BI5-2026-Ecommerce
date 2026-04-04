@@ -1,1 +1,16 @@
- 
+Alerte Dépense = VAR Seuil = 5000  // Seuil d'alerte personnalisable
+VAR TotalFournisseur = [Total Achats TTC]
+RETURN
+IF(TotalFournisseur > Seuil, "⚠️ Dépense élevée", "✅ OK")
+
+CurrentMonthName = MAX(d_date[Mois])
+
+Évolution Prix = 
+VAR CurrentPrice = DIVIDE([Total Achats TTC], [Nombre de Factures], 0)
+VAR PreviousPrice = 
+    CALCULATE(
+        DIVIDE([Total Achats TTC], [Nombre de Factures], 0),
+        PREVIOUSMONTH(d_date[Date])
+    )
+RETURN
+DIVIDE(CurrentPrice - PreviousPrice, PreviousPrice, 0)
