@@ -1,16 +1,81 @@
-Alerte Dépense = VAR Seuil = 5000  // Seuil d'alerte personnalisable
-VAR TotalFournisseur = [Total Achats TTC]
-RETURN
-IF(TotalFournisseur > Seuil, "⚠️ Dépense élevée", "✅ OK")
+-- ============================================================
+-- FILE : DAX/mesures_achats.dax
+-- TABLE SOURCE : f_achats
+-- RÔLE : Achats fournisseurs (coûts d'approvisionnement)
+-- PAGES : Dash Purchase | Dash Finance | Dash GM
+-- AUTEUR : Esprit 4BI5 — Projet Sougui 2026
+-- ============================================================
 
-CurrentMonthName = MAX(d_date[Mois])
+-- ─────────────────────────────────────────────
+-- BLOC 1 : MONTANTS D'ACHAT
+-- ─────────────────────────────────────────────
 
-Évolution Prix = 
-VAR CurrentPrice = DIVIDE([Total Achats TTC], [Nombre de Factures], 0)
-VAR PreviousPrice = 
+[Total Achats TTC] =
+    SUM(f_achats[montant_ttc])
+-- Total des achats fournisseurs TTC sur la période.
+-- Affiché : card Dash Purchase | card Dash Finance
+--           lineChart Dash GM (vs CA ventes) | lineChart Dash Finance
+
+[Total Achats HT] =
+    SUM(f_achats[montant_ht])
+-- Total des achats hors taxes.
+-- Affiché : pivotTable Dash Purchase (par fournisseur)
+
+[Total Achats AP] =
     CALCULATE(
-        DIVIDE([Total Achats TTC], [Nombre de Factures], 0),
-        PREVIOUSMONTH(d_date[Date])
+        SUM(f_achats[montant_ttc]),
+        SAMEPERIODLASTYEAR(d_date[Date])
     )
-RETURN
-DIVIDE(CurrentPrice - PreviousPrice, PreviousPrice, 0)
+-- Total Achats de l'Année Précédente (AP = N-1).
+-- Utilisé pour le calcul de la variation YY%.
+-- Affiché : pivotTable Dash Purchase (colonne N-1)
+
+[Total TVA payée] =
+    SUM(f_achats[montant_tva])
+-- TVA déductible payée aux fournisseurs.
+-- Affiché : card Dash Purchase | card Dash Finance
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 2 : INDICATEURS OPÉRATIONNELS ACHATS
+-- ─────────────────────────────────────────────
+
+[Nombre de Factures] =
+    DISTINCTCOUNT(f_achats[id_facture])
+-- Nombre de factures d'achat distinctes sur la période.
+-- Affiché : card Dash Purchase | pivotTable Dash Purchase
+
+[Nombre de Fournisseur] =
+    DISTINCTCOUNT(f_achats[id_fournisseur])
+-- Nombre de fournisseurs actifs (ayant au moins une facture).
+-- Affiché : card Dash Purchase
+
+[Panier moyen] =
+    DIVIDE([Total Achats TTC], [Nombre de Factures], 0)
+-- Valeur moyenne d'une facture d'achat = Total TTC / Nb factures.
+-- Affiché : card Dash Purchase
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 3 : ANALYSE & COMPARAISON
+-- ─────────────────────────────────────────────
+
+[YY %] =
+    DIVIDE(
+        [Total Achats TTC] - [Total Achats AP],
+        [Total Achats AP],
+        0
+    )
+-- Variation des achats N vs N-1 en pourcentage (Year over Year).
+-- Positif = hausse des coûts d'approvisionnement.
+-- Affiché : pivotTable Dash Purchase (colonne %)
+
+[Type Fournisseur] =
+    SWITCH(TRUE(),
+        [Total Achats TTC] >= 100000, "🏭 Fournisseur stratégique",
+        [Total Achats TTC] >= 20000,  "📦 Fournisseur régulier",
+        [Total Achats TTC] >= 5000,   "🔄 Fournisseur occasionnel",
+        "🔍 Petit fournisseur"
+    )
+-- Segmentation des fournisseurs selon le volume d'achats.
+-- Affiché : pivotTable Dash Purchase (colonne Type)
