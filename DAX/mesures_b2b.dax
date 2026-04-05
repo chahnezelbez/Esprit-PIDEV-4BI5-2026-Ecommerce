@@ -1,1 +1,88 @@
- 
+ -- ============================================================
+-- FILE : DAX/mesures_b2b.dax
+-- TABLE SOURCE : fact_venteb2b
+-- RÔLE : Ventes B2B (vente aux entreprises / sociétés)
+-- PAGES : Dash B2B | Dash Finance | Dash GM
+-- AUTEUR : Esprit 4BI5 — Projet Sougui 2026
+-- ============================================================
+
+-- ─────────────────────────────────────────────
+-- BLOC 1 : CHIFFRE D'AFFAIRES B2B
+-- ─────────────────────────────────────────────
+
+[B2B | CA TTC] =
+    SUM(fact_venteb2b[montant_ttc])
+-- CA TTC total B2B sur la période sélectionnée.
+-- Affiché : card Dash B2B
+
+[B2B | CA TTC YTD] =
+    TOTALYTD(
+        SUM(fact_venteb2b[montant_ttc]),
+        d_date[Date]
+    )
+-- CA TTC cumulé depuis le début de l'année (Year-To-Date).
+-- Affiché : areaChart Dash B2B (courbe N)
+
+[B2B | CA TTC YTD N-1] =
+    CALCULATE(
+        TOTALYTD(SUM(fact_venteb2b[montant_ttc]), d_date[Date]),
+        SAMEPERIODLASTYEAR(d_date[Date])
+    )
+-- CA TTC YTD de l'année précédente, pour comparaison N vs N-1.
+-- Affiché : areaChart Dash B2B (courbe N-1)
+
+[CA_B2B] =
+    SUM(fact_venteb2b[montant_ttc])
+-- Alias de B2B | CA TTC, utilisé dans les croisements Finance/GM.
+-- Affiché : pivotTable Dash B2B (par client) | Dash Finance | Dash GM
+
+[CA_Total] =
+    [CA] + [CA_B2B]
+-- CA global Sougui = B2C + B2B, utilisé dans Dash Finance et Dash GM.
+-- Affiché : card Dash Finance | card Dash GM | lineChart Dash Finance
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 2 : INDICATEURS OPÉRATIONNELS B2B
+-- ─────────────────────────────────────────────
+
+[B2B | Nbre Factures] =
+    DISTINCTCOUNT(fact_venteb2b[id_facture])
+-- Nombre de factures B2B distinctes sur la période.
+-- Affiché : card Dash B2B
+
+[B2B | Nbre Clients Actifs] =
+    DISTINCTCOUNT(fact_venteb2b[id_client])
+-- Nombre de clients B2B ayant passé au moins une commande.
+-- Affiché : card Dash B2B
+
+[B2B | Panier Moyen TTC] =
+    DIVIDE([B2B | CA TTC], [B2B | Nbre Factures], 0)
+-- Valeur moyenne d'une facture B2B = CA TTC / Nombre de factures.
+-- Affiché : areaChart Dash B2B
+
+[B2B | Montant TVA] =
+    SUM(fact_venteb2b[montant_tva])
+-- Total de la TVA collectée sur les ventes B2B.
+-- Affiché : card Dash B2B
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 3 : SEGMENTATION & ANALYSE CLIENTS
+-- ─────────────────────────────────────────────
+
+[Client Type B2B] =
+    SWITCH(TRUE(),
+        [CA_B2B] >= 50000, "🏆 Grand compte",
+        [CA_B2B] >= 10000, "⭐ Compte intermédiaire",
+        [CA_B2B] >= 1000,  "📦 Petit compte",
+        "🔍 Compte inactif"
+    )
+-- Segmentation des clients selon leur CA B2B annuel.
+-- Affiché : pivotTable Dash B2B (colonne Type)
+
+[Part B2B] =
+    DIVIDE([CA_B2B], [CA_Total], 0)
+-- Part du canal B2B dans le chiffre d'affaires total Sougui.
+-- Affiché : card Dash GM | hundredPercentStackedBarChart Dash Finance
+
