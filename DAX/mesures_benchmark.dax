@@ -1,1 +1,130 @@
- 
+ -- ============================================================
+-- FILE : DAX/mesures_benchmark.dax
+-- TABLE SOURCE : fqctbenchmqrk
+-- RÔLE : Veille concurrentielle & positionnement prix (Benchmark)
+-- PAGES : Dash Marketing | Dash GM | Page Temp
+-- DIMENSIONS LIÉES : dim_concurrent | dim_categoires | dim_produits
+-- AUTEUR : Esprit 4BI5 — Projet Sougui 2026
+-- ============================================================
+
+-- ─────────────────────────────────────────────
+-- BLOC 1 : PRIX — COMPARAISON SOUGUI VS MARCHÉ
+-- ─────────────────────────────────────────────
+
+[BM | Prix Moyen Sougui] =
+    AVERAGE(fqctbenchmqrk[prix_sougui])
+-- Prix moyen de vente Sougui sur les produits benchmarkés.
+-- Affiché : lineChart Dash GM (vs concurrents) | pivotTable Dash Marketing
+--           clusteredColumnChart Page Temp
+
+[BM | Prix Moyen Marché] =
+    AVERAGE(fqctbenchmqrk[prix_marche])
+-- Prix moyen du marché (médiane concurrents) pour comparaison.
+-- Affiché : pivotTable Dash Marketing
+
+[BM | Prix Moyen par Concurrent] =
+    CALCULATE(
+        AVERAGE(fqctbenchmqrk[prix_concurrent]),
+        ALLSELECTED(dim_concurrent[Nom_Concurrent])
+    )
+-- Prix moyen par concurrent sélectionné via slicer dim_concurrent.
+-- Affiché : lineChart Dash GM | clusteredColumnChart Dash Marketing
+
+[Prix_Moyen_Sougui] =
+    AVERAGE(fqctbenchmqrk[prix_sougui])
+-- Alias de BM | Prix Moyen Sougui, utilisé dans les visuels Page Temp.
+-- Affiché : clusteredColumnChart Page Temp (par catégorie)
+
+[Prix_Moyen_Concurrents] =
+    AVERAGE(fqctbenchmqrk[prix_concurrent])
+-- Prix moyen de tous les concurrents (sans filtre slicer).
+-- Affiché : clusteredColumnChart Page Temp
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 2 : ANALYSE COMPÉTITIVE — ÉCART DE PRIX
+-- ─────────────────────────────────────────────
+
+[BM | % Position Prix Sougui vs Marché] =
+    DIVIDE(
+        [BM | Prix Moyen Sougui] - [BM | Prix Moyen Marché],
+        [BM | Prix Moyen Marché],
+        0
+    )
+-- Écart de prix Sougui vs marché en %.
+-- Positif = Sougui plus cher | Négatif = Sougui moins cher.
+-- Seuils : >15% risque perte clients | <-5% opportunité revalorisation.
+-- Affiché : card Dash Marketing | gauge Dash Marketing | pivotTable Dash Marketing
+
+[BM | Statut Compétitif] =
+    SWITCH(TRUE(),
+        [BM | % Position Prix Sougui vs Marché] > 0.15, "🔴 Prix trop élevé",
+        [BM | % Position Prix Sougui vs Marché] > 0.05, "🟠 Légèrement au-dessus",
+        [BM | % Position Prix Sougui vs Marché] > -0.05,"🟢 Prix aligné marché",
+        "🔵 Prix sous le marché"
+    )
+-- Label de statut concurrentiel basé sur l'écart de prix.
+-- Affiché : card Dash Marketing | pivotTable Dash Marketing
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 3 : JAUGES — VISUEL GAUGE Dash Marketing
+-- ─────────────────────────────────────────────
+
+[BM | Jauge Min] =
+    -0.20
+-- Valeur minimale de la jauge de positionnement prix (-20%).
+
+[BM | Jauge Max] =
+    0.30
+-- Valeur maximale de la jauge de positionnement prix (+30%).
+
+[BM | Jauge Cible] =
+    0.05
+-- Cible de positionnement prix : +5% vs marché (marge acceptable).
+-- Affiché : gauge Dash Marketing (cible de référence)
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 4 : COMPTAGES & PARTS DE MARCHÉ
+-- ─────────────────────────────────────────────
+
+[Nb_Produits_Votre] =
+    DISTINCTCOUNT(fqctbenchmqrk[id_produit_sougui])
+-- Nombre de références Sougui présentes dans le benchmark.
+-- Affiché : card Dash Marketing
+
+[Nb_Produits_Concurrents] =
+    DISTINCTCOUNT(fqctbenchmqrk[id_produit_concurrent])
+-- Nombre de références concurrentes analysées dans le benchmark.
+-- Affiché : card Dash Marketing
+
+[Part_Marché_Estimée] =
+    DIVIDE(
+        [CA],
+        [CA] + SUM(fqctbenchmqrk[ca_estime_concurrent]),
+        0
+    )
+-- Part de marché estimée de Sougui = CA Sougui / (CA Sougui + CA concurrents estimé).
+-- Affiché : card Dash GM
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 5 : VISUELS HTML — Page Temp (prototypes)
+-- ─────────────────────────────────────────────
+
+[PriceGap_HTML_3D] =
+-- Visuel HTML 3D représentant l'écart de prix par catégorie.
+-- Barres 3D colorées : rouge = au-dessus marché | vert = sous marché.
+-- Affiché : Para HTML Viewer | Page Temp
+
+[Prix_HTML_SansCadre] =
+-- Tableau HTML compact des prix Sougui sans bordure de carte.
+-- Design minimaliste pour intégration dans des pages denses.
+-- Affiché : Para HTML Viewer | Page Temp
+
+[Prix_Moyen_Concurrent_HTML] =
+-- Visuel HTML comparatif des prix moyens par concurrent.
+-- Classement des concurrents du moins cher au plus cher.
+-- Affiché : Para HTML Viewer | Page Temp
+
