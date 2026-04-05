@@ -1,1 +1,154 @@
+-- ============================================================
+-- FILE : DAX/mesures_b2c.dax
+-- TABLE SOURCE : fact_venteredo
+-- RÔLE : Ventes B2C (vente au détail / grand public)
+-- PAGES : Dash B2C | Page 2 | Page 3
+-- AUTEUR : Esprit 4BI5 — Projet Sougui 2026
+-- ============================================================
+
+-- ─────────────────────────────────────────────
+-- BLOC 1 : KPI FONDAMENTAUX
+-- Utilisés sur : Dash B2C (cards), Dash Finance, Dash GM
+-- ─────────────────────────────────────────────
+
+CA =
+    SUMX(
+        fact_venteredo,
+        fact_venteredo[prix_unitaire] * fact_venteredo[quantite]
+    )
+-- Chiffre d'affaires brut B2C.
+-- Affiché : card Dash B2C | lineChart Dash Finance | lineChart Dash GM
+
+Marge Brute =
+    SUMX(
+        fact_venteredo,
+        (fact_venteredo[prix_unitaire] - fact_venteredo[cout_achat]) * fact_venteredo[quantite]
+    )
+-- Marge brute = CA - coût d'achat.
+-- Affiché : card Dash Finance | lineChart Dash Finance | pivotTable Dash Finance
+
+[Taux Marge %] =
+    DIVIDE([Marge Brute], [CA], 0)
+-- Rentabilité globale. Seuil cible : 20%.
+-- Affiché : pivotTable Dash Finance | B2C_Alertes_HTML | B2C_Scroller_HTML
+
+[Nb Commandes Client] =
+    DISTINCTCOUNT(fact_venteredo[id_commande])
+-- Nombre de commandes distinctes (pas de doublons).
+-- Affiché : card Dash B2C | map Dash GM | B2C_KPI_Cards_HTML
+
+[Nb Produits] =
+    DISTINCTCOUNT(fact_venteredo[id_produit])
+-- Nombre de références produits actives sur la période.
+-- Affiché : card Dash B2C
+
+[Quantité Vendue] =
+    SUM(fact_venteredo[quantite])
+-- Nombre total d'unités vendues.
+-- Affiché : areaChart Dash B2C | B2C_Scroller_HTML | B2C_Alertes_HTML
+
+[TVA_Totale] =
+    SUM(fact_venteredo[montant_tva])
+-- Total TVA collectée sur les ventes B2C.
+-- Affiché : card Dash Finance
+
+[Part B2C] =
+    DIVIDE([CA], [CA] + [CA_B2B], 0)
+-- Part du canal B2C dans le CA total (B2C + B2B).
+-- Affiché : card Dash GM | hundredPercentStackedBarChart Dash Finance
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 2 : ANALYSE PRODUIT & RENTABILITÉ
+-- Utilisés sur : Dash B2C, Page 2, Page 3
+-- ─────────────────────────────────────────────
+
+[Rentabilité Produit] =
+    SWITCH(TRUE(),
+        [Taux Marge %] >= 0.25, "⭐⭐⭐ Highly Profitable",
+        [Taux Marge %] >= 0.15, "⭐⭐ Moderately Profitable",
+        [Taux Marge %] >= 0.05, "⭐ Low Profit",
+        "⚠️ Low Margin"
+    )
+-- Label de rentabilité par produit basé sur Taux Marge %.
+-- Affiché : donutChart Dash B2C (légende) | B2C_Action_Suggeree (colonne)
+-- Seuils : >=25% Highly | >=15% Moderately | >=5% Low | <5% Warning
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 3 : VISUELS HTML — Page Dash B2C
+-- ─────────────────────────────────────────────
+
+[B2C_Status_Final_Clean] =
+-- Indicateur de statut global B2C (HTML visuel).
+-- Résumé coloré de la santé du CA B2C sur la période sélectionnée.
+-- Affiché : HTML Content | Dash B2C (panneau gauche)
+
+[Top_Product_Creative_Card] =
+-- Carte créative HTML affichant le top produit du moment.
+-- Inclut : nom produit, CA, quantité, badge performance.
+-- Affiché : HTML Content | Dash B2C (panneau droit)
+
+[B2C_SDG_HTML] =
+-- Synthèse des indicateurs (Sell-out, Distribution, Growth) en HTML.
+-- Affiché : HTML Content | Dash B2C (barre inférieure)
+
+[CA_HTML_3D] =
+-- Visuel HTML 3D de l'évolution du CA dans le temps.
+-- Affiché : Para HTML Viewer | Page Temp (page de test)
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 4 : VISUELS HTML — Page 2 (KPI + Carte + Alertes)
+-- ─────────────────────────────────────────────
+
+[B2C_KPI_Cards_HTML] =
+-- Génère en HTML 4 cartes KPI : CA | Commandes | Marge | Panier moyen.
+-- Style thème Sougui : #118DFF accent | DIN/Segoe UI police | #F3F2F1 fond.
+-- Affiché : HTML Content | Page 2
+
+[B2C_Gouvernorats_HTML] =
+-- Carte à bulles des 24 gouvernorats tunisiens colorée par CA.
+-- Taille bulle = CA relatif | Couleur = intensité (rouge = top).
+-- Données : d_geo[Gouvernorat] × fact_venteredo[CA] × [Nb Commandes Client].
+-- Affiché : HTML Content | Page 2
+
+[B2C_Alertes_HTML] =
+-- Moteur d'alertes automatiques (5 types) :
+--   🔴 Produits vendus à perte (Marge Brute < 0)
+--   🟡 Marge critique < 10% ou à surveiller < 20%
+--   🟡 Catégories sans vente sur la période
+--   🟢 Top produit (TOPN 1 par CA)
+--   🔵 Panier moyen et volume commandes
+-- Filtre : exclut 'inconnu' et 'INCONNUE' de dim_produits.
+-- Affiché : HTML Content | Page 2
+
+[B2C_Scroller_HTML] =
+-- Tableau HTML dynamique : TOP 3 / FLOP 3 / SURVEILLER (marge < 15%).
+-- Colonnes : produit | mini barre CA | CA DT | Taux Marge % (arrondi 1 déc.).
+-- Marge colorée : vert >=20% | jaune >=10% | rouge <10%.
+-- Filtre : exclut 'inconnu', 'INCONNUE', produits à CA = 0.
+-- Affiché : HTML Content | Page 2
+
+
+-- ─────────────────────────────────────────────
+-- BLOC 5 : VISUELS HTML — Page 3 (Plan d'action)
+-- ─────────────────────────────────────────────
+
+[B2C_Action_Suggeree] =
+-- Tableau HTML complet : plan d'action sur les 20 premiers produits par CA.
+-- Colonnes : Produit | CA | Rentabilité (●●●) | Taux Marge % | Action.
+-- Logique SWITCH (9 cas) :
+--   Marge Brute < 0               → 🔴 "Vendu à perte — action immédiate"
+--   Highly Profitable + >=25%     → 🟢 "Produit phare — mettre en avant"
+--   Highly Profitable             → 🟢 "Maintenir — envisager upsell"
+--   Moderately Profitable + >=15% → 🔵 "Booster via promo ou bundle"
+--   Moderately Profitable         → 🟡 "Surveiller — optimiser coût achat"
+--   Marge < 10%                   → 🔴 "Revoir tarif ou arrêter"
+--   Marge < 15%                   → 🟠 "Marge faible — lancer promotion"
+--   Quantité < 10                 → 🟡 "Volume faible — action visibilité"
+--   Défaut                        → ⚪ "Surveiller — stable"
+-- Filtre : exclut 'inconnu', 'INCONNUE', CA = 0.
+-- Couleurs thème : #D64554 rouge | #D9B300 jaune | #1AAB40 vert | #118DFF bleu.
+-- Affiché : HTML Content | Page 3
  
