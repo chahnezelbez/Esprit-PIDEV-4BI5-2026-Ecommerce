@@ -1,0 +1,38 @@
+{
+  "model_name": "IsolationForest",
+  "task": "anomaly_detection",
+  "contamination": 0.05,
+  "requires_scaling": true,
+  "features": [
+    "feat_nb_products",
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_discount",
+    "feat_shipping_pct",
+    "target_value"
+  ],
+  "feature_dtypes": {
+    "feat_nb_products": "float",
+    "feat_avg_price": "float",
+    "feat_max_price": "float",
+    "feat_discount": "float",
+    "feat_shipping_pct": "float",
+    "target_value": "float"
+  },
+  "api_endpoint": "/predict/anomalie",
+  "input_example": {
+    "feat_nb_products": 0.0,
+    "feat_avg_price": 0.0,
+    "feat_max_price": 0.0,
+    "feat_discount": 0.0,
+    "feat_shipping_pct": 0.0,
+    "target_value": 0.0
+  },
+  "output_schema": {
+    "is_anomaly": "int (1 = anomalie, 0 = normal)",
+    "anomaly_score": "float (plus négatif = plus anormal)",
+    "label": "str ('Anomalie' ou 'Normal')"
+  },
+  "n8n_note": "POST JSON avec features → reçoit is_anomaly + anomaly_score + label",
+  "exported_at": "2026-04-17T18:09:09.423096"
+}

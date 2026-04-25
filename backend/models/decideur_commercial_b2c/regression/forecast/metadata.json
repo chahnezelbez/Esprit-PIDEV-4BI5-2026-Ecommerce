@@ -1,0 +1,16 @@
+{
+  "model_name": "Prophet (Facebook)",
+  "task": "time_series_forecast",
+  "target": "daily_orders (nombre de commandes par jour)",
+  "input_format": "{'periods': int, 'freq': 'D'} — nombre de jours à prévoir",
+  "api_endpoint": "/predict/forecast",
+  "output_schema": {
+    "ds": "date (YYYY-MM-DD)",
+    "yhat": "float (prédiction commandes/jour)",
+    "yhat_lower": "float (borne basse 80%)",
+    "yhat_upper": "float (borne haute 80%)"
+  },
+  "n8n_note": "POST {'periods': 30} → reçoit liste de {ds, yhat, yhat_lower, yhat_upper}",
+  "training_period": "2023-07-05 → 2026-01-02",
+  "exported_at": "2026-04-17T18:09:09.393718"
+}

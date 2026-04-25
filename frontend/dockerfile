@@ -1,0 +1,26 @@
+# Étape 1 : Build de l'application Angular
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copier les fichiers de dépendances
+COPY package*.json ./
+
+# Installer les dépendances (régénère le lock file si nécessaire)
+RUN npm install --force
+
+# Copier tout le code source
+COPY . .
+
+# Build de l'application (production)
+RUN npm run build -- --configuration production
+
+# Étape 2 : Serveur Nginx pour servir l'application
+FROM nginx:alpine
+
+# Copier les fichiers du build Angular
+COPY --from=build /app/dist/sougui-front/browser /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

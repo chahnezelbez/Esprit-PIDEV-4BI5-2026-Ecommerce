@@ -1,0 +1,228 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Décideur Marketing</h1>
+    <p class="subtitle">Clustering · Timeseries SARIMA · Régression prix · Classification produit</p>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="activeTab==='clustering'"     (click)="setTab('clustering')">Clustering</button>
+    <button [class.active]="activeTab==='timeseries'"     (click)="setTab('timeseries')">Timeseries SARIMA</button>
+    <button [class.active]="activeTab==='regression'"     (click)="setTab('regression')">Régression prix</button>
+    <button [class.active]="activeTab==='classification'" (click)="setTab('classification')">Classification</button>
+  </nav>
+
+  <div class="content-grid">
+    <div class="form-panel">
+
+      <!-- Clustering -->
+      <form *ngIf="activeTab==='clustering'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Prix actuel</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.price_current" name="pc"></div>
+          <div class="fg"><label>Remise (0-1)</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.discount_depth" name="dd"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Note produit</label>
+            <input type="number" step="0.1" [(ngModel)]="clusterForm.rating_value" name="rv"></div>
+          <div class="fg"><label>Nb avis</label>
+            <input type="number" [(ngModel)]="clusterForm.reviews_count" name="rc"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Qté vendue</label>
+            <input type="number" [(ngModel)]="clusterForm.sales_qty" name="sq"></div>
+          <div class="fg"><label>CA (TND)</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.sales_revenue" name="sr"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Lignes commande</label>
+            <input type="number" [(ngModel)]="clusterForm.order_lines" name="ol"></div>
+          <div class="fg"><label>Vélocité vente</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.sales_velocity" name="sv"></div>
+        </div>
+        <div class="fg"><label>Signal avis (0-1)</label>
+          <input type="number" step="0.01" [(ngModel)]="clusterForm.review_signal" name="rs"></div>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Segmenter le produit' }}
+        </button>
+      </form>
+
+      <!-- Timeseries -->
+      <form *ngIf="activeTab==='timeseries'" (ngSubmit)="submit()">
+        <div class="fg">
+          <label>Mois à prévoir (1–36)</label>
+          <input type="number" min="1" max="36" [(ngModel)]="tsPeriods" name="per">
+        </div>
+        <p class="hint">Modèle SARIMA entraîné sur les ventes mensuelles marketing.</p>
+        <button type="submit" class="btn-predict btn-teal" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Lancer SARIMA' }}
+        </button>
+      </form>
+
+      <!-- Régression -->
+      <form *ngIf="activeTab==='regression'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Remise (0-1)</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.discount_depth" name="dd"></div>
+          <div class="fg"><label>Note produit</label>
+            <input type="number" step="0.1" [(ngModel)]="regForm.rating_value" name="rv"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Nb avis</label>
+            <input type="number" [(ngModel)]="regForm.reviews_count" name="rc"></div>
+          <div class="fg"><label>Long. nom</label>
+            <input type="number" [(ngModel)]="regForm.name_len" name="nl"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Long. desc.</label>
+            <input type="number" [(ngModel)]="regForm.desc_len" name="dl"></div>
+          <div class="fg"><label>Qté vendue</label>
+            <input type="number" [(ngModel)]="regForm.sales_qty" name="sq"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>CA (TND)</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.sales_revenue" name="sr"></div>
+          <div class="fg"><label>Prix unit. moy.</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.avg_unit_price" name="aup"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Jours en vente</label>
+            <input type="number" [(ngModel)]="regForm.days_on_sale" name="dos"></div>
+          <div class="fg"><label>Vélocité vente</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.sales_velocity" name="sv"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>CA / ligne</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.revenue_per_orderline" name="rpl"></div>
+          <div class="fg"><label>Signal avis</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.review_signal" name="rs"></div>
+        </div>
+        <div class="fg"><label>Catégorie</label>
+          <select [(ngModel)]="regForm.broad_category" name="cat">
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select></div>
+        <div class="form-row">
+          <div class="fg"><label>Stock</label>
+            <select [(ngModel)]="regForm.stock_status" name="ss">
+              <option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option>
+            </select></div>
+          <div class="fg"><label>Paiement</label>
+            <select [(ngModel)]="regForm.main_payment" name="mp">
+              <option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option>
+            </select></div>
+        </div>
+        <div class="fg"><label>Livraison</label>
+          <select [(ngModel)]="regForm.main_delivery" name="md">
+            <option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option>
+          </select></div>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Prédire le prix' }}
+        </button>
+      </form>
+
+      <!-- Classification -->
+      <form *ngIf="activeTab==='classification'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Prix actuel</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.price_current" name="pc"></div>
+          <div class="fg"><label>Remise (0-1)</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.discount_depth" name="dd"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Note produit</label>
+            <input type="number" step="0.1" [(ngModel)]="classifForm.rating_value" name="rv"></div>
+          <div class="fg"><label>Nb avis</label>
+            <input type="number" [(ngModel)]="classifForm.reviews_count" name="rc"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Qté vendue</label>
+            <input type="number" [(ngModel)]="classifForm.sales_qty" name="sq"></div>
+          <div class="fg"><label>CA (TND)</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.sales_revenue" name="sr"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Lignes commande</label>
+            <input type="number" [(ngModel)]="classifForm.order_lines" name="ol"></div>
+          <div class="fg"><label>Prix unit. moy.</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.avg_unit_price" name="aup"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Jours en vente</label>
+            <input type="number" [(ngModel)]="classifForm.days_on_sale" name="dos"></div>
+          <div class="fg"><label>Vélocité vente</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.sales_velocity" name="sv"></div>
+        </div>
+        <div class="fg"><label>Catégorie</label>
+          <select [(ngModel)]="classifForm.broad_category" name="cat">
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select></div>
+        <div class="form-row">
+          <div class="fg"><label>Stock</label>
+            <select [(ngModel)]="classifForm.stock_status" name="ss">
+              <option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option>
+            </select></div>
+          <div class="fg"><label>Paiement</label>
+            <select [(ngModel)]="classifForm.main_payment" name="mp">
+              <option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option>
+            </select></div>
+        </div>
+        <div class="fg"><label>Livraison</label>
+          <select [(ngModel)]="classifForm.main_delivery" name="md">
+            <option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option>
+          </select></div>
+        <button type="submit" class="btn-predict btn-violet" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Classifier le produit' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-panel">
+      <div *ngIf="error" class="alert-error">{{ error }}</div>
+      <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Modèle ML en cours...</p></div>
+
+      <!-- Clustering result -->
+      <div *ngIf="result && activeTab==='clustering' && !loading" class="result-card">
+        <p class="result-label">Segment produit</p>
+        <div class="cluster-pill">Cluster {{ result.cluster }}</div>
+        <p class="result-note">Parmi {{ result.n_clusters }} clusters | Décideur : {{ result.decideur }}</p>
+      </div>
+
+      <!-- Timeseries result -->
+      <div *ngIf="result && activeTab==='timeseries' && !loading" class="result-card forecast-card">
+        <p class="result-label">Prévision SARIMA — {{ result.periods }} mois</p>
+        <p class="result-note" *ngIf="result.last_train_date">Dernier entraînement : {{ result.last_train_date }}</p>
+        <div class="forecast-list">
+          <div *ngFor="let v of result.forecast; let i=index" class="forecast-row">
+            <span class="f-date">Mois {{ i + 1 }}</span>
+            <span class="f-val">{{ v.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Régression result -->
+      <div *ngIf="result && activeTab==='regression' && !loading" class="result-card">
+        <p class="result-label">Prix prédit</p>
+        <div class="result-big">{{ result.predicted_value.toFixed(2) }}<span class="unit"> TND</span></div>
+      </div>
+
+      <!-- Classification result -->
+      <div *ngIf="result && activeTab==='classification' && !loading" class="result-card">
+        <p class="result-label">Classe produit</p>
+        <div class="result-big">Classe {{ result.prediction }}</div>
+        <div *ngIf="result.probabilities" class="proba-section">
+          <p class="proba-title">Probabilités par classe</p>
+          <div *ngFor="let p of result.probabilities; let i=index" class="proba-row">
+            <span>Classe {{ i }}</span>
+            <div class="bar-bg"><div class="bar-fill" [style.width.%]="p*100"></div></div>
+            <span>{{ (p*100).toFixed(1) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!result && !loading && !error" class="empty-state">
+        <p>Remplissez le formulaire et cliquez sur le bouton pour appeler le modèle.</p>
+      </div>
+    </div>
+  </div>
+</div>

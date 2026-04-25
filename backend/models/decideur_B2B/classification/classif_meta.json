@@ -1,0 +1,48 @@
+{
+  "type": "classification",
+  "tache_1": {
+    "cible": "encaissement_trouve (0/1)",
+    "features_num": [
+      "montant_ht",
+      "tva",
+      "total_ttc",
+      "ca_total_client",
+      "nombre_de_marches_client",
+      "annee",
+      "mois_sin",
+      "mois_cos",
+      "ecart_negatif_flag"
+    ],
+    "features_cat": [
+      "segment_client",
+      "client"
+    ],
+    "sortie": "probabilite (float 0-1) + classe (0=Non encaissé, 1=Encaissé)",
+    "meilleur_modele": "Random Forest",
+    "fichier": "classif_1_random_forest.joblib"
+  },
+  "tache_2": {
+    "cible": "high_risk_non_collection (0/1)",
+    "features_num": [
+      "log_total_ttc",
+      "log_montant_ht",
+      "tva",
+      "timbre",
+      "annee",
+      "mois",
+      "jour_mois",
+      "mois_sin",
+      "mois_cos",
+      "desc_len",
+      "desc_word_count",
+      "client_prev_invoice_count",
+      "client_prev_non_paid_rate",
+      "days_since_last_invoice"
+    ],
+    "features_cat": [
+      "client"
+    ],
+    "sortie": "probabilite (float 0-1) + classe (0=Faible risque, 1=Haut risque)",
+    "meilleur_modele": "SVM (choix notebook)"
+  }
+}

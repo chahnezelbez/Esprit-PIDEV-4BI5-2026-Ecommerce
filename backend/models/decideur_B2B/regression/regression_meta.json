@@ -1,0 +1,33 @@
+{
+  "type": "regression",
+  "cible": "montant_encaisse (DT)",
+  "features_num": [
+    "montant_ht",
+    "tva",
+    "total_ttc",
+    "ca_total_client",
+    "nombre_de_marches_client",
+    "annee",
+    "mois_sin",
+    "mois_cos",
+    "ecart_negatif_flag"
+  ],
+  "features_cat": [
+    "segment_client",
+    "client"
+  ],
+  "sortie": "float — montant encaissé prédit en DT",
+  "note": "Régression conditionnelle sur factures encaissées uniquement.",
+  "modeles": [
+    {
+      "rang": 1,
+      "nom": "XGBoost Regressor",
+      "fichier": "regression_1_xgboost.joblib"
+    },
+    {
+      "rang": 2,
+      "nom": "Gradient Boosting",
+      "fichier": "regression_2_gradient_boosting.joblib"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "decideur": "purchase",
+  "pipeline": "Sougui — Décideur Purchase",
+  "run_at": "2026-04-19T19:17:14.354Z",
+  "cron": "0 6 * * 1 (lundi 6h)",
+  "models": {
+    "classification": {
+      "decideur": "purchase",
+      "task": "clustering",
+      "cluster": 0
+    },
+    "regression": null,
+    "clustering": null
+  },
+  "summary": {
+    "prediction_class": null,
+    "predicted_value": null,
+    "cluster_assigned": null
+  }
+}

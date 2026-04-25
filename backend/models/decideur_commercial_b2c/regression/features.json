@@ -1,0 +1,14 @@
+{
+  "features": [
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_free_shipping",
+    "feat_shipping_pct",
+    "feat_payment_encoded",
+    "feat_is_tunis",
+    "feat_nb_products",
+    "feat_total_qty",
+    "feat_has_promo",
+    "feat_is_gift"
+  ]
+}

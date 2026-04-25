@@ -1,0 +1,179 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Décideur GM</h1>
+    <p class="subtitle">Classification client · Régression CA · Clustering RFM · Détection anomalie</p>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="activeTab==='classification'" (click)="setTab('classification')">Classification client</button>
+    <button [class.active]="activeTab==='regression'"     (click)="setTab('regression')">Régression CA</button>
+    <button [class.active]="activeTab==='clustering'"     (click)="setTab('clustering')">Clustering RFM</button>
+    <button [class.active]="activeTab==='anomaly'"        (click)="setTab('anomaly')">Anomalie commande</button>
+  </nav>
+
+  <div class="content-grid">
+    <div class="form-panel">
+
+      <!-- Classification (7 features RFM) -->
+      <form *ngIf="activeTab==='classification'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Récence (jours)</label>
+            <input type="number" step="0.1" [(ngModel)]="classifForm.Recency" name="rec"></div>
+          <div class="fg"><label>Âge client (jours)</label>
+            <input type="number" [(ngModel)]="classifForm.Customer_Age_Days" name="age"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Fréquence</label>
+            <input type="number" step="0.1" [(ngModel)]="classifForm.Frequency" name="freq"></div>
+          <div class="fg"><label>% weekend</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.Pct_Weekend" name="pw"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Nb catégories</label>
+            <input type="number" [(ngModel)]="classifForm.Nb_Categories" name="nc"></div>
+          <div class="fg"><label>Montant total</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.Monetary" name="mon"></div>
+        </div>
+        <div class="fg"><label>Prix moyen</label>
+          <input type="number" step="0.01" [(ngModel)]="classifForm.Avg_Price" name="ap"></div>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Classifier le client' }}
+        </button>
+      </form>
+
+      <!-- Régression (25 features — simplifiée par dropdowns) -->
+      <form *ngIf="activeTab==='regression'" (ngSubmit)="submit()">
+        <div class="section-label">Informations temporelles</div>
+        <div class="form-row">
+          <div class="fg"><label>Mois</label>
+            <input type="number" min="1" max="12" [(ngModel)]="regForm.mois" name="mois"></div>
+          <div class="fg"><label>Trimestre</label>
+            <input type="number" min="1" max="4" [(ngModel)]="regForm.trimestre" name="trim"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Quantité</label>
+            <input type="number" [(ngModel)]="regForm.quantite" name="qty"></div>
+          <div class="fg"><label>Weekend</label>
+            <select [(ngModel)]="regForm.est_weekend" name="wkd">
+              <option [value]="0">Non</option><option [value]="1">Oui</option>
+            </select></div>
+        </div>
+        <div class="section-label" style="margin-top:0.75rem">Catégorie · Canal · Gouvernorat</div>
+        <div class="fg"><label>Catégorie produit</label>
+          <select [(ngModel)]="selectedCat" name="cat">
+            <option *ngFor="let c of categories" [value]="c">Catégorie {{ c }}</option>
+          </select></div>
+        <div class="fg"><label>Canal</label>
+          <select [(ngModel)]="selectedCanal" name="canal">
+            <option *ngFor="let c of canaux" [value]="c">Canal {{ c }}</option>
+          </select></div>
+        <div class="fg"><label>Gouvernorat</label>
+          <select [(ngModel)]="selectedGouv" name="gouv">
+            <option *ngFor="let g of gouvernorats" [value]="g">{{ g }}</option>
+          </select></div>
+        <p class="hint">Les champs one-hot seront encodés automatiquement.</p>
+        <button type="submit" class="btn-predict btn-amber" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Prédire le CA' }}
+        </button>
+      </form>
+
+      <!-- Clustering RFM (7 features) -->
+      <form *ngIf="activeTab==='clustering'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Récence (jours)</label>
+            <input type="number" step="0.1" [(ngModel)]="clusterForm.Recency" name="rec"></div>
+          <div class="fg"><label>Fréquence</label>
+            <input type="number" step="0.1" [(ngModel)]="clusterForm.Frequency" name="freq"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Montant total</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.Monetary" name="mon"></div>
+          <div class="fg"><label>Panier moyen</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.Avg_Order_Value" name="aov"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Nb catégories</label>
+            <input type="number" [(ngModel)]="clusterForm.Nb_Categories" name="nc"></div>
+          <div class="fg"><label>% weekend</label>
+            <input type="number" step="0.01" [(ngModel)]="clusterForm.Pct_Weekend" name="pw"></div>
+        </div>
+        <div class="fg"><label>Acheteur en ligne</label>
+          <select [(ngModel)]="clusterForm.Is_Online_Buyer" name="online">
+            <option [value]="1">Oui</option><option [value]="0">Non</option>
+          </select></div>
+        <button type="submit" class="btn-predict btn-violet" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Segmenter le client' }}
+        </button>
+      </form>
+
+      <!-- Anomalie (5 features) -->
+      <form *ngIf="activeTab==='anomaly'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Prix unitaire</label>
+            <input type="number" step="0.01" [(ngModel)]="anomalyForm.prix_unitaire" name="pu"></div>
+          <div class="fg"><label>Quantité</label>
+            <input type="number" [(ngModel)]="anomalyForm.quantite" name="qty"></div>
+        </div>
+        <div class="fg"><label>Montant total</label>
+          <input type="number" step="0.01" [(ngModel)]="anomalyForm.montant_total" name="mt"></div>
+        <div class="form-row">
+          <div class="fg"><label>Mois</label>
+            <input type="number" min="1" max="12" [(ngModel)]="anomalyForm.mois" name="mois"></div>
+          <div class="fg"><label>Weekend</label>
+            <select [(ngModel)]="anomalyForm.est_weekend" name="wkd">
+              <option [value]="0">Non</option><option [value]="1">Oui</option>
+            </select></div>
+        </div>
+        <button type="submit" class="btn-predict btn-danger" [disabled]="loading">
+          {{ loading ? 'Analyse...' : 'Détecter l\'anomalie' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-panel">
+      <div *ngIf="error" class="alert-error">{{ error }}</div>
+      <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Modèle ML en cours...</p></div>
+
+      <div *ngIf="result && activeTab==='classification' && !loading" class="result-card">
+        <p class="result-label">Segment client</p>
+        <div class="result-big">Classe {{ result.prediction }}</div>
+        <div *ngIf="result.probabilities" class="proba-section">
+          <p class="proba-title">Probabilités</p>
+          <div *ngFor="let p of result.probabilities; let i=index" class="proba-row">
+            <span>Classe {{ i }}</span>
+            <div class="bar-bg"><div class="bar-fill" [style.width.%]="p*100"></div></div>
+            <span>{{ (p*100).toFixed(1) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="result && activeTab==='regression' && !loading" class="result-card">
+        <p class="result-label">CA prédit</p>
+        <div class="result-big">{{ result.predicted_value.toFixed(2) }}<span class="unit"> TND</span></div>
+      </div>
+
+      <div *ngIf="result && activeTab==='clustering' && !loading" class="result-card">
+        <p class="result-label">Segment RFM</p>
+        <div class="cluster-pill">Cluster {{ result.cluster }}</div>
+        <p class="result-note">Décideur : {{ result.decideur }}</p>
+      </div>
+
+      <div *ngIf="result && activeTab==='anomaly' && !loading" class="result-card">
+        <p class="result-label">Détection anomalie</p>
+        <div class="anomaly-badge" [class.is-anomaly]="result.is_anomaly" [class.is-normal]="!result.is_anomaly">
+          {{ result.is_anomaly ? 'ANOMALIE DÉTECTÉE' : 'NORMAL' }}
+        </div>
+        <div class="score-row">
+          <span class="score-label">Score anomalie</span>
+          <span class="score-val">{{ result.anomaly_score.toFixed(4) }}</span>
+        </div>
+        <p class="result-note">{{ result.note }}</p>
+      </div>
+
+      <div *ngIf="!result && !loading && !error" class="empty-state">
+        <p>Remplissez le formulaire et cliquez sur le bouton pour appeler le modèle.</p>
+      </div>
+    </div>
+  </div>
+</div>

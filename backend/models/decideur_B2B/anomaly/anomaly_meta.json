@@ -1,0 +1,35 @@
+{
+  "type": "anomaly_detection",
+  "features": [
+    "log_total_ttc",
+    "log_montant_ht",
+    "log_ca_total_client",
+    "log_prev_mean",
+    "recovery_rate",
+    "encaissement_trouve",
+    "ecart_negatif_flag",
+    "ecart_facture_encaissement_filled",
+    "client_prev_invoice_count",
+    "days_since_last_invoice",
+    "invoice_vs_history_ratio",
+    "desc_len",
+    "desc_word_count",
+    "mois",
+    "jour_mois"
+  ],
+  "sortie": "-1 = anomalie, 1 = normal",
+  "note": "LOF non exporté (pas de predict sur nouvelles données). Appliquer anomaly_scaler.joblib avant predict().",
+  "contamination": 0.1,
+  "modeles": [
+    {
+      "rang": 1,
+      "nom": "IsolationForest",
+      "fichier": "anomaly_1_isolation_forest.joblib"
+    },
+    {
+      "rang": 2,
+      "nom": "OneClassSVM",
+      "fichier": "anomaly_2_oneclass_svm.joblib"
+    }
+  ]
+}

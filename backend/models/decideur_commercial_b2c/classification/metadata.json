@@ -1,0 +1,54 @@
+{
+  "model_name": "GradientBoostingClassifier",
+  "task": "classification",
+  "target": "target_completion",
+  "classes": {
+    "0": "En cours",
+    "1": "Terminée"
+  },
+  "requires_scaling": false,
+  "features": [
+    "feat_is_peak_season",
+    "feat_payment_encoded",
+    "feat_shipping_pct",
+    "feat_is_tunis",
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_has_note",
+    "feat_has_promo",
+    "feat_free_shipping",
+    "feat_discount"
+  ],
+  "feature_dtypes": {
+    "feat_is_peak_season": "float",
+    "feat_payment_encoded": "float",
+    "feat_shipping_pct": "float",
+    "feat_is_tunis": "float",
+    "feat_avg_price": "float",
+    "feat_max_price": "float",
+    "feat_has_note": "float",
+    "feat_has_promo": "float",
+    "feat_free_shipping": "float",
+    "feat_discount": "float"
+  },
+  "api_endpoint": "/predict/classification",
+  "input_example": {
+    "feat_is_peak_season": 0.0,
+    "feat_payment_encoded": 0.0,
+    "feat_shipping_pct": 0.0,
+    "feat_is_tunis": 0.0,
+    "feat_avg_price": 0.0,
+    "feat_max_price": 0.0,
+    "feat_has_note": 0.0,
+    "feat_has_promo": 0.0,
+    "feat_free_shipping": 0.0,
+    "feat_discount": 0.0
+  },
+  "output_schema": {
+    "prediction": "int (0 ou 1)",
+    "probability": "float (0.0 → 1.0)",
+    "label": "str ('En cours' ou 'Terminée')"
+  },
+  "n8n_note": "POST JSON avec les features → reçoit prediction + probability + label",
+  "exported_at": "2026-04-17T18:09:09.105603"
+}

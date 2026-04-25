@@ -1,0 +1,14 @@
+{
+  "features": [
+    "feat_is_peak_season",
+    "feat_payment_encoded",
+    "feat_shipping_pct",
+    "feat_is_tunis",
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_has_note",
+    "feat_has_promo",
+    "feat_free_shipping",
+    "feat_discount"
+  ]
+}

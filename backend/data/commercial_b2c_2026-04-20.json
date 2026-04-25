@@ -1,0 +1,33 @@
+{
+  "decideur": "commercial_b2c",
+  "pipeline": "Sougui — Décideur Commercial B2C",
+  "run_at": "2026-04-20T08:34:51.267Z",
+  "cron": "0 6 * * 2 (Mardi 6h)",
+  "status": "completed",
+  "models": {
+    "regression": {
+      "predicted_value_tnd": 90.92413534022006,
+      "status": "success"
+    },
+    "classification": {
+      "prediction": 1,
+      "label": "Terminée",
+      "status": "success"
+    },
+    "anomaly": {
+      "is_anomaly": true,
+      "anomaly_score": -0.7235791369402299,
+      "status": "success"
+    },
+    "forecast": {
+      "periods": 30,
+      "predictions_count": 30,
+      "status": "success"
+    }
+  },
+  "summary": {
+    "has_anomaly": true,
+    "predicted_value": 90.92413534022006,
+    "anomaly_score": -0.7235791369402299
+  }
+}

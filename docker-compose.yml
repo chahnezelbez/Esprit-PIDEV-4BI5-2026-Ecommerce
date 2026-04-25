@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: sougui-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: sougui_db
+      MYSQL_USER: sougui_user
+      MYSQL_PASSWORD: sougui_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - sougui-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+  # Backend FastAPI
+  backend:
+    build: ./sougui-api  # chemin vers ton dossier backend (contenant Dockerfile et main.py)
+    container_name: sougui-api
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=sougui_user
+      - DB_PASSWORD=sougui_pass
+      - DB_NAME=sougui_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - sougui-net
+    volumes:
+      - ./sougui-api/models:/app/models  # monte les modèles localement (optionnel)
+
+  # Frontend Angular
+  frontend:
+    build: ./sougui-front  # chemin vers ton dossier frontend (contenant Dockerfile)
+    container_name: sougui-front
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - sougui-net
+
+networks:
+  sougui-net:
+    driver: bridge
+
+volumes:
+  mysql_data:

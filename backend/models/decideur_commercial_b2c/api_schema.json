@@ -1,0 +1,76 @@
+{
+  "api_name": "Décideur Commercial B2C",
+  "version": "1.0.0",
+  "base_url": "http://localhost:8000",
+  "endpoints": {
+    "POST /predict/classification": {
+      "description": "Prédit si une commande sera Terminée ou En cours",
+      "input": {
+        "feat_is_peak_season": "float",
+        "feat_payment_encoded": "float",
+        "feat_shipping_pct": "float",
+        "feat_is_tunis": "float",
+        "feat_avg_price": "float",
+        "feat_max_price": "float",
+        "feat_has_note": "float",
+        "feat_has_promo": "float",
+        "feat_free_shipping": "float",
+        "feat_discount": "float"
+      },
+      "output": {
+        "prediction": "int",
+        "probability": "float",
+        "label": "str"
+      }
+    },
+    "POST /predict/regression": {
+      "description": "Prédit le montant total d'une commande (TND)",
+      "input": {
+        "feat_avg_price": "float",
+        "feat_max_price": "float",
+        "feat_free_shipping": "float",
+        "feat_shipping_pct": "float",
+        "feat_payment_encoded": "float",
+        "feat_is_tunis": "float",
+        "feat_nb_products": "float",
+        "feat_total_qty": "float",
+        "feat_has_promo": "float",
+        "feat_is_gift": "float"
+      },
+      "output": {
+        "predicted_value_log": "float",
+        "predicted_value_tnd": "float"
+      }
+    },
+    "POST /predict/forecast": {
+      "description": "Prévision du nombre de commandes pour les N prochains jours",
+      "input": {
+        "periods": "int (ex: 30)"
+      },
+      "output": "list[{ds, yhat, yhat_lower, yhat_upper}]"
+    },
+    "POST /predict/anomalie": {
+      "description": "Détecte si une commande est anormale (fraude, erreur, B2B caché...)",
+      "input": {
+        "feat_nb_products": "float",
+        "feat_avg_price": "float",
+        "feat_max_price": "float",
+        "feat_discount": "float",
+        "feat_shipping_pct": "float",
+        "target_value": "float"
+      },
+      "output": {
+        "is_anomaly": "int",
+        "anomaly_score": "float",
+        "label": "str"
+      }
+    },
+    "GET /health": {
+      "description": "Vérification que l'API est en ligne",
+      "output": {
+        "status": "ok",
+        "models_loaded": "list"
+      }
+    }
+  }
+}

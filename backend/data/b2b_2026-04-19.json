@@ -1,0 +1,36 @@
+{
+  "decideur": "b2b",
+  "pipeline": "Sougui — Décideur B2B",
+  "run_at": "2026-04-19T16:32:16.906Z",
+  "cron": "0 8 * * 4 — jeudi 8h",
+  "models": {
+    "anomaly_detection": {
+      "is_anomaly": true,
+      "anomaly_score": -0.6281236364124182,
+      "prediction": -1,
+      "status": "success"
+    },
+    "classification": {
+      "prediction": 8,
+      "probabilities": null,
+      "status": "success"
+    },
+    "clustering": {
+      "cluster": 2,
+      "status": "success"
+    },
+    "forecast": {
+      "predicted_value": -0.20440787076950073,
+      "status": "success"
+    },
+    "regression": {
+      "predicted_value": 9.430656433105469,
+      "status": "success"
+    }
+  },
+  "summary": {
+    "total_models": 5,
+    "models_success": 5,
+    "anomaly_detected": true
+  }
+}

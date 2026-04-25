@@ -1,0 +1,23 @@
+{
+  "type": "clustering",
+  "features": [
+    "log_nb_factures",
+    "log_ca_total",
+    "log_ca_moyen",
+    "log_panier_moyen",
+    "tx_encaissement",
+    "taux_recouvrement_montant",
+    "nb_anomalies",
+    "anciennete_jours"
+  ],
+  "sortie": "label cluster (int) — DBSCAN: -1 = outlier",
+  "labels_metier": {
+    "-1": "Regular Clients",
+    "0": "Regular Clients",
+    "1": "Regular Clients",
+    "2": "Frequent Operational Clients",
+    "3": "Regular Clients",
+    "4": "High Value Strategic Clients"
+  },
+  "scaler": "cluster_scaler.joblib"
+}

@@ -1,0 +1,32 @@
+<div class="feature-page">
+  <div class="page-header">
+    <h1>Décideur B2B</h1>
+    <p class="subtitle">Analyse B2B pour la classification et la détection de risques.</p>
+  </div>
+
+  <app-result-card title="Caractéristiques B2B">
+    <div class="form-grid">
+      <label>
+        Features (séparées par des virgules)
+        <input type="text" [(ngModel)]="featuresValue" />
+      </label>
+    </div>
+    <button class="btn-primary" (click)="submit()" [disabled]="loading()">
+      {{ loading() ? 'Analyse en cours…' : 'Lancer la classification' }}
+    </button>
+  </app-result-card>
+
+  <app-result-card *ngIf="result()" title="Résultat B2B">
+    <p><strong>Classe prédite :</strong> {{ result()!.prediction }}</p>
+    <ng-container *ngIf="result()!.probabilities as probabilities">
+      <p *ngIf="probabilities.length"><strong>Probabilités :</strong></p>
+      <ul class="prob-list" *ngIf="probabilities.length">
+        <li *ngFor="let p of probabilities; let i = index">
+          Classe {{ i }} : {{ formatPct(p) }}
+        </li>
+      </ul>
+    </ng-container>
+  </app-result-card>
+
+  <div class="error-box" *ngIf="errorMsg()">Erreur — {{ errorMsg() }}</div>
+</div>

@@ -1,0 +1,51 @@
+{
+  "decideur": "financier",
+  "pipeline": "Sougui — Décideur Financier",
+  "run_at": "2026-04-19T16:05:09.873Z",
+  "cron": "0 9 * * 5 — vendredi 9h",
+  "models": {
+    "clustering_kmeans": {
+      "cluster": 2,
+      "status": "success"
+    },
+    "forecast_arima": {
+      "periods": 12,
+      "forecast_points": 12,
+      "forecast_mean": 6.65640827342131,
+      "forecast_min": 6.4555668864539575,
+      "forecast_max": 6.795792139971485,
+      "trend": "décroissance",
+      "status": "success"
+    }
+  },
+  "forecast_values": {
+    "raw": [
+      6.795792139971485,
+      6.4555668864539575,
+      6.521660524014793,
+      6.57379845611591,
+      6.614927437120755,
+      6.647372012698018,
+      6.67296589950656,
+      6.69315562399251,
+      6.709082277801204,
+      6.721646010491984,
+      6.731556904583197,
+      6.739375108305355
+    ],
+    "month_1": 6.795792139971485,
+    "month_6": 6.647372012698018,
+    "month_12": 6.739375108305355
+  },
+  "alerts": {
+    "cluster_anormal": false,
+    "forecast_declining": true,
+    "high_variance": false
+  },
+  "summary": {
+    "total_models": 2,
+    "models_success": 2,
+    "cluster_value": 2,
+    "forecast_direction": "décroissance"
+  }
+}

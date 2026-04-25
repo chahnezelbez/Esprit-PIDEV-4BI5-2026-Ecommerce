@@ -1,0 +1,15 @@
+{
+  "type": "series_temporelles",
+  "granularite": "mensuelle",
+  "cible": "CA mensuel B2B (DT)",
+  "features": [
+    "lag_1",
+    "lag_2",
+    "lag_3",
+    "rolling_mean_3",
+    "month_sin",
+    "month_cos"
+  ],
+  "sortie": "float — CA prédit en DT",
+  "note_svr": "Appliquer forecast_scaler.joblib avant predict() pour SVR uniquement"
+}

@@ -1,0 +1,210 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Décideur Commercial B2C</h1>
+    <p class="subtitle">Régression · Classification · Anomalie · Forecast</p>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="activeTab==='regression'"     (click)="setTab('regression')">Régression</button>
+    <button [class.active]="activeTab==='classification'" (click)="setTab('classification')">Classification</button>
+    <button [class.active]="activeTab==='anomaly'"        (click)="setTab('anomaly')">Détection anomalie</button>
+    <button [class.active]="activeTab==='forecast'"       (click)="setTab('forecast')">Forecast Prophet</button>
+  </nav>
+
+  <div class="content-grid">
+
+    <!-- ══ FORM ══════════════════════════════════════════════════ -->
+    <div class="form-panel">
+
+      <!-- Régression -->
+      <form *ngIf="activeTab==='regression'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Prix moyen</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.feat_avg_price" name="avgp"></div>
+          <div class="fg"><label>Prix max</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.feat_max_price" name="maxp"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Nb produits</label>
+            <input type="number" [(ngModel)]="regForm.feat_nb_products" name="nbp"></div>
+          <div class="fg"><label>Quantité totale</label>
+            <input type="number" [(ngModel)]="regForm.feat_total_qty" name="qty"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>% livraison</label>
+            <input type="number" step="0.01" [(ngModel)]="regForm.feat_shipping_pct" name="spc"></div>
+          <div class="fg"><label>Mode paiement</label>
+            <input type="number" [(ngModel)]="regForm.feat_payment_encoded" name="pay"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Livraison gratuite</label>
+            <select [(ngModel)]="regForm.feat_free_shipping" name="fs">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+          <div class="fg"><label>Région Tunis</label>
+            <select [(ngModel)]="regForm.feat_is_tunis" name="tunis">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Promo</label>
+            <select [(ngModel)]="regForm.feat_has_promo" name="promo">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+          <div class="fg"><label>Cadeau</label>
+            <select [(ngModel)]="regForm.feat_is_gift" name="gift">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+        </div>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Estimer le montant' }}
+        </button>
+      </form>
+
+      <!-- Classification -->
+      <form *ngIf="activeTab==='classification'" (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="fg"><label>Prix moyen</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.feat_avg_price" name="avgp"></div>
+          <div class="fg"><label>Prix max</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.feat_max_price" name="maxp"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>% livraison</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.feat_shipping_pct" name="spc"></div>
+          <div class="fg"><label>Remise</label>
+            <input type="number" step="0.01" [(ngModel)]="classifForm.feat_discount" name="disc"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Mode paiement</label>
+            <input type="number" [(ngModel)]="classifForm.feat_payment_encoded" name="pay"></div>
+          <div class="fg"><label>Région Tunis</label>
+            <select [(ngModel)]="classifForm.feat_is_tunis" name="tunis">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Saison haute</label>
+            <select [(ngModel)]="classifForm.feat_is_peak_season" name="peak">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+          <div class="fg"><label>Livraison gratuite</label>
+            <select [(ngModel)]="classifForm.feat_free_shipping" name="fs">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Note client</label>
+            <select [(ngModel)]="classifForm.feat_has_note" name="note">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+          <div class="fg"><label>Promo</label>
+            <select [(ngModel)]="classifForm.feat_has_promo" name="promo">
+              <option [value]="1">Oui</option><option [value]="0">Non</option>
+            </select></div>
+        </div>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Classifier la commande' }}
+        </button>
+      </form>
+
+      <!-- Anomalie -->
+      <form *ngIf="activeTab==='anomaly'" (ngSubmit)="submit()">
+        <div class="fg"><label>Nb produits</label>
+          <input type="number" [(ngModel)]="anomalyForm.feat_nb_products" name="nbp"></div>
+        <div class="form-row">
+          <div class="fg"><label>Prix moyen</label>
+            <input type="number" step="0.01" [(ngModel)]="anomalyForm.feat_avg_price" name="avgp"></div>
+          <div class="fg"><label>Prix max</label>
+            <input type="number" step="0.01" [(ngModel)]="anomalyForm.feat_max_price" name="maxp"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Remise</label>
+            <input type="number" step="0.01" [(ngModel)]="anomalyForm.feat_discount" name="disc"></div>
+          <div class="fg"><label>% livraison</label>
+            <input type="number" step="0.01" [(ngModel)]="anomalyForm.feat_shipping_pct" name="spc"></div>
+        </div>
+        <div class="fg"><label>Valeur cible (TND)</label>
+          <input type="number" step="0.01" [(ngModel)]="anomalyForm.target_value" name="target"></div>
+        <button type="submit" class="btn-predict btn-danger" [disabled]="loading">
+          {{ loading ? 'Analyse...' : 'Détecter l\'anomalie' }}
+        </button>
+      </form>
+
+      <!-- Forecast -->
+      <form *ngIf="activeTab==='forecast'" (ngSubmit)="submit()">
+        <div class="fg">
+          <label>Nombre de jours à prévoir (1–365)</label>
+          <input type="number" min="1" max="365" [(ngModel)]="forecastPeriods" name="periods">
+        </div>
+        <p class="hint">Utilise un modèle Prophet entraîné sur l'historique des commandes B2C.</p>
+        <button type="submit" class="btn-predict" [disabled]="loading">
+          {{ loading ? 'Calcul...' : 'Lancer le forecast' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- ══ RESULT ══════════════════════════════════════════════════ -->
+    <div class="result-panel">
+
+      <div *ngIf="error" class="alert-error">{{ error }}</div>
+
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Appel au modèle ML...</p>
+      </div>
+
+      <!-- Régression -->
+      <div *ngIf="result && activeTab==='regression' && !loading" class="result-card">
+        <p class="result-label">Montant estimé (TND)</p>
+        <div class="result-big">{{ result.predicted_value_tnd.toFixed(2) }}<span class="unit"> TND</span></div>
+        <p class="result-note">Valeur log : {{ result.predicted_value_log.toFixed(4) }}</p>
+      </div>
+
+      <!-- Classification -->
+      <div *ngIf="result && activeTab==='classification' && !loading" class="result-card">
+        <p class="result-label">Statut de la commande</p>
+        <div class="result-big status-badge" [class.status-ok]="result.prediction===1" [class.status-pending]="result.prediction===0">
+          {{ result.label }}
+        </div>
+        <div *ngIf="result.probabilities" class="proba-section">
+          <p class="proba-title">Probabilités</p>
+          <div *ngFor="let p of result.probabilities; let i=index" class="proba-row">
+            <span>{{ i===0 ? 'En cours' : 'Terminée' }}</span>
+            <div class="bar-bg"><div class="bar-fill" [style.width.%]="p*100"></div></div>
+            <span>{{ (p*100).toFixed(1) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anomalie -->
+      <div *ngIf="result && activeTab==='anomaly' && !loading" class="result-card">
+        <p class="result-label">Résultat détection</p>
+        <div class="result-big anomaly-badge" [class.is-anomaly]="result.is_anomaly" [class.is-normal]="!result.is_anomaly">
+          {{ result.is_anomaly ? 'ANOMALIE DÉTECTÉE' : 'NORMAL' }}
+        </div>
+        <div class="score-row">
+          <span class="score-label">Score Isolation Forest</span>
+          <span class="score-val">{{ result.anomaly_score.toFixed(4) }}</span>
+        </div>
+        <p class="result-note">{{ result.note }}</p>
+      </div>
+
+      <!-- Forecast -->
+      <div *ngIf="result && activeTab==='forecast' && !loading" class="result-card forecast-card">
+        <p class="result-label">Prévision sur {{ result.periods }} jours</p>
+        <div class="forecast-list">
+          <div *ngFor="let p of result.predictions" class="forecast-row">
+            <span class="f-date">{{ p.ds }}</span>
+            <span class="f-val">{{ p.yhat.toFixed(0) }}</span>
+            <span class="f-range">[{{ p.yhat_lower.toFixed(0) }} – {{ p.yhat_upper.toFixed(0) }}]</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!result && !loading && !error" class="empty-state">
+        <p>Remplissez le formulaire et cliquez sur le bouton pour appeler le modèle.</p>
+      </div>
+    </div>
+  </div>
+</div>

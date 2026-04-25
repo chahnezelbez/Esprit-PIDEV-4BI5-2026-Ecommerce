@@ -1,0 +1,248 @@
+.purchase-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: #1a1a1a;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6b6b6b;
+    margin: 0;
+  }
+}
+
+// ─── Onglets de tâche ────────────────────────────────────────
+.task-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.5px solid #e0dfd8;
+  padding-bottom: 0;
+
+  button {
+    padding: 8px 20px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #6b6b6b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover { color: #1a1a1a; }
+
+    &.active {
+      color: #534ab7;
+      border-bottom-color: #534ab7;
+      font-weight: 500;
+    }
+  }
+}
+
+// ─── Card principale ─────────────────────────────────────────
+.card {
+  background: #fff;
+  border: 0.5px solid #e0dfd8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: #1a1a1a;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 1.25rem;
+  }
+}
+
+// ─── Grille de champs ────────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b6b6b;
+    text-transform: none;
+  }
+
+  input,
+  select {
+    height: 36px;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #1a1a1a;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus {
+      border-color: #534ab7;
+      box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1);
+    }
+  }
+}
+
+// ─── Bouton principal ────────────────────────────────────────
+.btn-primary {
+  height: 40px;
+  padding: 0 24px;
+  background: #534ab7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { background: #3c3489; }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Boîtes de résultat ──────────────────────────────────────
+.result-box {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 0.5px solid;
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .result-sub {
+    font-size: 13px;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  .result-unit {
+    font-size: 16px;
+    font-weight: 400;
+    margin-left: 6px;
+    opacity: 0.7;
+  }
+}
+
+.result-classif {
+  background: #eeedfe;
+  border-color: #afa9ec;
+  .result-label { color: #3c3489; }
+  .result-value { color: #26215c; }
+  .result-sub   { color: #534ab7; }
+}
+
+.result-regression {
+  background: #e1f5ee;
+  border-color: #5dcaa5;
+  .result-label { color: #085041; }
+  .result-value { color: #04342c; }
+  .result-unit  { color: #0f6e56; }
+}
+
+.result-cluster {
+  background: #faeeda;
+  border-color: #ef9f27;
+  .result-label { color: #633806; }
+  .result-value { color: #412402; }
+  .result-sub   { color: #854f0b; }
+}
+
+// ─── Barres de probabilité ───────────────────────────────────
+.prob-bars {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prob-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .prob-name {
+    font-size: 12px;
+    color: #534ab7;
+    min-width: 60px;
+  }
+
+  .prob-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(83, 74, 183, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+
+    .prob-fill {
+      height: 100%;
+      background: #534ab7;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+  }
+
+  .prob-pct {
+    font-size: 12px;
+    font-weight: 500;
+    color: #3c3489;
+    min-width: 40px;
+    text-align: right;
+  }
+}
+
+// ─── Erreur ──────────────────────────────────────────────────
+.error-box {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  background: #fcebeb;
+  border: 0.5px solid #f09595;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #501313;
+
+  strong { color: #a32d2d; }
+}

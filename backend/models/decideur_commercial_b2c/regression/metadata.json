@@ -1,0 +1,51 @@
+{
+  "model_name": "RandomForestRegressor",
+  "task": "regression",
+  "target": "target_value (Montant total commande en TND)",
+  "log_transform": true,
+  "log_transform_note": "Le modèle prédit log1p(valeur). Appliquer np.expm1() sur la sortie.",
+  "requires_scaling": false,
+  "features": [
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_free_shipping",
+    "feat_shipping_pct",
+    "feat_payment_encoded",
+    "feat_is_tunis",
+    "feat_nb_products",
+    "feat_total_qty",
+    "feat_has_promo",
+    "feat_is_gift"
+  ],
+  "feature_dtypes": {
+    "feat_avg_price": "float",
+    "feat_max_price": "float",
+    "feat_free_shipping": "float",
+    "feat_shipping_pct": "float",
+    "feat_payment_encoded": "float",
+    "feat_is_tunis": "float",
+    "feat_nb_products": "float",
+    "feat_total_qty": "float",
+    "feat_has_promo": "float",
+    "feat_is_gift": "float"
+  },
+  "api_endpoint": "/predict/regression",
+  "input_example": {
+    "feat_avg_price": 0.0,
+    "feat_max_price": 0.0,
+    "feat_free_shipping": 0.0,
+    "feat_shipping_pct": 0.0,
+    "feat_payment_encoded": 0.0,
+    "feat_is_tunis": 0.0,
+    "feat_nb_products": 0.0,
+    "feat_total_qty": 0.0,
+    "feat_has_promo": 0.0,
+    "feat_is_gift": 0.0
+  },
+  "output_schema": {
+    "predicted_value_log": "float (espace log)",
+    "predicted_value_tnd": "float (TND réel après expm1)"
+  },
+  "n8n_note": "POST JSON avec features → reçoit valeur prédite en TND",
+  "exported_at": "2026-04-17T18:09:09.147431"
+}

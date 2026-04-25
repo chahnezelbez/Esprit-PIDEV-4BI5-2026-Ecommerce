@@ -1,0 +1,35 @@
+{
+  "decideur": "marketing",
+  "pipeline": "Sougui — Décideur Marketing",
+  "run_at": "2026-04-19T15:38:18.440Z",
+  "cron": "0 6 * * 3 — mercredi 6h",
+  "models": {
+    "clustering": {
+      "cluster": 2,
+      "n_clusters": 3,
+      "status": "success"
+    },
+    "timeseries": {
+      "periods": 12,
+      "forecast_points": 12,
+      "order": [
+        0,
+        1,
+        1
+      ],
+      "status": "success"
+    },
+    "regression": {
+      "predicted_value": 141.11,
+      "status": "success"
+    },
+    "classification": {
+      "prediction": 1,
+      "probabilities": [
+        0.4278804166216066,
+        0.5721195833783934
+      ],
+      "status": "success"
+    }
+  }
+}

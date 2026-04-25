@@ -1,0 +1,27 @@
+<div class="feature-page">
+  <div class="page-header">
+    <h1>Décideur Financier</h1>
+    <p class="subtitle">Prévision financière et suivi des flux.</p>
+  </div>
+
+  <app-result-card title="Horizon de prévision">
+    <label>
+      Nombre de périodes
+      <input type="number" [(ngModel)]="request.periods" min="1" />
+    </label>
+    <button class="btn-primary" (click)="submit()" [disabled]="loading()">
+      {{ loading() ? 'Prévision en cours…' : 'Obtenir une prévision' }}
+    </button>
+  </app-result-card>
+
+  <app-result-card *ngIf="result()" title="Prévision financière">
+    <p><strong>Périodes :</strong> {{ result()!.periods }}</p>
+    <ul>
+      <li *ngFor="let value of result()!.forecast; let i = index">
+        Période {{ i + 1 }} : {{ value | number:'1.0-0' }}
+      </li>
+    </ul>
+  </app-result-card>
+
+  <div class="error-box" *ngIf="errorMsg()">Erreur — {{ errorMsg() }}</div>
+</div>

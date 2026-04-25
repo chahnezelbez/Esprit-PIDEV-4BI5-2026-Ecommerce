@@ -1,0 +1,10 @@
+{
+  "features": [
+    "feat_nb_products",
+    "feat_avg_price",
+    "feat_max_price",
+    "feat_discount",
+    "feat_shipping_pct",
+    "target_value"
+  ]
+}

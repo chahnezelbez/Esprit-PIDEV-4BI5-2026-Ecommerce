@@ -1,0 +1,147 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: #1a1a1a;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6b6b6b;
+    margin: 0;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.5px solid #e0dfd8;
+  padding-bottom: 0;
+
+  button {
+    padding: 8px 20px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #6b6b6b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover { color: #1a1a1a; }
+
+    &.active {
+      color: #534ab7;
+      border-bottom-color: #534ab7;
+      font-weight: 500;
+    }
+  }
+}
+
+.content-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-panel {
+  background: #fff;
+  border: 0.5px solid #e0dfd8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.fg {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b6b6b;
+    text-transform: none;
+  }
+
+  input,
+  select {
+    height: 36px;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 0 10px;
+    font-size: 14px;
+    transition: border-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: #534ab7;
+    }
+  }
+}
+
+.btn-predict {
+  padding: 10px 20px;
+  background: #534ab7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #4338a6;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.btn-teal {
+    background: #0d9488;
+
+    &:hover:not(:disabled) {
+      background: #0f766e;
+    }
+  }
+
+  &.btn-violet {
+    background: #8b5cf6;
+
+    &:hover:not(:disabled) {
+      background: #7c3aed;
+    }
+  }
+}
+
+.error-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 14px;
+}
