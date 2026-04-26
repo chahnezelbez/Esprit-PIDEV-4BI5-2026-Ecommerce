@@ -15,7 +15,7 @@ defaults:
 
 jobs:
   # ============================================
-  # JOB 1: TESTS UNITAIRES (s'exécute toujours)
+  # JOB 1: TESTS UNITAIRES
   # ============================================
   test:
     runs-on: ubuntu-latest
@@ -100,7 +100,6 @@ jobs:
       run: |
         echo "github.ref: ${{ github.ref }}"
         echo "github.ref_name: ${{ github.ref_name }}"
-        echo "Repository: ${{ github.repository }}"
     
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -119,36 +118,11 @@ jobs:
         mlflow server --backend-store-uri sqlite:///mlflow.db --host 127.0.0.1 --port 5000 &
         sleep 5
     
-    - name: Run training pipeline (Optuna)
-      run: |
-        if [ -f pipelines/day5_optuna_optimization.py ]; then
-          python pipelines/day5_optuna_optimization.py
-        else
-          echo "⚠️ Training script not found - running demo training"
-          python -c "
-import mlflow
-import numpy as np
-from sklearn.ensemble import RandomForestRegressor
-
-mlflow.set_experiment('CI_Training')
-with mlflow.start_run():
-    X = np.random.rand(100, 5)
-    y = np.random.rand(100)
-    model = RandomForestRegressor()
-    model.fit(X, y)
-    mlflow.sklearn.log_model(model, 'model')
-    mlflow.log_metric('rmse', 0.5)
-print('✅ Training completed')
-"
-        fi
+    - name: Run training pipeline
+      run: python pipelines/day5_optuna_optimization.py
     
-    - name: Register best model in MLflow Registry
-      run: |
-        if [ -f pipelines/day3_model_registry.py ]; then
-          python pipelines/day3_model_registry.py
-        else
-          echo "⚠️ Registry script not found - skipping"
-        fi
+    - name: Register best model
+      run: python pipelines/day3_model_registry.py
     
     - name: Upload MLflow artifacts
       uses: actions/upload-artifact@v4
@@ -188,17 +162,10 @@ print('✅ Training completed')
         path: mlruns/
     
     - name: Promote model to Production
-      run: |
-        if [ -f pipelines/day3_model_registry.py ]; then
-          python pipelines/day3_model_registry.py
-        else
-          echo "✅ Model promotion - production ready"
-        fi
+      run: python pipelines/day3_model_registry.py
     
     - name: Deploy to cloud
-      run: |
-        echo "🚀 Deploying to production environment..."
-        echo "✅ Deployment completed successfully!"
+      run: echo "🚀 Deployment completed!"
 
   # ============================================
   # JOB 4: MONITORING (uniquement sur main)
@@ -220,14 +187,7 @@ print('✅ Training completed')
       run: pip install evidently pandas numpy scikit-learn
     
     - name: Run data drift detection
-      run: |
-        if [ -f monitoring/evidently_drift.py ]; then
-          python monitoring/evidently_drift.py
-        else
-          echo "📊 Data drift monitoring - active"
-          mkdir -p reports
-          echo '{"status": "no_drift", "timestamp": "'$(date -Iseconds)'"}' > reports/drift_report.json
-        fi
+      run: python monitoring/evidently_drift.py
     
     - name: Upload drift report
       uses: actions/upload-artifact@v4
