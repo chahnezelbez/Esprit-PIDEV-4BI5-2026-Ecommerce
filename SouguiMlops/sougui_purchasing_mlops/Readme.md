@@ -86,8 +86,7 @@ sougui_purchasing_mlops/
 │  🚀  Model Registry                                              │
 │       Staging ──────────────────► Production                     │
 │                    ↓                                             │
-│  📡  Monitoring (SQLite)                                         │
-│       Drift detection · Alertes · Latence                        │
+│                                                                  │
 │                    ↓                                             │
 │  🔮  API FastAPI / MLflow Models Serve                           │
 │       http://127.0.0.1:5001                                      │
