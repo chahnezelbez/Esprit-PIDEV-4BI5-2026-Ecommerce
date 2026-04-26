@@ -1,0 +1,33 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.4
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.0
+mlflow_version: 2.13.0
+model_size_bytes: 74826
+model_uuid: 88720ed67cad43c1b8fef7fa30bcf601
+run_id: 0a4c0b26991f40a0963cedc53060594b
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "Montant_HT", "required": true}, {"type": "double",
+    "name": "Taux_TVA", "required": true}, {"type": "integer", "name": "Mois", "required":
+    true}, {"type": "integer", "name": "Annee", "required": true}, {"type": "integer",
+    "name": "Est_weekend", "required": true}, {"type": "integer", "name": "Categorie_Enc",
+    "required": true}, {"type": "integer", "name": "Fournisseur_Enc", "required":
+    true}, {"type": "integer", "name": "Methode_Enc", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int32", "shape": [-1]}}]'
+  params: null
+utc_time_created: '2026-04-25 15:25:28.846631'
