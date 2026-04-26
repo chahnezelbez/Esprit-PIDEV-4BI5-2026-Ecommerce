@@ -96,64 +96,16 @@ sougui_purchasing_mlops/
 ---
 
 ## 🧪 Days 1 à 6 – Détail technique
+## 📘 Récapitulatif des 6 jours MLOps
 
-### 📘 Day 1 – Experiment Tracking basique
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Suivi manuel des expériences → non reproductible |
-| **Solution** | MLflow log paramètres, métriques et artefacts |
-| **Output** | ✅ 4 runs (Classification, Régression, Clustering, Forecast) |
-
----
-
-### 📘 Day 2 – Multi-métriques + Artifacts
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Une seule métrique ne suffit pas |
-| **Solution** | Log de 5 métriques + images PNG (confusion matrix, ROC, résidus) |
-| **Output** | ✅ Artifacts visibles et comparables dans MLflow UI |
-
----
-
-### 📘 Day 3 – Model Registry + Versions
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Difficile de gérer les versions et la mise en production |
-| **Solution** | MLflow Registry avec versions (v1, v2, v3) et promotion |
-| **Output** | ✅ 3 versions par modèle, v2 en Production |
-
----
-
-### 📘 Day 4 – Persistance SQLite
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Les données MLflow ne persistent pas après redémarrage |
-| **Solution** | Backend SQLite + serveur centralisé |
-| **Output** | ✅ Base `mlflow.db` persistante (244 KB) |
-
----
-
-### 📘 Day 5 – Optuna + Hyperparameter Tuning
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Optimisation manuelle inefficace |
-| **Solution** | Optuna explore automatiquement l'espace des paramètres |
-| **Output** | ✅ 30 runs automatiques, meilleurs paramètres identifiés |
-
----
-
-### 📘 Day 6 – MLflow Model Format + Inference
-
-| Élément | Détail |
-|---------|--------|
-| **Problème** | Format pickle non standardisé |
-| **Solution** | Format MLflow + chargement depuis Registry + inférence |
-| **Output** | ✅ Prédictions pour 5 nouveaux clients (churn, prix, segment, ventes) |
+| Jour | Objectif | Problème | Solution | Output |
+|------|----------|----------|----------|--------|
+| **Day 1** | Experiment Tracking | Suivi manuel → non reproductible | MLflow : logs paramètres, métriques, artefacts | ✅ 4 runs (Classification, Régression, Clustering, Forecast) |
+| **Day 2** | Multi-métriques + Artefacts | Une seule métrique insuffisante | Log de 5 métriques + images (matrice confusion, ROC, résidus) | ✅ Artefacts visibles et comparables dans MLflow UI |
+| **Day 3** | Model Registry + Promotion | Gestion difficile des versions | MLflow Registry + promotion Staging → Production | ✅ 2 modèles enregistrés, promotion automatique |
+| **Day 4** | CI/CD Automatisation | Pipeline manuel et non reproductible | GitHub Actions : test → train → deploy → monitor | ✅ Exécution automatique sur push (test + train) |
+| **Day 5** | Optimisation Optuna | Réglage manuel inefficace | Recherche automatique des hyperparamètres | ✅ RMSE : 373 → 169, R² : 0.27 → 0.85 |
+| **Day 6** | Monitoring & Dérive | Absence de surveillance post-déploiement | Evidently AI + SQLite pour détection de dérive | ✅ Rapport de dérive, alertes configurables |
 
 ---
 
@@ -255,6 +207,50 @@ python pipelines/day3_model_registry.py
 | **Objectif** | Versionner et gouverner les modèles |
 | **Output** | ✅ Modèles enregistrés en Staging avec versions v1 / v2 / v3 |
 
+1. Classification (Churn) – ✅ Parfait
+Version	Accuracy	F1 Score	AUC	Statut
+v1_Baseline	0.5125	0.4109	0.5041	None
+v2_Optimized	0.4850	0.4521	0.5059	Production
+v3_Deep	0.5050	0.4949	0.5048	None
+Ce qui a fonctionné :
+
+✅ 3 versions créées (v1, v2, v3)
+
+✅ Chaque version enregistrée dans Model Registry (SOUGUI_Churn_Classifier)
+
+✅ Version 2 promue en Production
+
+Pourquoi v2 a été choisie ?
+Le code a promu la v2_Optimized (version 2). C’est configurable – tu peux choisir celle avec le meilleur F1 score.
+
+2. Régression (Prix) – ✅ Parfait
+Version	RMSE	Statut
+v1_Baseline	52.11	None
+v2_Optimized	52.88	Production
+v3_Deep	53.80	None
+Ce qui a fonctionné :
+
+✅ 3 versions créées
+
+✅ Chaque version enregistrée dans Model Registry (SOUGUI_Price_Regressor)
+
+✅ Version 2 promue en Production
+3. Clustering – ✅ Correct (pas de Registry)
+Version	Silhouette
+v1_Baseline	0.2921
+v2_Optimized	0.2921
+v3_Deep	0.2921
+Pourquoi pas de Registry ?
+Le clustering (KMeans) n’est pas un modèle de prédiction supervisée. MLflow ne permet pas de l’enregistrer dans le Model Registry de la même façon.
+✅ C’est normal et attendu. Les runs sont bien logués, les métriques sont visibles.
+
+4. Forecast – ✅ Correct (pas de Registry)
+Version	AIC
+v1_Baseline	4645.61
+v2_Optimized	4645.61
+v3_Deep	4645.61
+Pourquoi pas de Registry ?
+SARIMA n’est pas un modèle sklearn standard. MLflow ne peut pas l’enregistrer directement dans le Registry.
 ---
 
 ### 📘 Day 4 – CI/CD Pipeline
