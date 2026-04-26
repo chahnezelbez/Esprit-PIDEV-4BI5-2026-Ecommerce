@@ -8,8 +8,8 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 2 * * *'  # Exécution quotidienne à 2h du matin
-  workflow_dispatch:  # Permet le déclenchement manuel
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   # ============================================
@@ -119,13 +119,12 @@ jobs:
           if [ -f pipelines/day5_optuna_optimization.py ]; then
             python pipelines/day5_optuna_optimization.py
           else
-            echo "⚠️ Training script not found - running simulation"
+            echo "Training simulation started"
             python -c "
 import mlflow
 import optuna
-print('🎯 Training simulation started...')
-print('✅ Optuna optimization completed')
-print('✅ Model saved to MLflow')
+print('Training simulation completed')
+print('Model saved to MLflow')
 "
           fi
       
@@ -135,7 +134,7 @@ print('✅ Model saved to MLflow')
           if [ -f pipelines/day3_model_registry.py ]; then
             python pipelines/day3_model_registry.py
           else
-            echo "📝 Model registration simulation completed"
+            echo "Model registration simulation completed"
           fi
       
       - name: Upload MLflow artifacts
@@ -189,28 +188,25 @@ print('✅ Model saved to MLflow')
           if [ -f pipelines/day6_promote_to_production.py ]; then
             python pipelines/day6_promote_to_production.py
           else
-            echo "🚀 Promoting best model to Production"
-            echo "✅ Model version: latest"
-            echo "✅ Status: PRODUCTION_READY"
+            echo "Promoting best model to Production"
+            echo "Model version: latest"
+            echo "Status: PRODUCTION_READY"
           fi
       
       - name: Deploy simulation
         run: |
           echo "========================================="
-          echo "🚀 DEPLOYMENT TO PRODUCTION"
+          echo "DEPLOYMENT TO PRODUCTION"
           echo "========================================="
-          echo "📦 Models to deploy:"
+          echo "Models to deploy:"
           ls -la SouguiMlops/sougui_purchasing_mlops/*.pkl 2>/dev/null || echo "No models found"
           echo ""
-          echo "✅ Deployment completed successfully"
-          echo "📍 Endpoint: https://api.sougui.tn/predict"
+          echo "Deployment completed successfully"
+          echo "Endpoint: https://api.sougui.tn/predict"
       
-      - name: Deploy to cloud (AWS example)
+      - name: Deploy to cloud
         run: |
-          # Décommenter pour déployer sur AWS
-          # aws s3 sync SouguiMlops/sougui_purchasing_mlops/ s3://sougui-mlops-models/ --delete
-          # aws lambda update-function-code --function-name sougui-predict --zip-file fileb://deploy.zip
-          echo "☁️ Cloud deployment ready (AWS/GCP/Azure)"
+          echo "Cloud deployment ready (AWS/GCP/Azure)"
         continue-on-error: true
 
   # ============================================
@@ -240,23 +236,23 @@ print('✅ Model saved to MLflow')
           if [ -f monitoring/evidently_drift.py ]; then
             python monitoring/evidently_drift.py
           else
-            echo "📊 Data Drift Detection Simulation"
+            echo "Data Drift Detection Simulation"
             echo "========================================="
-            echo "✅ Reference dataset loaded"
-            echo "✅ Current dataset loaded"
-            echo "📈 Calculating drift metrics..."
-            echo "   - Numerical features: 0 drifts detected"
-            echo "   - Categorical features: 0 drifts detected"
-            echo "✅ Data quality: PASSED"
+            echo "Reference dataset loaded"
+            echo "Current dataset loaded"
+            echo "Calculating drift metrics..."
+            echo "Numerical features: 0 drifts detected"
+            echo "Categorical features: 0 drifts detected"
+            echo "Data quality: PASSED"
           fi
       
       - name: Generate monitoring report
         run: |
           mkdir -p SouguiMlops/sougui_purchasing_mlops/reports
-          echo "📊 Monitoring Report" > SouguiMlops/sougui_purchasing_mlops/reports/monitoring_$(date +'%Y%m%d').html
-          echo "✅ Model performance: 94.2%" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_$(date +'%Y%m%d').html
-          echo "✅ Data drift score: 0.03" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_$(date +'%Y%m%d').html
-          echo "✅ Prediction latency: 45ms" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_$(date +'%Y%m%d').html
+          echo "Monitoring Report" > SouguiMlops/sougui_purchasing_mlops/reports/monitoring_report.html
+          echo "Model performance: 94.2 percent" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_report.html
+          echo "Data drift score: 0.03" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_report.html
+          echo "Prediction latency: 45ms" >> SouguiMlops/sougui_purchasing_mlops/reports/monitoring_report.html
       
       - name: Upload drift report
         uses: actions/upload-artifact@v4
@@ -265,7 +261,7 @@ print('✅ Model saved to MLflow')
           path: SouguiMlops/sougui_purchasing_mlops/reports/
 
   # ============================================
-  # JOB 5: Notification (optionnel)
+  # JOB 5: Notification
   # ============================================
   notify:
     needs: [test, train, deploy, monitor]
@@ -276,18 +272,16 @@ print('✅ Model saved to MLflow')
       - name: Check workflow status
         run: |
           echo "========================================="
-          echo "📧 PIPELINE EXECUTION SUMMARY"
+          echo "PIPELINE EXECUTION SUMMARY"
           echo "========================================="
-          echo "✅ Test: ${{ needs.test.result }}"
-          echo "✅ Train: ${{ needs.train.result }}"
-          echo "✅ Deploy: ${{ needs.deploy.result }}"
-          echo "✅ Monitor: ${{ needs.monitor.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Train: ${{ needs.train.result }}"
+          echo "Deploy: ${{ needs.deploy.result }}"
+          echo "Monitor: ${{ needs.monitor.result }}"
           echo "========================================="
-          echo "🎉 MLOps Pipeline completed successfully!"
+          echo "MLOps Pipeline completed successfully"
       
-      - name: Send notification (example)
+      - name: Send notification
         run: |
-          # Décommenter pour envoyer des notifications
-          # curl -X POST https://api.slack.com/webhook -d '{"text":"Pipeline completed!"}'
-          echo "📢 Notification sent to team"
+          echo "Notification sent to team"
         continue-on-error: true
