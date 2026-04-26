@@ -306,4 +306,5 @@ print(f"   - Régression: R² passé de 0.27 à {r2:.4f}")
 print("\n🌐 Interface MLflow: http://127.0.0.1:5000")
 print("   → Onglet 'Models' pour voir les modèles optimisés")#   v 2  
  #   v 3  
+ #   v 4  
  
