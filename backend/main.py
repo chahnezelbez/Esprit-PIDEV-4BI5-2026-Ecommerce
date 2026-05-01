@@ -1,4 +1,9 @@
+# =====================================================
+# IMPORTS - CORRECTS
+# =====================================================
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
@@ -7,22 +12,41 @@ from pathlib import Path
 import logging
 import json
 from typing import List, Dict, Any
-from fastapi.middleware.cors import CORSMiddleware
+
+# ❌ SUPPRIMER CETTE LIGNE SI ELLE EXISTE:
+# from httpx import Response
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# =====================================================
+# CRÉER APP
+# =====================================================
 app = FastAPI(
     title="Sougui API - Décideurs Multi-Tâches",
     description="API pour les modèles ML multi-décideurs (Purchase, Commercial B2C, Marketing, GM, B2B, Financier)",
     version="3.5.0"
 )
+
+# =====================================================
+# ✅ CORS MIDDLEWARE - ESSENTIAL
+# =====================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8081"],   # origine de ton frontend Angular
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:4200",
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:4200",
+        "http://127.0.0.1:8080",
+        "*"  # Accept all origins
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 # ------------------------------------------------------------------
 # Chemins des modèles
