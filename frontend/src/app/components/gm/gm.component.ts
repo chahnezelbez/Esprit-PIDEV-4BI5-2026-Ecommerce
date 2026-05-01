@@ -16,19 +16,19 @@ const PROFIL_CLIENT: Record<number, { label: string; desc: string; action: strin
     label: 'Client à risque de départ',
     desc: 'Ce client n\'a pas commandé depuis longtemps et ses achats se raréfient.',
     action: 'Recommandé : offre de réactivation ou bon de fidélité personnalisé.',
-    icon: '⚠️', color: 'box--amber',
+    icon: '⚠️', color: 'result-reveal--amber',
   },
   1: {
     label: 'Client régulier',
     desc: 'Ce client commande régulièrement avec un panier dans la moyenne de Sougui.',
     action: 'Maintenir la relation et lui proposer les nouveautés du catalogue artisanal.',
-    icon: '🤝', color: 'box--blue',
+    icon: '🤝', color: 'result-reveal--blue',
   },
   2: {
     label: 'Client fidèle — Prioritaire',
     desc: 'Excellent profil : commandes fréquentes, montants élevés, très engagé envers Sougui.',
     action: 'Traitement prioritaire — accès aux pièces exclusives et programme partenaire.',
-    icon: '⭐', color: 'box--green',
+    icon: '⭐', color: 'result-reveal--green',
   },
 };
 
@@ -37,23 +37,22 @@ const SEGMENT_CLIENT: Record<number, { label: string; desc: string; action: stri
     label: 'Acheteur occasionnel',
     desc: 'Achats ponctuels, panier modeste. Client en phase de découverte.',
     action: 'Proposer une sélection d\'entrée de gamme et un guide artisanat.',
-    icon: '🛒', color: 'box--blue',
+    icon: '🛒', color: 'result-reveal--blue',
   },
   1: {
     label: 'Acheteur fidèle',
     desc: 'Commandes régulières couvrant plusieurs catégories artisanales Sougui.',
     action: 'Invitation aux événements et campagne multi-catégories.',
-    icon: '💙', color: 'box--violet',
+    icon: '💙', color: 'result-reveal--green',
   },
   2: {
     label: 'Grand compte',
     desc: 'Volumes et montants élevés. Client stratégique de la maison Sougui.',
     action: 'Suivi personnalisé, offres exclusives et partenariat artisan dédié.',
-    icon: '🏆', color: 'box--amber',
+    icon: '🏆', color: 'result-reveal--amber',
   },
 };
 
-// Catégories artisanales réelles du catalogue Sougui
 const CAT_NAMES: Record<number, string> = {
   2: 'Bijou artisanal', 3: 'Couffin tressé', 4: 'Poterie fine',
   5: 'Tableau décoratif', 6: 'Couffin tissé', 7: 'Couffin palmier',
@@ -61,7 +60,6 @@ const CAT_NAMES: Record<number, string> = {
   11: 'Poterie émaillée', 12: 'Calligraphie',
 };
 
-// Impact de chaque catégorie sur le CA (données réelles du modèle de prévision)
 const CAT_IMPACT: Record<number, number> = {
   10: 95, 2: 72, 11: 54, 7: 52, 12: 38, 8: 34, 9: 20, 3: 15, 4: 12, 5: 10, 6: 8,
 };
@@ -87,13 +85,11 @@ export class GmComponent {
   readonly catImpact  = CAT_IMPACT;
   readonly catKeys    = Object.keys(CAT_NAMES).map(Number);
 
-  // ── Profil client ────────────────────────────────────────────
   classifForm: GmClassificationRequest = {
     Recency: 12, Customer_Age_Days: 365, Pct_Weekend: 0.25,
     Frequency: 5, Nb_Categories: 3, Monetary: 1250.75, Avg_Price: 250.15,
   };
 
-  // ── Estimation CA ────────────────────────────────────────────
   regForm: GmRegressionRequest = {
     est_weekend: 0, mois: 6, trimestre: 2, quantite: 10,
     categorie_id_2: 1, categorie_id_3: 0, categorie_id_4: 0, categorie_id_5: 0,
@@ -105,18 +101,15 @@ export class GmComponent {
     gouvernorat_Sousse: 0, gouvernorat_Tunis: 0,
   };
 
-  // ── Segmentation client ──────────────────────────────────────
   clusterForm: GmClusteringRequest = {
     Recency: 8, Frequency: 12, Monetary: 2450.0,
     Avg_Order_Value: 204.17, Nb_Categories: 4, Pct_Weekend: 0.33, Is_Online_Buyer: 1,
   };
 
-  // ── Vérification commande ────────────────────────────────────
   anomalyForm: GmAnomalyRequest = {
     prix_unitaire: 49.99, quantite: 2, montant_total: 99.98, mois: 12, est_weekend: 1,
   };
 
-  // Dropdowns régression
   readonly gouvernorats = ['Ben_Arous','Bizerte','INCONNU','Monastir','Nabeul','Sfax','Sousse','Tunis'];
   readonly gouvernoratLabels: Record<string, string> = {
     Ben_Arous: 'Ben Arous', Bizerte: 'Bizerte', INCONNU: 'Non renseigné',
@@ -142,7 +135,7 @@ export class GmComponent {
     this.anomalyResult.set(null);
   }
 
-  private syncRegForm(): void {
+  syncRegForm(): void {
     this.gouvernorats.forEach(g =>
       ((this.regForm as any)[`gouvernorat_${g}`] = this.selectedGouv === g ? 1 : 0));
     this.catKeys.forEach(c =>
@@ -170,9 +163,7 @@ export class GmComponent {
     }
   }
 
-  getProfil(p: number)  { return PROFIL_CLIENT[p]  ?? { label:`Profil ${p}`, desc:'', action:'', icon:'❓', color:'box--blue' }; }
-  getSegment(c: number) { return SEGMENT_CLIENT[c]  ?? { label:`Segment ${c}`, desc:'', action:'', icon:'📦', color:'box--blue' }; }
-  probPct(v: number): string { return (v * 100).toFixed(1) + '%'; }
+  getProfil(p: number)  { return PROFIL_CLIENT[p]  ?? { label:`Profil ${p}`, desc:'', action:'', icon:'❓', color:'result-reveal--blue' }; }
+  getSegment(c: number) { return SEGMENT_CLIENT[c]  ?? { label:`Segment ${c}`, desc:'', action:'', icon:'📦', color:'result-reveal--blue' }; }
   scoreBar(s: number): number { return Math.min(100, Math.max(0, ((s + 0.5) / 0.7) * 100)); }
-  trimLabel(t: number): string { return ['T1 (Jan-Mars)','T2 (Avr-Juin)','T3 (Juil-Sep)','T4 (Oct-Déc)'][t-1] ?? `T${t}`; }
 }

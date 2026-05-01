@@ -14,40 +14,29 @@ import {
 
 export type MarketingTab = 'clustering' | 'timeseries' | 'regression' | 'classification';
 
-// ── Données réelles extraites des fichiers joblib ────────────────
-// Clustering KMeans — 9 features, StandardScaler
-// Moyennes des features (scaler.mean_) :
-//   price_current=133.6, discount=6.76, sales_qty=35.9, sales_revenue=1391.2
-//   order_lines=4.88, sales_velocity=0.187
-// Segments déduits des centres de clusters :
-const CLUSTER_META: Record<number, { label: string; desc: string; icon: string; color: string }> = {
+// Clustering KMeans — 9 features
+const CLUSTER_META: Record<number, { label: string; desc: string; icon: string; colorClass: string }> = {
   0: {
     label: 'Produit standard',
     desc: 'Volume et prix dans la moyenne. Produit courant du catalogue artisanal.',
     icon: '🛍️',
-    color: 'cluster--blue',
+    colorClass: 'result-reveal--blue',
   },
   1: {
     label: 'Best-seller',
     desc: 'Forte vélocité, nombreux avis positifs. Produit phare à mettre en avant.',
     icon: '⭐',
-    color: 'cluster--green',
+    colorClass: 'result-reveal--green',
   },
   2: {
     label: 'Produit dormant',
     desc: 'Faible rotation, peu d\'avis. Nécessite une action marketing (promo ou retrait).',
     icon: '💤',
-    color: 'cluster--amber',
+    colorClass: 'result-reveal--amber',
   },
 };
 
-// Régression : RandomForest(200 arbres) prédit price_current
-// Top importances : price_current 37.7%, reviews_count 12.8%, sales_qty 3.7%
-
-// SARIMA(0,1,1)(0,1,1,12) — entraîné 24 mois jusqu'au 2025-06-01
-// Prévision : ~2700 TND/mois
-
-// Classification : classes produit selon performance globale
+// Classification
 const CLASSIF_META: Record<number, { label: string; desc: string; icon: string }> = {
   0: {
     label: 'Produit faible performance',
@@ -78,7 +67,6 @@ export class MarketingComponent {
   regrResult       = signal<MarketingRegressionResponse | null>(null);
   classifResult    = signal<MarketingClassificationResponse | null>(null);
 
-  // ── SARIMA config (lu depuis sarima_config.joblib) ───────────
   readonly sarimaConfig = {
     order: '(0,1,1)',
     seasonalOrder: '(0,1,1,12)',
@@ -86,9 +74,7 @@ export class MarketingComponent {
     trainLength: 24,
   };
 
-  // ── Clustering (9 features — ordre exact de feature_names.joblib) ─
-  // ['price_current','discount_depth','rating_value','reviews_count',
-  //  'sales_qty','sales_revenue','order_lines','sales_velocity','review_signal']
+  // Clustering form
   clusterForm: MarketingClusteringRequest = {
     price_current:  49.99,
     discount_depth: 0.15,
@@ -103,8 +89,7 @@ export class MarketingComponent {
 
   tsPeriods = 12;
 
-  // ── Régression (18 features, SANS price_current) ─────────────
-  // top feature importance : reviews_count (12.8%), sales_qty (3.7%)
+  // Regression form
   regForm: MarketingRegressionRequest = {
     discount_depth:          0.12,
     rating_value:            4.5,
@@ -126,7 +111,7 @@ export class MarketingComponent {
     main_delivery:           'express',
   };
 
-  // ── Classification (19 features, AVEC price_current) ─────────
+  // Classification form
   classifForm: MarketingClassificationRequest = {
     price_current:           59.99,
     discount_depth:          0.10,
@@ -154,7 +139,6 @@ export class MarketingComponent {
   readonly paymentMethods = ['credit_card', 'paypal', 'cash', 'virement'];
   readonly deliveryMethods = ['express', 'standard', 'pickup'];
 
-  // Feature importances réelles (régression)
   readonly topFeatures = [
     { name: 'price_current',  pct: 37.7 },
     { name: 'reviews_count',  pct: 12.8 },
@@ -215,7 +199,12 @@ export class MarketingComponent {
   }
 
   getClusterMeta(c: number) {
-    return CLUSTER_META[c] ?? { label: `Cluster ${c}`, desc: '', icon: '📦', color: 'cluster--blue' };
+    return CLUSTER_META[c] ?? {
+      label: `Cluster ${c}`,
+      desc: '',
+      icon: '📦',
+      colorClass: 'result-reveal--blue',
+    };
   }
 
   getClassifMeta(c: number) {
@@ -227,10 +216,12 @@ export class MarketingComponent {
   }
 
   tsAvg(forecast: number[]): number {
-    return forecast.reduce((a, b) => a + b, 0) / (forecast.length || 1);
+    if (!forecast || forecast.length === 0) return 0;
+    return forecast.reduce((a, b) => a + b, 0) / forecast.length;
   }
 
   tsMax(forecast: number[]): number {
+    if (!forecast || forecast.length === 0) return 0;
     return Math.max(...forecast);
   }
 }

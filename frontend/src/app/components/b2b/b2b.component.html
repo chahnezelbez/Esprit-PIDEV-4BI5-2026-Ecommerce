@@ -1,138 +1,186 @@
-<div class="feature-page">
-  <div class="page-header">
-    <h1>Décideur B2B</h1>
-    <p class="subtitle">Classification, clustering, anomalie et prévision pour les clients B2B.</p>
+<div class="b2b-page">
+
+  <!-- HERO SECTION - Pleine largeur, bleue -->
+  <div class="hero-full">
+    <div class="hero-content">
+      <div class="hero-title">
+        <h1>Décideur B2B</h1>
+        <p class="hero-script">Classification, clustering, anomalie et prévision pour les clients B2B</p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-ornament">
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+        </div>
+        <div class="logo-sougui">
+          <img src="https://sougui.tn/wp-content/uploads/2021/08/Logo-Sougui-arabe.png.webp"
+               alt="Logo Sougui" class="logo-img" />
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Task Selector -->
-  <div class="task-selector">
-    <button 
-      *ngFor="let task of availableTasks" 
-      [class.active]="selectedTask() === task"
-      (click)="setTask(task)"
-      class="task-btn"
-    >
-      {{ getTaskLabel(task) }}
-    </button>
+  <!-- ONGLETS (task selector) -->
+  <div class="tab-rail">
+    <div class="tab-rail-inner">
+      <button class="tab-btn" 
+              *ngFor="let task of availableTasks"
+              [class.tab-btn--active]="selectedTask() === task"
+              (click)="setTask(task)">
+        <span class="tab-icon">{{ getTaskIcon(task) }}</span>
+        <span>{{ getTaskLabel(task) }}</span>
+      </button>
+    </div>
   </div>
 
-  <!-- Features Input Card -->
-  <app-result-card title="Paramètres B2B">
-    <div class="form-grid">
-      <label>
-        Features (séparées par des virgules)
-        <input 
-          type="text" 
-          [(ngModel)]="featuresValue" 
-          placeholder="Ex: 0.15,1,0.4,0.07,0.9,12,220,18,0.02,0.58"
-        />
-      </label>
+  <!-- CONTENEUR PRINCIPAL -->
+  <div class="cards-container">
 
-      <!-- Additional inputs for Forecast task -->
-      <ng-container *ngIf="selectedTask() === 'forecast'">
-        <label>
-          Nombre de périodes à prévoir (1-36)
-          <input 
-            type="number" 
-            [(ngModel)]="forecastPeriods" 
-            min="1" 
-            max="36"
-          />
-        </label>
-      </ng-container>
+    <div class="luxury-card">
+      <div class="card-crown">
+        <div>
+          <h2>Paramètres B2B</h2>
+          <p>Entrez les features (séparées par des virgules) pour l’analyse.</p>
+        </div>
+        <div class="crown-badge crown-badge--blue">Configuration</div>
+      </div>
 
-      <!-- Risk Classification Selection -->
-      <ng-container *ngIf="selectedTask() === 'classification-risks'">
-        <p class="helper-text">⚠️ La classification des risques utilise 27 features (array plus long)</p>
-      </ng-container>
+      <div class="fields-layout">
+        <div class="fields-section">
+          <div class="section-label"><span class="section-num">01</span> Features</div>
+          <div class="fields-row">
+            <div class="field-wrap">
+              <label>Features (séparées par des virgules)</label>
+              <div class="input-shell">
+                <input type="text" [(ngModel)]="featuresValue" placeholder="Ex: 0.15,1,0.4,0.07,0.9,12,220,18,0.02,0.58">
+              </div>
+              <div class="feature-count" *ngIf="features.length > 0">
+                <span class="chip">{{ features.length }} features chargées</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <!-- Anomaly Detection Info -->
-      <ng-container *ngIf="selectedTask() === 'anomaly'">
-        <p class="helper-text">🔍 Détection d'anomalies dans les données B2B</p>
-      </ng-container>
-    </div>
+        <!-- Additional inputs for Forecast task -->
+        <div class="fields-section" *ngIf="selectedTask() === 'forecast'">
+          <div class="section-label"><span class="section-num">02</span> Prévision</div>
+          <div class="fields-row">
+            <div class="field-wrap">
+              <label>Nombre de périodes à prévoir (1-36)</label>
+              <div class="input-shell">
+                <input type="number" min="1" max="36" [(ngModel)]="forecastPeriods">
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <button class="btn-primary" (click)="submit()" [disabled]="loading()">
-      {{ loading() ? 'Analyse en cours…' : 'Lancer l\'analyse' }}
-    </button>
+        <!-- Info spécifique -->
+        <div class="info-message" *ngIf="selectedTask() === 'classification-risks'">
+          <span class="info-icon">⚠️</span> La classification des risques utilise 27 features (array plus long)
+        </div>
+        <div class="info-message" *ngIf="selectedTask() === 'anomaly'">
+          <span class="info-icon">🔍</span> Détection d'anomalies dans les données B2B
+        </div>
+      </div>
 
-    <div class="feature-count" *ngIf="features.length > 0">
-      <small>{{ features.length }} features chargées</small>
-    </div>
-  </app-result-card>
+      <div class="action-bar">
+        <button class="btn-luxe" (click)="submit()" [disabled]="loading()">
+          <ng-container *ngIf="!loading()">🚀 Lancer l’analyse</ng-container>
+          <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse en cours…</ng-container>
+        </button>
+        <p class="action-note">Analyse instantanée</p>
+      </div>
 
-  <!-- Results Card -->
-  <app-result-card *ngIf="hasResult()" [title]="getResultTitle()">
-    
-    <!-- Classification Results -->
-    <ng-container *ngIf="selectedTask() === 'classification' || selectedTask() === 'classification-risks'">
-      <div class="result-section">
-        <p><strong>Classe prédite :</strong> <span class="prediction-value">{{ classifResult()!.prediction }}</span></p>
+      <!-- RÉSULTATS -->
+      <div *ngIf="hasResult()" class="result-reveal" 
+           [class.result-reveal--blue]="selectedTask() !== 'anomaly' || !anomalyResult()?.is_anomaly"
+           [class.result-reveal--amber]="selectedTask() === 'anomaly' && anomalyResult()?.is_anomaly">
         
-        <ng-container *ngIf="classifResult()!.probabilities as probabilities">
-          <p *ngIf="probabilities.length > 0" class="proba-title"><strong>Probabilités par classe :</strong></p>
-          <ul class="prob-list" *ngIf="probabilities.length">
-            <li *ngFor="let p of probabilities; let i = index" class="prob-item">
-              <span class="class-label">Classe {{ i }}</span>
-              <span class="prob-bar">
-                <span class="prob-fill" [style.width.%]="p * 100"></span>
-              </span>
-              <span class="prob-value">{{ formatPct(p) }}</span>
-            </li>
-          </ul>
+        <!-- Classification / Classification Risques -->
+        <ng-container *ngIf="selectedTask() === 'classification' || selectedTask() === 'classification-risks'">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Classe prédite</div>
+              <div class="result-headline">{{ classifResult()!.prediction }}</div>
+              <div class="result-chip">Classification</div>
+            </div>
+            <div class="result-emoji">🎯</div>
+          </div>
+          <ng-container *ngIf="classifResult()!.probabilities as probabilities">
+            <div class="confidence-bars" *ngIf="probabilities.length">
+              <div class="conf-title">Probabilités par classe</div>
+              <div *ngFor="let p of probabilities; let i = index" class="conf-row">
+                <span class="conf-name">Classe {{ i }}</span>
+                <div class="conf-track"><div class="conf-fill" [style.width]="p * 100 + '%'"></div></div>
+                <span class="conf-pct">{{ p * 100 | number:'1.0-0' }}%</span>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <!-- Clustering -->
+        <ng-container *ngIf="selectedTask() === 'clustering'">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Cluster assigné</div>
+              <div class="result-headline">{{ clusterResult()!.cluster }}</div>
+              <div class="result-chip">Clustering</div>
+            </div>
+            <div class="result-emoji">🗂️</div>
+          </div>
+          <p class="result-explain">Client assigné au cluster {{ clusterResult()!.cluster }}</p>
+        </ng-container>
+
+        <!-- Forecast -->
+        <ng-container *ngIf="selectedTask() === 'forecast'">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Valeur prédite</div>
+              <div class="result-headline">{{ forecastResult()!.predicted_value | number:'1.2-2' }}</div>
+              <div class="result-chip">Prévision {{ forecastPeriods }} périodes</div>
+            </div>
+            <div class="result-emoji">📈</div>
+          </div>
+        </ng-container>
+
+        <!-- Regression -->
+        <ng-container *ngIf="selectedTask() === 'regression'">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Valeur prédite</div>
+              <div class="result-headline">{{ regressResult()!.predicted_value | number:'1.2-2' }}</div>
+              <div class="result-chip">Régression</div>
+            </div>
+            <div class="result-emoji">📊</div>
+          </div>
+        </ng-container>
+
+        <!-- Anomaly -->
+        <ng-container *ngIf="selectedTask() === 'anomaly'">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Statut</div>
+              <div class="result-headline">
+                {{ anomalyResult()!.is_anomaly ? '⚠️ Anomalie détectée' : '✅ Normal' }}
+              </div>
+              <div class="result-chip">Score : {{ anomalyResult()!.anomaly_score | number:'1.3-3' }}</div>
+            </div>
+            <div class="result-emoji">{{ anomalyResult()!.is_anomaly ? '🚨' : '🛡️' }}</div>
+          </div>
+          <p class="result-explain">
+            Prédiction : {{ anomalyResult()!.prediction === -1 ? 'Anomalie' : 'Normal' }}
+          </p>
         </ng-container>
       </div>
-    </ng-container>
-
-    <!-- Clustering Results -->
-    <ng-container *ngIf="selectedTask() === 'clustering'">
-      <div class="result-section">
-        <p><strong>Cluster assigné :</strong> <span class="cluster-value">{{ clusterResult()!.cluster }}</span></p>
-        <p class="helper-text">✓ Client assigné au cluster {{ clusterResult()!.cluster }}</p>
-      </div>
-    </ng-container>
-
-    <!-- Forecast Results -->
-    <ng-container *ngIf="selectedTask() === 'forecast'">
-      <div class="result-section">
-        <p><strong>Valeur prédite :</strong> <span class="predicted-value">{{ forecastResult()!.predicted_value | number:'1.2-2' }}</span></p>
-        <p class="helper-text">📈 Prévision pour {{ forecastPeriods }} périodes</p>
-      </div>
-    </ng-container>
-
-    <!-- Regression Results -->
-    <ng-container *ngIf="selectedTask() === 'regression'">
-      <div class="result-section">
-        <p><strong>Valeur prédite :</strong> <span class="predicted-value">{{ regressResult()!.predicted_value | number:'1.2-2' }}</span></p>
-        <p class="helper-text">📊 Résultat de la régression</p>
-      </div>
-    </ng-container>
-
-    <!-- Anomaly Detection Results -->
-    <ng-container *ngIf="selectedTask() === 'anomaly'">
-      <div class="result-section" [class.is-anomaly]="anomalyResult()!.is_anomaly">
-        <p>
-          <strong>Statut :</strong>
-          <span [class.anomaly-badge]="anomalyResult()!.is_anomaly" [class.normal-badge]="!anomalyResult()!.is_anomaly">
-            {{ anomalyResult()!.is_anomaly ? '⚠️ ANOMALIE DÉTECTÉE' : '✓ Normal' }}
-          </span>
-        </p>
-        <p><strong>Score d'anomalie :</strong> {{ anomalyResult()!.anomaly_score | number:'1.3-3' }}</p>
-        <p><strong>Prédiction :</strong> {{ anomalyResult()!.prediction === -1 ? 'Anomalie' : 'Normal' }}</p>
-      </div>
-    </ng-container>
-
-  </app-result-card>
-
-  <!-- Error Message -->
-  <div class="error-box" *ngIf="errorMsg()">
-    <span class="error-icon">❌</span>
-    <span>{{ errorMsg() }}</span>
+    </div>
   </div>
 
-  <!-- Loading Spinner -->
-  <div class="loading-spinner" *ngIf="loading()">
-    <div class="spinner"></div>
-    <p>Traitement en cours...</p>
+  <!-- POPUP ERREUR GLOBAL -->
+  <div *ngIf="errorMsg()" class="toast-error">
+    <span class="toast-icon">⚠️</span>
+    <div class="toast-body"><strong>Erreur</strong><p>{{ errorMsg() }}</p></div>
+    <button class="toast-close" (click)="errorMsg.set(null)">✕</button>
   </div>
+
 </div>

@@ -1,546 +1,374 @@
 <div class="marketing-page">
 
-  <!-- En-tête -->
-  <div class="page-header">
-    <div class="header-brand">
-      <span class="header-badge">MKT</span>
-      <div>
+  <!-- HERO SECTION - Pleine largeur, bleue -->
+  <div class="hero-full">
+    <div class="hero-content">
+      <div class="hero-title">
         <h1>Décideur Marketing</h1>
-        <p class="subtitle">Analyse intelligente du catalogue artisanal Sougui</p>
+        <p class="hero-script">Analyse intelligente du catalogue artisanal Sougui</p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-ornament">
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+        </div>
+        <div class="logo-sougui">
+          <img src="https://sougui.tn/wp-content/uploads/2021/08/Logo-Sougui-arabe.png.webp"
+               alt="Logo Sougui" class="logo-img" />
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Onglets -->
-  <div class="task-tabs">
-    <button [class.active]="activeTab() === 'clustering'"     (click)="setTab('clustering')">
-      <span class="tab-icon">🗂️</span> Clustering
-    </button>
-    <button [class.active]="activeTab() === 'timeseries'"     (click)="setTab('timeseries')">
-      <span class="tab-icon">📈</span> SARIMA
-    </button>
-    <button [class.active]="activeTab() === 'regression'"     (click)="setTab('regression')">
-      <span class="tab-icon">💰</span> Régression prix
-    </button>
-    <button [class.active]="activeTab() === 'classification'" (click)="setTab('classification')">
-      <span class="tab-icon">🔍</span> Classification
-    </button>
+  <!-- ONGLETS -->
+  <div class="tab-rail">
+    <div class="tab-rail-inner">
+      <button class="tab-btn" 
+              [class.tab-btn--active]="activeTab() === 'clustering'"
+              (click)="setTab('clustering')">
+        <span class="tab-icon">🗂️</span>
+        <span>Clustering</span>
+      </button>
+      <button class="tab-btn"
+              [class.tab-btn--active]="activeTab() === 'timeseries'"
+              (click)="setTab('timeseries')">
+        <span class="tab-icon">📈</span>
+        <span>SARIMA</span>
+      </button>
+      <button class="tab-btn"
+              [class.tab-btn--active]="activeTab() === 'regression'"
+              (click)="setTab('regression')">
+        <span class="tab-icon">💰</span>
+        <span>Régression prix</span>
+      </button>
+      <button class="tab-btn"
+              [class.tab-btn--active]="activeTab() === 'classification'"
+              (click)="setTab('classification')">
+        <span class="tab-icon">🔍</span>
+        <span>Classification</span>
+      </button>
+    </div>
   </div>
 
+  <!-- CONTENEUR PRINCIPAL -->
+  <div class="cards-container">
 
-  <!-- ══════════════════════════════════════════════
-       CLUSTERING
-       KMeans · 9 features · StandardScaler
-  ══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'clustering'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Segmentation produit — KMeans</h2>
-        <p class="card-desc">
-          Classe chaque produit artisanal en 3 segments selon ses performances de vente et d'engagement.
-        </p>
-      </div>
-
-      <!-- Légende clusters -->
-      <div class="cluster-legend">
-        <div class="cluster-legend-item" *ngFor="let k of [0, 1, 2]"
-             [ngClass]="getClusterMeta(k).color + '--light'">
-          <span class="cl-icon">{{ getClusterMeta(k).icon }}</span>
+    <!-- ========= CLUSTERING ========= -->
+    <ng-container *ngIf="activeTab() === 'clustering'">
+      <div class="luxury-card">
+        <div class="card-crown">
           <div>
-            <div class="cl-name">{{ getClusterMeta(k).label }}</div>
-            <div class="cl-desc">{{ getClusterMeta(k).desc }}</div>
+            <h2>Segmentation produit — KMeans</h2>
+            <p>Classe chaque produit artisanal en 3 segments selon ses performances de vente et d'engagement.</p>
           </div>
-        </div>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Performance commerciale</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Prix actuel <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="clusterForm.price_current" name="pc">
-            <span class="field-hint">Moy. catalogue : ~134 TND</span>
-          </div>
-          <div class="field">
-            <label>Remise <span class="unit-label">0–1</span></label>
-            <input type="number" step="0.01" min="0" max="1" [(ngModel)]="clusterForm.discount_depth" name="dd">
-            <span class="field-hint">ex: 0.15 = 15%</span>
-          </div>
-          <div class="field">
-            <label>Qté vendue</label>
-            <input type="number" [(ngModel)]="clusterForm.sales_qty" name="sq">
-            <span class="field-hint">Moy. : ~36 unités</span>
-          </div>
-          <div class="field">
-            <label>CA total <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="clusterForm.sales_revenue" name="sr">
-            <span class="field-hint">Moy. : ~1391 TND</span>
-          </div>
-          <div class="field">
-            <label>Lignes commande</label>
-            <input type="number" [(ngModel)]="clusterForm.order_lines" name="ol">
-            <span class="field-hint">Moy. : ~5</span>
-          </div>
-          <div class="field">
-            <label>Vélocité vente</label>
-            <input type="number" step="0.01" [(ngModel)]="clusterForm.sales_velocity" name="sv">
-          </div>
+          <div class="crown-badge crown-badge--blue">Segmentation</div>
         </div>
 
-        <div class="section-label" style="margin-top: 1rem">Réputation & avis</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Note produit <span class="unit-label">0–5</span></label>
-            <input type="number" step="0.1" min="0" max="5" [(ngModel)]="clusterForm.rating_value" name="rv">
-          </div>
-          <div class="field">
-            <label>Nombre d'avis</label>
-            <input type="number" [(ngModel)]="clusterForm.reviews_count" name="rc">
-          </div>
-          <div class="field">
-            <label>Signal avis <span class="unit-label">0–1</span></label>
-            <input type="number" step="0.01" min="0" max="1" [(ngModel)]="clusterForm.review_signal" name="rs">
-            <span class="field-hint">Qualité globale des avis</span>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary" [disabled]="loading()">
-          <span *ngIf="!loading()">🗂️ Segmenter le produit</span>
-          <span *ngIf="loading()">⏳ Analyse…</span>
-        </button>
-      </form>
-
-      <div *ngIf="clusterResult()" class="result-box"
-           [ngClass]="getClusterMeta(clusterResult()!.cluster).color">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Segment détecté</div>
-            <div class="result-value">
-              {{ getClusterMeta(clusterResult()!.cluster).icon }}
-              {{ getClusterMeta(clusterResult()!.cluster).label }}
-            </div>
-            <div class="result-badge">Cluster {{ clusterResult()!.cluster }} / {{ clusterResult()!.n_clusters }}</div>
-          </div>
-          <div class="result-icon-big">{{ getClusterMeta(clusterResult()!.cluster).icon }}</div>
-        </div>
-        <p class="result-desc">{{ getClusterMeta(clusterResult()!.cluster).desc }}</p>
-
-        <!-- Récap inputs -->
-        <div class="recap-chips">
-          <span class="recap-chip">💰 {{ clusterForm.price_current }} TND</span>
-          <span class="recap-chip">⭐ {{ clusterForm.rating_value }}/5</span>
-          <span class="recap-chip">📦 {{ clusterForm.sales_qty }} ventes</span>
-          <span class="recap-chip">💬 {{ clusterForm.reviews_count }} avis</span>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-
-  <!-- ══════════════════════════════════════════════
-       TIMESERIES — SARIMA(0,1,1)(0,1,1,12)
-       Entraîné : 24 mois → 2025-06-01
-  ══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'timeseries'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Prévision CA — SARIMA</h2>
-        <p class="card-desc">
-          Forecast mensuel du chiffre d'affaires marketing.<br>
-          Modèle entraîné sur <strong>24 mois</strong> (jusqu'au {{ sarimaConfig.lastTrainDate }}).
-        </p>
-      </div>
-
-      <!-- Info modèle -->
-      <div class="model-info-chips">
-        <span class="info-chip">Ordre SARIMA : {{ sarimaConfig.order }}</span>
-        <span class="info-chip">Saisonnier : {{ sarimaConfig.seasonalOrder }}</span>
-        <span class="info-chip">Train length : {{ sarimaConfig.trainLength }} mois</span>
-        <span class="info-chip info-chip--date">Dernier train : {{ sarimaConfig.lastTrainDate }}</span>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="slider-block">
-          <label class="slider-label">
-            Mois à prévoir : <strong>{{ tsPeriods }} mois</strong>
-            <span class="unit-label">1 – 36</span>
-          </label>
-          <div class="slider-row">
-            <span class="slider-min">1</span>
-            <input type="range" min="1" max="36" [(ngModel)]="tsPeriods" name="r">
-            <span class="slider-max">36</span>
-            <input type="number" min="1" max="36" [(ngModel)]="tsPeriods" name="v" class="slider-num">
-          </div>
-        </div>
-        <button type="submit" class="btn-primary btn-teal" [disabled]="loading()">
-          <span *ngIf="!loading()">📈 Lancer SARIMA</span>
-          <span *ngIf="loading()">⏳ Prévision en cours…</span>
-        </button>
-      </form>
-
-      <div *ngIf="tsResult()" class="ts-result">
-        <!-- KPI summary -->
-        <div class="ts-kpi-row">
-          <div class="ts-kpi">
-            <span class="kpi-label">Période prévue</span>
-            <span class="kpi-val">{{ tsResult()!.periods }} mois</span>
-          </div>
-          <div class="ts-kpi">
-            <span class="kpi-label">Moy. mensuelle</span>
-            <span class="kpi-val">{{ tsAvg(tsResult()!.forecast) | number:'1.0-0' }} <small>TND</small></span>
-          </div>
-          <div class="ts-kpi">
-            <span class="kpi-label">Pic prévu</span>
-            <span class="kpi-val">{{ tsMax(tsResult()!.forecast) | number:'1.0-0' }} <small>TND</small></span>
-          </div>
-          <div class="ts-kpi" *ngIf="tsResult()!.last_train_date">
-            <span class="kpi-label">Fin entraînement</span>
-            <span class="kpi-val small">{{ tsResult()!.last_train_date }}</span>
-          </div>
-        </div>
-
-        <!-- Mini bar chart -->
-        <div class="bar-chart">
-          <div *ngFor="let v of tsResult()!.forecast; let i = index" class="bar-col">
-            <div class="bar-fill-ts"
-                 [style.height.%]="(v / tsMax(tsResult()!.forecast)) * 100"
-                 [title]="'Mois ' + (i+1) + ' : ' + v.toFixed(0) + ' TND'">
-            </div>
-            <span class="bar-label">M{{ i + 1 }}</span>
-          </div>
-        </div>
-
-        <!-- Table -->
-        <div class="ts-table-header">
-          <span>Mois</span><span>CA prévu (TND)</span>
-        </div>
-        <div class="ts-list">
-          <div *ngFor="let v of tsResult()!.forecast; let i = index" class="ts-row"
-               [class.ts-row--max]="v === tsMax(tsResult()!.forecast)">
-            <span class="ts-month">Mois {{ i + 1 }}</span>
-            <span class="ts-val">{{ v | number:'1.0-0' }}</span>
-            <span class="ts-bar-inline">
-              <span [style.width.%]="(v / tsMax(tsResult()!.forecast)) * 100"></span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-
-  <!-- ══════════════════════════════════════════════
-       RÉGRESSION — RandomForest(200 arbres)
-       Prédit : price_current
-       Top features : price_current 37.7%, reviews_count 12.8%
-  ══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'regression'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Estimation du prix — RandomForest</h2>
-        <p class="card-desc">
-          Prédit le prix optimal d'un produit artisanal (price_current) selon ses caractéristiques.
-          Modèle RandomForest à <strong>200 arbres</strong>.
-        </p>
-      </div>
-
-      <!-- Feature importances -->
-      <div class="fi-block">
-        <div class="fi-title">Variables les plus influentes</div>
-        <div *ngFor="let f of topFeatures" class="fi-row">
-          <span class="fi-name">{{ f.name }}</span>
-          <div class="fi-bar-bg">
-            <div class="fi-bar-fill" [style.width.%]="f.pct * 2"></div>
-          </div>
-          <span class="fi-pct">{{ f.pct }}%</span>
-        </div>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Indicateurs commerciaux</div>
-        <div class="form-grid">
-          <div class="field field--highlight">
-            <label>Nb avis <span class="importance-badge">12.8%</span></label>
-            <input type="number" [(ngModel)]="regForm.reviews_count" name="rc">
-          </div>
-          <div class="field field--highlight">
-            <label>Qté vendue <span class="importance-badge">3.7%</span></label>
-            <input type="number" [(ngModel)]="regForm.sales_qty" name="sq">
-          </div>
-          <div class="field">
-            <label>CA total <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.sales_revenue" name="sr">
-          </div>
-          <div class="field">
-            <label>Lignes commande</label>
-            <input type="number" [(ngModel)]="regForm.order_lines" name="ol">
-          </div>
-          <div class="field">
-            <label>Prix unit. moyen <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.avg_unit_price" name="aup">
-          </div>
-          <div class="field">
-            <label>Qté moyenne</label>
-            <input type="number" [(ngModel)]="regForm.avg_qty" name="aq">
-          </div>
-          <div class="field">
-            <label>CA / ligne</label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.revenue_per_orderline" name="rpl">
-          </div>
-          <div class="field">
-            <label>Jours en vente</label>
-            <input type="number" [(ngModel)]="regForm.days_on_sale" name="dos">
-          </div>
-        </div>
-
-        <div class="section-label" style="margin-top:1rem">Caractéristiques produit</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Remise <span class="unit-label">0–1</span></label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.discount_depth" name="dd">
-          </div>
-          <div class="field">
-            <label>Note produit <span class="unit-label">0–5</span></label>
-            <input type="number" step="0.1" [(ngModel)]="regForm.rating_value" name="rv">
-          </div>
-          <div class="field">
-            <label>Vélocité vente</label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.sales_velocity" name="sv">
-          </div>
-          <div class="field">
-            <label>Signal avis <span class="unit-label">0–1</span></label>
-            <input type="number" step="0.01" [(ngModel)]="regForm.review_signal" name="rs">
-          </div>
-          <div class="field">
-            <label>Long. nom produit</label>
-            <input type="number" [(ngModel)]="regForm.name_len" name="nl">
-          </div>
-          <div class="field">
-            <label>Long. description</label>
-            <input type="number" [(ngModel)]="regForm.desc_len" name="dl">
-          </div>
-        </div>
-
-        <div class="section-label" style="margin-top:1rem">Contexte catalogue</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Catégorie</label>
-            <select [(ngModel)]="regForm.broad_category" name="cat">
-              <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Statut stock</label>
-            <select [(ngModel)]="regForm.stock_status" name="ss">
-              <option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Mode paiement</label>
-            <select [(ngModel)]="regForm.main_payment" name="mp">
-              <option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Mode livraison</label>
-            <select [(ngModel)]="regForm.main_delivery" name="md">
-              <option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary" [disabled]="loading()">
-          <span *ngIf="!loading()">💰 Estimer le prix optimal</span>
-          <span *ngIf="loading()">⏳ Calcul en cours…</span>
-        </button>
-      </form>
-
-      <div *ngIf="regrResult()" class="result-box result-box--blue">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Prix optimal prédit</div>
-            <div class="result-value">
-              {{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-              <span class="result-unit">TND</span>
+        <!-- Légende clusters (mini-cartes) -->
+        <div class="segment-cards">
+          <div *ngFor="let k of [0,1,2]" class="segment-card" [class.segment-card--blue]="k===0" [class.segment-card--green]="k===1" [class.segment-card--amber]="k===2">
+            <div class="segment-icon">{{ getClusterMeta(k).icon }}</div>
+            <div class="segment-info">
+              <div class="seg-name">{{ getClusterMeta(k).label }}</div>
+              <div class="seg-desc">{{ getClusterMeta(k).desc }}</div>
             </div>
           </div>
-          <div class="result-icon-big">🏷️</div>
-        </div>
-        <p class="result-desc">
-          Prix optimal estimé pour ce produit {{ regForm.broad_category.toLowerCase() }}
-          basé sur {{ regForm.reviews_count }} avis et {{ regForm.sales_qty }} ventes.
-        </p>
-      </div>
-    </div>
-  </ng-container>
-
-
-  <!-- ══════════════════════════════════════════════
-       CLASSIFICATION
-  ══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'classification'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Classification produit</h2>
-        <p class="card-desc">
-          Détermine si un produit artisanal est <strong>performant</strong> ou à <strong>faible performance</strong>
-          selon l'ensemble de ses métriques.
-        </p>
-      </div>
-
-      <!-- Légende classes -->
-      <div class="class-legend">
-        <div class="class-legend-item class-legend--green">
-          <span>📈</span>
-          <div>
-            <div class="cl-name">Classe 1 — Produit performant</div>
-            <div class="cl-desc">Bonnes métriques de vente, avis positifs, bonne rotation.</div>
-          </div>
-        </div>
-        <div class="class-legend-item class-legend--amber">
-          <span>📉</span>
-          <div>
-            <div class="cl-name">Classe 0 — Faible performance</div>
-            <div class="cl-desc">Volume faible ou avis insuffisants. Action marketing requise.</div>
-          </div>
-        </div>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Métriques produit (19 features)</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Prix actuel <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.price_current" name="pc">
-          </div>
-          <div class="field">
-            <label>Remise <span class="unit-label">0–1</span></label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.discount_depth" name="dd">
-          </div>
-          <div class="field">
-            <label>Note produit</label>
-            <input type="number" step="0.1" [(ngModel)]="classifForm.rating_value" name="rv">
-          </div>
-          <div class="field">
-            <label>Nb avis</label>
-            <input type="number" [(ngModel)]="classifForm.reviews_count" name="rc">
-          </div>
-          <div class="field">
-            <label>Long. nom</label>
-            <input type="number" [(ngModel)]="classifForm.name_len" name="nl">
-          </div>
-          <div class="field">
-            <label>Long. description</label>
-            <input type="number" [(ngModel)]="classifForm.desc_len" name="dl">
-          </div>
-          <div class="field">
-            <label>Qté vendue</label>
-            <input type="number" [(ngModel)]="classifForm.sales_qty" name="sq">
-          </div>
-          <div class="field">
-            <label>CA <span class="unit-label">TND</span></label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.sales_revenue" name="sr">
-          </div>
-          <div class="field">
-            <label>Lignes commande</label>
-            <input type="number" [(ngModel)]="classifForm.order_lines" name="ol">
-          </div>
-          <div class="field">
-            <label>Qté moyenne</label>
-            <input type="number" [(ngModel)]="classifForm.avg_qty" name="aq">
-          </div>
-          <div class="field">
-            <label>Prix unit. moyen</label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.avg_unit_price" name="aup">
-          </div>
-          <div class="field">
-            <label>Jours en vente</label>
-            <input type="number" [(ngModel)]="classifForm.days_on_sale" name="dos">
-          </div>
-          <div class="field">
-            <label>Vélocité vente</label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.sales_velocity" name="sv">
-          </div>
-          <div class="field">
-            <label>CA / ligne</label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.revenue_per_orderline" name="rpl">
-          </div>
-          <div class="field">
-            <label>Signal avis</label>
-            <input type="number" step="0.01" [(ngModel)]="classifForm.review_signal" name="rs">
-          </div>
-        </div>
-        <div class="form-grid" style="margin-top: 0.75rem">
-          <div class="field">
-            <label>Catégorie</label>
-            <select [(ngModel)]="classifForm.broad_category" name="cat">
-              <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Statut stock</label>
-            <select [(ngModel)]="classifForm.stock_status" name="ss">
-              <option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Mode paiement</label>
-            <select [(ngModel)]="classifForm.main_payment" name="mp">
-              <option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Mode livraison</label>
-            <select [(ngModel)]="classifForm.main_delivery" name="md">
-              <option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option>
-            </select>
-          </div>
         </div>
 
-        <button type="submit" class="btn-primary btn-violet" [disabled]="loading()">
-          <span *ngIf="!loading()">🔍 Classifier le produit</span>
-          <span *ngIf="loading()">⏳ Analyse…</span>
-        </button>
-      </form>
-
-      <div *ngIf="classifResult()" class="result-box"
-           [class.result-box--green]="classifResult()!.prediction === 1"
-           [class.result-box--amber]="classifResult()!.prediction === 0">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Classification produit</div>
-            <div class="result-value">
-              {{ getClassifMeta(classifResult()!.prediction).icon }}
-              {{ getClassifMeta(classifResult()!.prediction).label }}
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Performance commerciale</div>
+            <div class="fields-row">
+              <div class="field-wrap">
+                <label>Prix actuel (TND)</label>
+                <div class="input-shell"><input type="number" step="0.01" [(ngModel)]="clusterForm.price_current" /><span class="input-suffix">TND</span></div>
+              </div>
+              <div class="field-wrap">
+                <label>Remise (0–1)</label>
+                <div class="input-shell"><input type="number" step="0.01" [(ngModel)]="clusterForm.discount_depth" /></div>
+              </div>
+              <div class="field-wrap">
+                <label>Qté vendue</label>
+                <div class="input-shell"><input type="number" [(ngModel)]="clusterForm.sales_qty" /></div>
+              </div>
+              <div class="field-wrap">
+                <label>CA total (TND)</label>
+                <div class="input-shell"><input type="number" step="0.01" [(ngModel)]="clusterForm.sales_revenue" /><span class="input-suffix">TND</span></div>
+              </div>
+              <div class="field-wrap">
+                <label>Lignes commande</label>
+                <div class="input-shell"><input type="number" [(ngModel)]="clusterForm.order_lines" /></div>
+              </div>
+              <div class="field-wrap">
+                <label>Vélocité vente</label>
+                <div class="input-shell"><input type="number" step="0.01" [(ngModel)]="clusterForm.sales_velocity" /></div>
+              </div>
             </div>
-            <div class="result-badge">Classe {{ classifResult()!.prediction }}</div>
           </div>
-          <div class="result-icon-big">{{ getClassifMeta(classifResult()!.prediction).icon }}</div>
-        </div>
-        <p class="result-desc">{{ getClassifMeta(classifResult()!.prediction).desc }}</p>
-
-        <div *ngIf="classifResult()!.probabilities" class="prob-section">
-          <div class="prob-section-title">Confiance du modèle</div>
-          <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="prob-row">
-            <span class="prob-name">{{ getClassifMeta(i).label }}</span>
-            <div class="prob-track">
-              <div class="prob-fill" [style.width]="probPercent(p)"></div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">02</span> Réputation & avis</div>
+            <div class="fields-row">
+              <div class="field-wrap">
+                <label>Note produit (0–5)</label>
+                <div class="input-shell"><input type="number" step="0.1" [(ngModel)]="clusterForm.rating_value" /></div>
+              </div>
+              <div class="field-wrap">
+                <label>Nombre d'avis</label>
+                <div class="input-shell"><input type="number" [(ngModel)]="clusterForm.reviews_count" /></div>
+              </div>
+              <div class="field-wrap">
+                <label>Signal avis (0–1)</label>
+                <div class="input-shell"><input type="number" step="0.01" [(ngModel)]="clusterForm.review_signal" /></div>
+              </div>
             </div>
-            <span class="prob-pct">{{ probPercent(p) }}</span>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-luxe" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🗂️ Segmenter le produit</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+          <p class="action-note">Segmentation KMeans sur 9 features</p>
+        </div>
+
+        <div *ngIf="clusterResult()" class="result-reveal" [ngClass]="getClusterMeta(clusterResult()!.cluster).colorClass">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Segment détecté</div>
+              <div class="result-headline">{{ getClusterMeta(clusterResult()!.cluster).icon }} {{ getClusterMeta(clusterResult()!.cluster).label }}</div>
+              <div class="result-chip">Cluster {{ clusterResult()!.cluster }} / {{ clusterResult()!.n_clusters }}</div>
+            </div>
+          </div>
+          <p class="result-explain">{{ getClusterMeta(clusterResult()!.cluster).desc }}</p>
+          <div class="recap-grid">
+            <div class="recap-tile"><span class="recap-k">Prix</span><span class="recap-v">{{ clusterForm.price_current }} TND</span></div>
+            <div class="recap-tile"><span class="recap-k">Note</span><span class="recap-v">{{ clusterForm.rating_value }}/5</span></div>
+            <div class="recap-tile"><span class="recap-k">Ventes</span><span class="recap-v">{{ clusterForm.sales_qty }}</span></div>
+            <div class="recap-tile"><span class="recap-k">Avis</span><span class="recap-v">{{ clusterForm.reviews_count }}</span></div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-  <!-- Erreur globale -->
-  <div *ngIf="errorMsg()" class="error-box">
-    <strong>⚠️ Erreur</strong> — {{ errorMsg() }}
+    <!-- ========= SARIMA (TIMESERIES) ========= -->
+    <ng-container *ngIf="activeTab() === 'timeseries'">
+      <div class="luxury-card">
+        <div class="card-crown">
+          <div>
+            <h2>Prévision CA — SARIMA</h2>
+            <p>Modèle SARIMA(0,1,1)(0,1,1,12) – entraîné sur 24 mois (jusqu'au {{ sarimaConfig.lastTrainDate }}).</p>
+          </div>
+          <div class="crown-badge crown-badge--blue">Prévision</div>
+        </div>
+
+        <div class="insight-strip">
+          <div class="insight-pill insight-pill--blue"><span class="pip-dot"></span>Ordre : {{ sarimaConfig.order }}</div>
+          <div class="insight-pill insight-pill--blue"><span class="pip-dot"></span>Saisonnier : {{ sarimaConfig.seasonalOrder }}</div>
+          <div class="insight-pill insight-pill--blue"><span class="pip-dot"></span>Train : {{ sarimaConfig.trainLength }} mois</div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Paramètres de prévision</div>
+            <div class="fields-row">
+              <div class="field-wrap">
+                <label>Mois à prévoir (1 – 36)</label>
+                <div class="input-shell">
+                  <input type="range" min="1" max="36" step="1" [(ngModel)]="tsPeriods" style="flex:1">
+                  <input type="number" min="1" max="36" [(ngModel)]="tsPeriods" style="width:70px; text-align:center">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-luxe" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">📈 Lancer SARIMA</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Prévision...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="tsResult()" class="result-reveal result-reveal--blue">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Prévision SARIMA</div>
+              <div class="result-headline">{{ tsResult()!.periods }} mois</div>
+            </div>
+          </div>
+          <div class="confidence-bars" style="margin-top:0.5rem">
+            <div class="conf-row"><span class="conf-name">Moyenne mensuelle</span><span class="conf-pct">{{ tsAvg(tsResult()!.forecast) | number:'1.0-0' }} TND</span></div>
+            <div class="conf-row"><span class="conf-name">Pic prévu</span><span class="conf-pct">{{ tsMax(tsResult()!.forecast) | number:'1.0-0' }} TND</span></div>
+          </div>
+          <div class="bar-chart" style="display:flex; gap:4px; margin-bottom:1rem; padding:1rem 0">
+            <div *ngFor="let v of tsResult()!.forecast; let i = index" style="flex:1; text-align:center">
+            <!--  <div style="background:#1E3A8A; height: {{ (v / tsMax(tsResult()!.forecast)) * 80 }}px; width:100%; border-radius:4px 4px 0 0; transition:height 0.4s"></div> -->
+              <div style="font-size:10px; color:#64748B">M{{ i+1 }}</div>
+            </div>
+          </div>
+          <div class="forecast-list" style="max-height:300px; overflow-y:auto; border-top:1px solid #E2E8F0">
+            <div *ngFor="let v of tsResult()!.forecast; let i = index" style="display:flex; justify-content:space-between; padding:0.5rem; border-bottom:1px solid #E2E8F0">
+              <span>Mois {{ i+1 }}</span><span>{{ v | number:'1.0-0' }} TND</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ========= RÉGRESSION PRIX ========= -->
+    <ng-container *ngIf="activeTab() === 'regression'">
+      <div class="luxury-card">
+        <div class="card-crown">
+          <div>
+            <h2>Estimation du prix optimal — RandomForest</h2>
+            <p>Prédit le prix courant d'un produit artisanal selon ses caractéristiques.</p>
+          </div>
+          <div class="crown-badge crown-badge--gold">Prix optimal</div>
+        </div>
+
+        <!-- Feature importances -->
+        <div class="insight-strip">
+          <div class="insight-pill insight-pill--blue" *ngFor="let f of topFeatures">
+            <span class="pip-dot"></span><strong>{{ f.name }}</strong> — {{ f.pct }}% d'influence
+          </div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Indicateurs commerciaux</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Nb avis *</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.reviews_count"></div></div>
+              <div class="field-wrap"><label>Qté vendue *</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.sales_qty"></div></div>
+              <div class="field-wrap"><label>CA total (TND)</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="regForm.sales_revenue"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Lignes commande</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.order_lines"></div></div>
+              <div class="field-wrap"><label>Prix unit. moyen</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="regForm.avg_unit_price"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Jours en vente</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.days_on_sale"></div></div>
+            </div>
+          </div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">02</span> Caractéristiques produit</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Remise (0–1)</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="regForm.discount_depth"></div></div>
+              <div class="field-wrap"><label>Note (0–5)</label><div class="input-shell"><input type="number" step="0.1" [(ngModel)]="regForm.rating_value"></div></div>
+              <div class="field-wrap"><label>Vélocité vente</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="regForm.sales_velocity"></div></div>
+              <div class="field-wrap"><label>Signal avis (0–1)</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="regForm.review_signal"></div></div>
+              <div class="field-wrap"><label>Long. nom</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.name_len"></div></div>
+              <div class="field-wrap"><label>Long. description</label><div class="input-shell"><input type="number" [(ngModel)]="regForm.desc_len"></div></div>
+            </div>
+          </div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">03</span> Contexte catalogue</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Catégorie</label><div class="input-shell"><select [(ngModel)]="regForm.broad_category"><option *ngFor="let c of categories" [value]="c">{{ c }}</option></select></div></div>
+              <div class="field-wrap"><label>Statut stock</label><div class="input-shell"><select [(ngModel)]="regForm.stock_status"><option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option></select></div></div>
+              <div class="field-wrap"><label>Mode paiement</label><div class="input-shell"><select [(ngModel)]="regForm.main_payment"><option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option></select></div></div>
+              <div class="field-wrap"><label>Mode livraison</label><div class="input-shell"><select [(ngModel)]="regForm.main_delivery"><option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option></select></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-luxe btn-luxe--gold" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">💰 Estimer le prix optimal</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Calcul...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="regrResult()" class="result-reveal result-reveal--blue">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Prix optimal prédit</div>
+              <div class="result-headline">{{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} <span class="result-unit">TND</span></div>
+            </div>
+            <div class="result-emoji">🏷️</div>
+          </div>
+          <p class="result-explain">Basé sur {{ regForm.reviews_count }} avis et {{ regForm.sales_qty }} ventes.</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ========= CLASSIFICATION ========= -->
+    <ng-container *ngIf="activeTab() === 'classification'">
+      <div class="luxury-card">
+        <div class="card-crown">
+          <div>
+            <h2>Classification produit</h2>
+            <p>Détermine si un produit est <strong>performant</strong> ou à <strong>faible performance</strong>.</p>
+          </div>
+          <div class="crown-badge crown-badge--orange">Performance</div>
+        </div>
+
+        <!-- Légende classes -->
+        <div class="segment-cards">
+          <div class="segment-card segment-card--green"><div class="segment-icon">📈</div><div class="segment-info"><div class="seg-name">Classe 1 – Performant</div><div class="seg-desc">Bonnes métriques de vente, avis positifs</div></div></div>
+          <div class="segment-card segment-card--amber"><div class="segment-icon">📉</div><div class="segment-info"><div class="seg-name">Classe 0 – Faible performance</div><div class="seg-desc">Volume faible ou avis insuffisants</div></div></div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Métriques produit</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Prix actuel</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="classifForm.price_current"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Remise</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="classifForm.discount_depth"></div></div>
+              <div class="field-wrap"><label>Note</label><div class="input-shell"><input type="number" step="0.1" [(ngModel)]="classifForm.rating_value"></div></div>
+              <div class="field-wrap"><label>Nb avis</label><div class="input-shell"><input type="number" [(ngModel)]="classifForm.reviews_count"></div></div>
+              <div class="field-wrap"><label>Long. nom</label><div class="input-shell"><input type="number" [(ngModel)]="classifForm.name_len"></div></div>
+              <div class="field-wrap"><label>Long. description</label><div class="input-shell"><input type="number" [(ngModel)]="classifForm.desc_len"></div></div>
+              <div class="field-wrap"><label>Qté vendue</label><div class="input-shell"><input type="number" [(ngModel)]="classifForm.sales_qty"></div></div>
+              <div class="field-wrap"><label>CA total</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="classifForm.sales_revenue"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Lignes commande</label><div class="input-shell"><input type="number" [(ngModel)]="classifForm.order_lines"></div></div>
+              <div class="field-wrap"><label>Vélocité vente</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="classifForm.sales_velocity"></div></div>
+              <div class="field-wrap"><label>Signal avis</label><div class="input-shell"><input type="number" step="0.01" [(ngModel)]="classifForm.review_signal"></div></div>
+            </div>
+          </div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">02</span> Contexte</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Catégorie</label><div class="input-shell"><select [(ngModel)]="classifForm.broad_category"><option *ngFor="let c of categories" [value]="c">{{ c }}</option></select></div></div>
+              <div class="field-wrap"><label>Statut stock</label><div class="input-shell"><select [(ngModel)]="classifForm.stock_status"><option *ngFor="let s of stockStatuses" [value]="s">{{ s }}</option></select></div></div>
+              <div class="field-wrap"><label>Mode paiement</label><div class="input-shell"><select [(ngModel)]="classifForm.main_payment"><option *ngFor="let p of paymentMethods" [value]="p">{{ p }}</option></select></div></div>
+              <div class="field-wrap"><label>Mode livraison</label><div class="input-shell"><select [(ngModel)]="classifForm.main_delivery"><option *ngFor="let d of deliveryMethods" [value]="d">{{ d }}</option></select></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-luxe btn-luxe--orange" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🔍 Classifier le produit</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="classifResult()" class="result-reveal" [class.result-reveal--green]="classifResult()!.prediction === 1" [class.result-reveal--amber]="classifResult()!.prediction === 0">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Statut détecté</div>
+              <div class="result-headline">{{ getClassifMeta(classifResult()!.prediction).icon }} {{ getClassifMeta(classifResult()!.prediction).label }}</div>
+              <div class="result-chip">Classe {{ classifResult()!.prediction }}</div>
+            </div>
+          </div>
+          <p class="result-explain">{{ getClassifMeta(classifResult()!.prediction).desc }}</p>
+          <div *ngIf="classifResult()!.probabilities" class="confidence-bars">
+            <div class="conf-title">Niveau de confiance</div>
+            <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="conf-row">
+              <span class="conf-name">{{ getClassifMeta(i).label }}</span>
+              <div class="conf-track"><div class="conf-fill" [style.width]="probPercent(p)"></div></div>
+              <span class="conf-pct">{{ probPercent(p) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
   </div>
 
-  <!-- Loading global -->
-  <div *ngIf="loading()" class="loading-overlay">
-    <div class="spinner"></div>
-    <p>Modèle ML en cours…</p>
+  <!-- POPUP ERREUR GLOBAL -->
+  <div *ngIf="errorMsg()" class="toast-error">
+    <span class="toast-icon">⚠️</span>
+    <div class="toast-body"><strong>Information manquante</strong><p>{{ errorMsg() }}</p></div>
+    <button class="toast-close" (click)="errorMsg.set(null)">✕</button>
   </div>
+
 </div>

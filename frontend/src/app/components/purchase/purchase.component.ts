@@ -1,3 +1,4 @@
+// purchase.component.ts
 import { Component, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,39 +14,34 @@ import {
 
 type ActiveTask = 'classification' | 'regression' | 'clustering';
 
-// ─── Labels métier basés sur l'analyse du modèle ──────────────────
-// Le RandomForest est piloté à 96% par Taux_TVA (52%) + Marge_TVA (44%)
-// Classe 0 = profil TVA faible → achat exonéré ou à régime réduit
-// Classe 1 = profil TVA standard → achat courant validé
-const CLASSIF_LABELS: Record<number, { label: string; desc: string; color: string }> = {
+// ─── Résultats métier ─────────────────────────────────────────
+const CLASSIF_LABELS: Record<number, { label: string; desc: string; icon: string }> = {
   0: {
-    label: 'Achat exonéré / TVA réduite',
-    desc: 'Cet achat présente un profil TVA faible. Il est classé hors TVA standard ou à régime réduit.',
-    color: 'result-box--amber',
+    label: 'Achat à TVA réduite ou exonéré',
+    desc: 'Ce produit bénéficie d’un taux de TVA avantageux (0%, 7% ou 13%). Vérifiez l’éligibilité auprès de votre expert‑comptable.',
+    icon: '🌿',
   },
   1: {
-    label: 'Achat soumis TVA standard',
-    desc: 'Cet achat suit le régime TVA courant. Il peut être validé normalement.',
-    color: 'result-box--green',
+    label: 'Achat à TVA normale (19%)',
+    desc: 'TVA standard applicable. Le montant TTC final inclut la TVA au taux normal.',
+    icon: '📄',
   },
 };
 
-// ─── Segments de clustering fournisseurs ──────────────────────────
-// KMeans sur : Nb_Factures, Montant_Total, Montant_Moyen, Montant_Max, TVA_Moy
 const CLUSTER_LABELS: Record<number, { label: string; desc: string; icon: string }> = {
   0: {
-    label: 'Petit fournisseur',
-    desc: 'Volume faible, faible nombre de factures. Relation occasionnelle.',
-    icon: '🏪',
+    label: 'Fournisseur occasionnel',
+    desc: 'Peu de factures, montants modestes. Relation à développer.',
+    icon: '🌱',
   },
   1: {
     label: 'Fournisseur régulier',
-    desc: 'Volume et fréquence modérés. Partenaire de confiance établi.',
+    desc: 'Volume et fréquence modérés. Partenaire fiable.',
     icon: '🤝',
   },
   2: {
     label: 'Fournisseur stratégique',
-    desc: 'Grand volume, montants élevés. Partenaire clé à fidéliser.',
+    desc: 'Fort volume et valeurs élevées. Partenaire clé pour l’entreprise.',
     icon: '⭐',
   },
 };
@@ -66,7 +62,12 @@ export class PurchaseComponent {
   regrResult    = signal<PurchaseRegressionResponse | null>(null);
   clustResult   = signal<PurchaseClusteringResponse | null>(null);
 
-  // ─── Fournisseurs connus (extraits de l'encodeur) ─────────────
+  // Listes pour les menus déroulants
+  moisList = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+  anneeList = [2023, 2024, 2025, 2026];
+  semaineList = Array.from({ length: 53 }, (_, i) => i + 1);
+  methodesPaiement = ['Virement', 'Chèque', 'Espèces', 'Carte bancaire', 'Traite'];
+
   readonly fournisseurs = [
     'ASCOM','STEG','SONEDE','ORANGE','Tunisie Telecom',
     'KERAMOS','HAMILA CERAMIQUE','ENNAIM Céramique','Zouba Ceramic',
@@ -76,15 +77,16 @@ export class PurchaseComponent {
     'La Quincaillerie du Sahel','Delta Distribution',
     'META (FACEBOOK)','Elementor Ltd.','Oxahost',
     'Vivo Energy','NATBAG','TRANSAF','Transport Fehri',
-    'My Print Tunisia','SNAPRINT','My Print Tunisia',
+    'My Print Tunisia','SNAPRINT',
     'INCONNU'
   ];
   readonly categories = ['MATERIAUX', 'SERVICE'];
 
+  // --- Formulaires ---
   classifForm: PurchaseClassificationRequest = {
     Montant_HT: 1500,
-    Taux_TVA: 0.18,
-    Marge_TVA: 0.05,
+    Taux_TVA: 0.19,
+    Marge_TVA: 0.10,
     Mois: 5,
     Annee: 2025,
     Semaine: 20,
@@ -97,29 +99,98 @@ export class PurchaseComponent {
     Mois: 6,
     Annee: 2025,
     Semaine: 24,
-    Est_weekend: 1,
+    Est_weekend: 0,
     fournisseur: 'STEG',
     categorie: 'SERVICE',
-    methode: 'Inconnu',
+    methode: 'Virement',
     Taux_TVA: 0.19,
   };
 
   clustForm: PurchaseClusteringRequest = {
-    Nb_Factures: 12,
+    Nb_Factures: 20,
     Montant_Total: 12500,
     Montant_Moyen: 1041.67,
     Montant_Max: 3500,
-    TVA_Moy: 0.18,
+    TVA_Moy: 0.19,
   };
+
+  // Gestion des erreurs par champ
+  errors: Record<string, string> = {};
 
   constructor(@Inject(ApiService) private api: ApiService) {}
 
+  // ⭐ METHODE MANQUANTE AJOUTÉE
   setTask(task: ActiveTask): void {
     this.activeTask.set(task);
     this.errorMsg.set(null);
+    // Optionnel : réinitialiser les résultats pour plus de propreté
+    this.classifResult.set(null);
+    this.regrResult.set(null);
+    this.clustResult.set(null);
   }
 
+  // --- Validations ---
+  validateField(fieldName: string, value: any, rules: { required?: boolean; min?: number; max?: number }) {
+    if (rules.required && (value === null || value === undefined || value === '')) {
+      this.errors[fieldName] = 'Ce champ est requis.';
+      return false;
+    }
+    if (rules.min !== undefined && value < rules.min) {
+      this.errors[fieldName] = `La valeur minimale est ${rules.min}.`;
+      return false;
+    }
+    if (rules.max !== undefined && value > rules.max) {
+      this.errors[fieldName] = `La valeur maximale est ${rules.max}.`;
+      return false;
+    }
+    delete this.errors[fieldName];
+    return true;
+  }
+
+  clearError(fieldName: string) {
+    delete this.errors[fieldName];
+  }
+
+  clearErrorMsg() {
+    this.errorMsg.set(null);
+  }
+
+  // Vérification avant soumission
+  private validateClassification(): boolean {
+    let ok = true;
+    if (!this.validateField('Montant_HT', this.classifForm.Montant_HT, { required: true, min: 0 })) ok = false;
+    if (!this.validateField('Taux_TVA', this.classifForm.Taux_TVA, { required: true })) ok = false;
+    if (!this.validateField('Marge_TVA', this.classifForm.Marge_TVA, { required: true })) ok = false;
+    if (!this.validateField('Mois', this.classifForm.Mois, { required: true, min: 1, max: 12 })) ok = false;
+    if (!this.validateField('Annee', this.classifForm.Annee, { required: true })) ok = false;
+    if (!this.validateField('fournisseur', this.classifForm.fournisseur, { required: true })) ok = false;
+    if (!this.validateField('categorie', this.classifForm.categorie, { required: true })) ok = false;
+    if (!ok) this.errorMsg.set('Veuillez corriger les champs en erreur avant de continuer.');
+    return ok;
+  }
+
+  private validateRegression(): boolean {
+    let ok = true;
+    if (!this.validateField('rMois', this.regrForm.Mois, { required: true, min: 1, max: 12 })) ok = false;
+    if (!this.validateField('rAnnee', this.regrForm.Annee, { required: true })) ok = false;
+    if (!this.validateField('rFournisseur', this.regrForm.fournisseur, { required: true })) ok = false;
+    if (!this.validateField('rCategorie', this.regrForm.categorie, { required: true })) ok = false;
+    if (!ok) this.errorMsg.set('Veuillez corriger les champs en erreur.');
+    return ok;
+  }
+
+  private validateClustering(): boolean {
+    let ok = true;
+    if (!this.validateField('Nb_Factures', this.clustForm.Nb_Factures, { required: true, min: 1 })) ok = false;
+    if (!this.validateField('Montant_Total', this.clustForm.Montant_Total, { required: true, min: 0 })) ok = false;
+    if (!this.validateField('Montant_Moyen', this.clustForm.Montant_Moyen, { required: true, min: 0 })) ok = false;
+    if (!ok) this.errorMsg.set('Veuillez renseigner correctement l’historique du fournisseur.');
+    return ok;
+  }
+
+  // --- Soumissions ---
   submitClassification(): void {
+    if (!this.validateClassification()) return;
     this.loading.set(true);
     this.errorMsg.set(null);
     this.classifResult.set(null);
@@ -130,6 +201,7 @@ export class PurchaseComponent {
   }
 
   submitRegression(): void {
+    if (!this.validateRegression()) return;
     this.loading.set(true);
     this.errorMsg.set(null);
     this.regrResult.set(null);
@@ -140,6 +212,7 @@ export class PurchaseComponent {
   }
 
   submitClustering(): void {
+    if (!this.validateClustering()) return;
     this.loading.set(true);
     this.errorMsg.set(null);
     this.clustResult.set(null);
@@ -149,6 +222,7 @@ export class PurchaseComponent {
     });
   }
 
+  // --- Utilitaires UI ---
   probPercent(val: number): string {
     return (val * 100).toFixed(1) + '%';
   }
@@ -156,8 +230,8 @@ export class PurchaseComponent {
   getClassifMeta(pred: number) {
     return CLASSIF_LABELS[pred] ?? {
       label: `Classe ${pred}`,
-      desc: 'Classe non documentée.',
-      color: 'result-box--blue',
+      desc: 'Résultat non documenté. Contactez votre administrateur.',
+      icon: '❓',
     };
   }
 
@@ -167,5 +241,12 @@ export class PurchaseComponent {
       desc: 'Segment non documenté.',
       icon: '📦',
     };
+  }
+
+  getTabOffset(): string {
+    const active = this.activeTask();
+    if (active === 'classification') return '0%';
+    if (active === 'regression') return '33%';
+    return '66%';
   }
 }

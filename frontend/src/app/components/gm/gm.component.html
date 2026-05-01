@@ -1,507 +1,320 @@
 <div class="gm-page">
 
-  <!-- ── En-tête ───────────────────────────────────────────────── -->
-  <div class="page-header">
-    <div class="header-brand">
-      <span class="header-badge">DG</span>
-      <div>
+  <!-- HERO SECTION - Pleine largeur, bleue -->
+  <div class="hero-full">
+    <div class="hero-content">
+      <div class="hero-title">
         <h1>Tableau de bord Direction</h1>
-        <p class="subtitle">Analyse clientèle · Prévision CA · Vérification commandes</p>
+        <p class="hero-script">Analyse clientèle · Prévision CA · Vérification commandes</p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-ornament">
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+          <span class="ornament-diamond">◆</span>
+        </div>
+        <div class="logo-sougui">
+          <img src="https://sougui.tn/wp-content/uploads/2021/08/Logo-Sougui-arabe.png.webp"
+               alt="Logo Sougui" class="logo-img" />
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Onglets ────────────────────────────────────────────────── -->
-  <div class="task-tabs">
-    <button [class.active]="activeTab() === 'classification'" (click)="setTab('classification')">
-      <span class="tab-icon">👤</span> Profil client
-    </button>
-    <button [class.active]="activeTab() === 'regression'"     (click)="setTab('regression')">
-      <span class="tab-icon">📊</span> Prévision CA
-    </button>
-    <button [class.active]="activeTab() === 'clustering'"     (click)="setTab('clustering')">
-      <span class="tab-icon">🏷️</span> Segmentation
-    </button>
-    <button [class.active]="activeTab() === 'anomaly'"        (click)="setTab('anomaly')">
-      <span class="tab-icon">🔎</span> Vérification commande
-    </button>
+  <!-- ONGLETS -->
+  <div class="tab-rail">
+    <div class="tab-rail-inner">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'classification'" (click)="setTab('classification')">
+        <span class="tab-icon">👤</span> Profil client
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'regression'" (click)="setTab('regression')">
+        <span class="tab-icon">📊</span> Prévision CA
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'clustering'" (click)="setTab('clustering')">
+        <span class="tab-icon">🏷️</span> Segmentation
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'anomaly'" (click)="setTab('anomaly')">
+        <span class="tab-icon">🔎</span> Vérification commande
+      </button>
+    </div>
   </div>
 
+  <!-- CONTENEUR PRINCIPAL -->
+  <div class="cards-container">
 
-  <!-- ════════════════════════════════════════════════════════════
-       PROFIL CLIENT
-  ════════════════════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'classification'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Analyse du profil client</h2>
-        <p class="card-desc">
-          Identifie automatiquement le profil d'un client selon son historique d'achats
-          et propose une action commerciale adaptée.
-        </p>
-      </div>
-
-      <!-- Référentiel des profils -->
-      <div class="profil-legend">
-        <div class="profil-card profil--amber">
-          <span class="profil-icon">⚠️</span>
-          <div class="profil-name">Client à risque</div>
-          <div class="profil-hint">Inactif depuis longtemps</div>
-        </div>
-        <div class="profil-card profil--blue">
-          <span class="profil-icon">🤝</span>
-          <div class="profil-name">Client régulier</div>
-          <div class="profil-hint">Achats dans la moyenne</div>
-        </div>
-        <div class="profil-card profil--green">
-          <span class="profil-icon">⭐</span>
-          <div class="profil-name">Client prioritaire</div>
-          <div class="profil-hint">Fidèle & montants élevés</div>
-        </div>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Historique du client</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Jours depuis sa dernière commande</label>
-            <input type="number" min="0" [(ngModel)]="classifForm.Recency" name="rec">
-            <span class="field-hint">Plus ce chiffre est faible, plus le client est actif</span>
-          </div>
-          <div class="field">
-            <label>Ancienneté client <span class="unit-label">jours</span></label>
-            <input type="number" min="0" [(ngModel)]="classifForm.Customer_Age_Days" name="age">
-          </div>
-          <div class="field">
-            <label>Nombre total de commandes</label>
-            <input type="number" min="0" step="0.1" [(ngModel)]="classifForm.Frequency" name="freq">
-          </div>
-          <div class="field">
-            <label>Total dépensé <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="classifForm.Monetary" name="mon">
-          </div>
-          <div class="field">
-            <label>Panier moyen <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="classifForm.Avg_Price" name="ap">
-          </div>
-          <div class="field">
-            <label>Nombre de catégories achetées</label>
-            <input type="number" min="0" [(ngModel)]="classifForm.Nb_Categories" name="nc">
-            <span class="field-hint">Bijou, Poterie, Tableau…</span>
-          </div>
-          <div class="field">
-            <label>Part des achats le week-end <span class="unit-label">0 – 1</span></label>
-            <input type="number" min="0" max="1" step="0.01" [(ngModel)]="classifForm.Pct_Weekend" name="pw">
-            <span class="field-hint">ex : 0.25 = 25% des commandes le week-end</span>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary" [disabled]="loading()">
-          <span *ngIf="!loading()">👤 Analyser ce client</span>
-          <span *ngIf="loading()">⏳ Analyse en cours…</span>
-        </button>
-      </form>
-
-      <!-- Résultat -->
-      <div *ngIf="classifResult()" class="result-box" [ngClass]="getProfil(classifResult()!.prediction).color"
-           @fadeIn>
-        <div class="result-header">
+    <!-- ========= PROFIL CLIENT ========= -->
+    <ng-container *ngIf="activeTab() === 'classification'">
+      <div class="luxury-card">
+        <div class="card-crown">
           <div>
-            <div class="result-label">Profil détecté</div>
-            <div class="result-value">
-              {{ getProfil(classifResult()!.prediction).icon }}
-              {{ getProfil(classifResult()!.prediction).label }}
+            <h2>Analyse du profil client</h2>
+            <p>Identifie automatiquement le profil d'un client selon son historique d'achats et propose une action commerciale adaptée.</p>
+          </div>
+          <div class="crown-badge crown-badge--blue">Profil</div>
+        </div>
+
+        <!-- Légende des profils -->
+        <div class="segment-cards">
+          <div class="segment-card segment-card--amber">
+            <div class="segment-icon">⚠️</div>
+            <div class="segment-info">
+              <div class="seg-name">Client à risque</div>
+              <div class="seg-desc">Inactif depuis longtemps</div>
             </div>
           </div>
-          <div class="result-icon-big">{{ getProfil(classifResult()!.prediction).icon }}</div>
-        </div>
-        <p class="result-desc">{{ getProfil(classifResult()!.prediction).desc }}</p>
-
-        <div class="action-block">
-          <span class="action-label">💡 Action recommandée</span>
-          <p class="action-text">{{ getProfil(classifResult()!.prediction).action }}</p>
-        </div>
-
-        <div *ngIf="classifResult()!.probabilities" class="prob-section">
-          <div class="prob-section-title">Niveau de certitude par profil</div>
-          <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="prob-row">
-            <span class="prob-name">{{ getProfil(i).label }}</span>
-            <div class="prob-track">
-              <div class="prob-fill" [style.width]="probPct(p)"></div>
+          <div class="segment-card segment-card--blue">
+            <div class="segment-icon">🤝</div>
+            <div class="segment-info">
+              <div class="seg-name">Client régulier</div>
+              <div class="seg-desc">Achats dans la moyenne</div>
             </div>
-            <span class="prob-pct">{{ probPct(p) }}</span>
+          </div>
+          <div class="segment-card segment-card--green">
+            <div class="segment-icon">⭐</div>
+            <div class="segment-info">
+              <div class="seg-name">Client prioritaire</div>
+              <div class="seg-desc">Fidèle & montants élevés</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Historique du client</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Jours depuis dernière commande</label><div class="input-shell"><input type="number" min="0" [(ngModel)]="classifForm.Recency"></div></div>
+              <div class="field-wrap"><label>Ancienneté client (jours)</label><div class="input-shell"><input type="number" min="0" [(ngModel)]="classifForm.Customer_Age_Days"></div></div>
+              <div class="field-wrap"><label>Nombre total de commandes</label><div class="input-shell"><input type="number" min="0" step="0.1" [(ngModel)]="classifForm.Frequency"></div></div>
+              <div class="field-wrap"><label>Total dépensé (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="classifForm.Monetary"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Panier moyen (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="classifForm.Avg_Price"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Nb catégories achetées</label><div class="input-shell"><input type="number" min="0" [(ngModel)]="classifForm.Nb_Categories"></div></div>
+              <div class="field-wrap"><label>Part des achats week-end (0–1)</label><div class="input-shell"><input type="number" min="0" max="1" step="0.01" [(ngModel)]="classifForm.Pct_Weekend"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-luxe" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">👤 Analyser ce client</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="classifResult()" class="result-reveal" [ngClass]="getProfil(classifResult()!.prediction).color">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Profil détecté</div>
+              <div class="result-headline">{{ getProfil(classifResult()!.prediction).icon }} {{ getProfil(classifResult()!.prediction).label }}</div>
+            </div>
+            <div class="result-emoji">{{ getProfil(classifResult()!.prediction).icon }}</div>
+          </div>
+          <p class="result-explain">{{ getProfil(classifResult()!.prediction).desc }}</p>
+          <div class="action-block">
+            <span class="action-label">💡 Action recommandée</span>
+            <p class="action-text">{{ getProfil(classifResult()!.prediction).action }}</p>
+          </div>
+          <div *ngIf="classifResult()!.probabilities" class="confidence-bars">
+            <div class="conf-title">Niveau de certitude par profil</div>
+            <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="conf-row">
+              <span class="conf-name">{{ getProfil(i).label }}</span>
+              <div class="conf-track"><div class="conf-fill" [style.width]="p * 100 + '%'"></div></div>
+              <span class="conf-pct">{{ p * 100 | number:'1.0-0' }}%</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-
-  <!-- ════════════════════════════════════════════════════════════
-       PRÉVISION CA
-  ════════════════════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'regression'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Prévision du chiffre d'affaires</h2>
-        <p class="card-desc">
-          Estimez le CA attendu pour une commande selon la catégorie artisanale,
-          la région, le canal de vente et la période.
-        </p>
-      </div>
-
-      <!-- Impact catégories sur le CA (données réelles) -->
-      <div class="impact-block">
-        <div class="impact-title">Catégories artisanales par contribution au CA</div>
-        <div class="impact-bars">
-          <div *ngFor="let k of catKeys" class="impact-row">
-            <span class="impact-cat">{{ catNames[k] }}</span>
-            <div class="impact-bar-bg">
-              <div class="impact-bar-fill" [style.width.%]="catImpact[k]"></div>
-            </div>
-            <span class="impact-pct">{{ catImpact[k] }}%</span>
-          </div>
-        </div>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Détails de la commande</div>
-        <div class="form-grid">
-          <div class="field field--highlight">
-            <label>Catégorie artisanale</label>
-            <select [(ngModel)]="selectedCat" name="cat">
-              <option *ngFor="let k of catKeys" [value]="k">{{ catNames[k] }}</option>
-            </select>
-            <span class="field-hint">Principal déterminant du CA</span>
-          </div>
-          <div class="field">
-            <label>Quantité commandée</label>
-            <input type="number" min="1" [(ngModel)]="regForm.quantite" name="qty">
-          </div>
-        </div>
-
-        <div class="section-label" style="margin-top:1rem">Période & canal</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Mois</label>
-            <select [(ngModel)]="regForm.mois" name="mois">
-              <option *ngFor="let m of moisLabels; let i = index" [value]="i+1">{{ m }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Trimestre</label>
-            <select [(ngModel)]="regForm.trimestre" name="trim">
-              <option [value]="1">{{ trimLabel(1) }}</option>
-              <option [value]="2">{{ trimLabel(2) }}</option>
-              <option [value]="3">{{ trimLabel(3) }}</option>
-              <option [value]="4">{{ trimLabel(4) }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Canal de vente</label>
-            <select [(ngModel)]="selectedCanal" name="canal">
-              <option *ngFor="let c of canaux" [value]="c">{{ canalLabels[c] }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Commande le week-end ?</label>
-            <select [(ngModel)]="regForm.est_weekend" name="wkd">
-              <option [value]="0">Non — jour de semaine</option>
-              <option [value]="1">Oui — week-end</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="section-label" style="margin-top:1rem">Région du client</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Gouvernorat</label>
-            <select [(ngModel)]="selectedGouv" name="gouv">
-              <option *ngFor="let g of gouvernorats" [value]="g">{{ gouvernoratLabels[g] }}</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary btn-teal" [disabled]="loading()">
-          <span *ngIf="!loading()">📊 Estimer le CA</span>
-          <span *ngIf="loading()">⏳ Calcul en cours…</span>
-        </button>
-      </form>
-
-      <!-- Résultat CA -->
-      <div *ngIf="regrResult()" class="result-box box--blue">
-        <div class="result-header">
+    <!-- ========= PRÉVISION CA ========= -->
+    <ng-container *ngIf="activeTab() === 'regression'">
+      <div class="luxury-card">
+        <div class="card-crown">
           <div>
-            <div class="result-label">Chiffre d'affaires estimé</div>
-            <div class="result-value ca-value">
-              {{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-              <span class="result-unit">TND</span>
+            <h2>Prévision du chiffre d'affaires</h2>
+            <p>Estimez le CA attendu pour une commande selon la catégorie artisanale, la région, le canal et la période.</p>
+          </div>
+          <div class="crown-badge crown-badge--gold">Prévision</div>
+        </div>
+
+        <!-- Impact catégories -->
+        <div class="insight-strip">
+          <div class="insight-pill insight-pill--blue" *ngFor="let k of catKeys | slice:0:4">
+            <span class="pip-dot"></span><strong>{{ catNames[k] }}</strong> — {{ catImpact[k] }}% d’influence
+          </div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Détails de la commande</div>
+            <div class="fields-row">
+              <div class="field-wrap field-wrap--highlight"><label>Catégorie artisanale</label><div class="input-shell"><select [(ngModel)]="selectedCat" (change)="syncRegForm()"><option *ngFor="let k of catKeys" [value]="k">{{ catNames[k] }}</option></select></div></div>
+              <div class="field-wrap"><label>Quantité commandée</label><div class="input-shell"><input type="number" min="1" [(ngModel)]="regForm.quantite"></div></div>
             </div>
           </div>
-          <div class="result-icon-big">💰</div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">02</span> Période & canal</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Mois</label><div class="input-shell"><select [(ngModel)]="regForm.mois"><option *ngFor="let m of moisLabels; let i = index" [value]="i+1">{{ m }}</option></select></div></div>
+              <div class="field-wrap"><label>Trimestre</label><div class="input-shell"><select [(ngModel)]="regForm.trimestre"><option [value]="1">T1 (Jan-Mars)</option><option [value]="2">T2 (Avr-Juin)</option><option [value]="3">T3 (Juil-Sep)</option><option [value]="4">T4 (Oct-Déc)</option></select></div></div>
+              <div class="field-wrap"><label>Canal de vente</label><div class="input-shell"><select [(ngModel)]="selectedCanal" (change)="syncRegForm()"><option *ngFor="let c of canaux" [value]="c">{{ canalLabels[c] }}</option></select></div></div>
+              <div class="field-wrap"><label>Commande le week-end ?</label><div class="input-shell"><select [(ngModel)]="regForm.est_weekend"><option [value]="0">Non — jour de semaine</option><option [value]="1">Oui — week-end</option></select></div></div>
+            </div>
+          </div>
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">03</span> Région du client</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Gouvernorat</label><div class="input-shell"><select [(ngModel)]="selectedGouv" (change)="syncRegForm()"><option *ngFor="let g of gouvernorats" [value]="g">{{ gouvernoratLabels[g] }}</option></select></div></div>
+            </div>
+          </div>
         </div>
-        <p class="result-desc">
-          Estimation pour <strong>{{ regForm.quantite }} unités</strong>
-          de <strong>{{ catNames[selectedCat] }}</strong>
-          en <strong>{{ moisLabels[regForm.mois - 1] }}</strong>
-          via <strong>{{ canalLabels[selectedCanal] }}</strong>
-          — {{ gouvernoratLabels[selectedGouv] }}.
-        </p>
-      </div>
-    </div>
-  </ng-container>
 
-
-  <!-- ════════════════════════════════════════════════════════════
-       SEGMENTATION CLIENT
-  ════════════════════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'clustering'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Segmentation de la clientèle</h2>
-        <p class="card-desc">
-          Classe un client dans l'un des 3 segments Sougui selon ses habitudes d'achat.
-          Permet d'orienter la stratégie commerciale.
-        </p>
-      </div>
-
-      <!-- Légende segments -->
-      <div class="segment-legend">
-        <div class="seg-card seg--blue">
-          <span class="seg-icon">🛒</span>
-          <div class="seg-name">Acheteur occasionnel</div>
-          <div class="seg-desc">Découverte, achats ponctuels</div>
+        <div class="action-bar">
+          <button class="btn-luxe btn-luxe--gold" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">📊 Estimer le CA</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Calcul...</ng-container>
+          </button>
         </div>
-        <div class="seg-card seg--violet">
-          <span class="seg-icon">💙</span>
-          <div class="seg-name">Acheteur fidèle</div>
-          <div class="seg-desc">Régulier, multi-catégories</div>
-        </div>
-        <div class="seg-card seg--amber">
-          <span class="seg-icon">🏆</span>
-          <div class="seg-name">Grand compte</div>
-          <div class="seg-desc">Volume élevé, stratégique</div>
+
+        <div *ngIf="regrResult()" class="result-reveal result-reveal--blue">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Chiffre d'affaires estimé</div>
+              <div class="result-headline">{{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} <span class="result-unit">TND</span></div>
+            </div>
+            <div class="result-emoji">💰</div>
+          </div>
+          <p class="result-explain">Estimation pour <strong>{{ regForm.quantite }} unités</strong> de <strong>{{ catNames[selectedCat] }}</strong> en <strong>{{ moisLabels[regForm.mois-1] }}</strong> via <strong>{{ canalLabels[selectedCanal] }}</strong> — {{ gouvernoratLabels[selectedGouv] }}.</p>
         </div>
       </div>
+    </ng-container>
 
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Comportement d'achat du client</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Jours depuis sa dernière commande</label>
-            <input type="number" min="0" step="0.1" [(ngModel)]="clusterForm.Recency" name="rec">
-          </div>
-          <div class="field">
-            <label>Nombre total de commandes</label>
-            <input type="number" min="0" step="0.1" [(ngModel)]="clusterForm.Frequency" name="freq">
-          </div>
-          <div class="field">
-            <label>Total dépensé <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="clusterForm.Monetary" name="mon">
-          </div>
-          <div class="field">
-            <label>Panier moyen <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="clusterForm.Avg_Order_Value" name="aov">
-          </div>
-          <div class="field">
-            <label>Catégories artisanales achetées</label>
-            <input type="number" min="0" [(ngModel)]="clusterForm.Nb_Categories" name="nc">
-          </div>
-          <div class="field">
-            <label>Part des achats le week-end <span class="unit-label">0–1</span></label>
-            <input type="number" min="0" max="1" step="0.01" [(ngModel)]="clusterForm.Pct_Weekend" name="pw">
-          </div>
-          <div class="field">
-            <label>Commande en ligne ?</label>
-            <select [(ngModel)]="clusterForm.Is_Online_Buyer" name="online">
-              <option [value]="1">Oui — boutique en ligne</option>
-              <option [value]="0">Non — point de vente physique</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary btn-violet" [disabled]="loading()">
-          <span *ngIf="!loading()">🏷️ Identifier le segment</span>
-          <span *ngIf="loading()">⏳ Analyse…</span>
-        </button>
-      </form>
-
-      <!-- Résultat segmentation -->
-      <div *ngIf="clusterResult()" class="result-box" [ngClass]="getSegment(clusterResult()!.cluster).color">
-        <div class="result-header">
+    <!-- ========= SEGMENTATION ========= -->
+    <ng-container *ngIf="activeTab() === 'clustering'">
+      <div class="luxury-card">
+        <div class="card-crown">
           <div>
-            <div class="result-label">Segment identifié</div>
-            <div class="result-value">
-              {{ getSegment(clusterResult()!.cluster).icon }}
-              {{ getSegment(clusterResult()!.cluster).label }}
+            <h2>Segmentation de la clientèle</h2>
+            <p>Classe un client dans l'un des 3 segments Sougui selon ses habitudes d'achat.</p>
+          </div>
+          <div class="crown-badge crown-badge--orange">Segmentation</div>
+        </div>
+
+        <div class="segment-cards">
+          <div class="segment-card segment-card--blue"><div class="segment-icon">🛒</div><div class="segment-info"><div class="seg-name">Acheteur occasionnel</div><div class="seg-desc">Découverte, achats ponctuels</div></div></div>
+          <div class="segment-card segment-card--green"><div class="segment-icon">💙</div><div class="segment-info"><div class="seg-name">Acheteur fidèle</div><div class="seg-desc">Régulier, multi-catégories</div></div></div>
+          <div class="segment-card segment-card--amber"><div class="segment-icon">🏆</div><div class="segment-info"><div class="seg-name">Grand compte</div><div class="seg-desc">Volume élevé, stratégique</div></div></div>
+        </div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Comportement d'achat</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Jours depuis dernière commande</label><div class="input-shell"><input type="number" min="0" step="0.1" [(ngModel)]="clusterForm.Recency"></div></div>
+              <div class="field-wrap"><label>Nombre total de commandes</label><div class="input-shell"><input type="number" min="0" step="0.1" [(ngModel)]="clusterForm.Frequency"></div></div>
+              <div class="field-wrap"><label>Total dépensé (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="clusterForm.Monetary"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Panier moyen (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="clusterForm.Avg_Order_Value"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Catégories achetées</label><div class="input-shell"><input type="number" min="0" [(ngModel)]="clusterForm.Nb_Categories"></div></div>
+              <div class="field-wrap"><label>Part week-end (0–1)</label><div class="input-shell"><input type="number" min="0" max="1" step="0.01" [(ngModel)]="clusterForm.Pct_Weekend"></div></div>
+              <div class="field-wrap"><label>Commande en ligne ?</label><div class="input-shell"><select [(ngModel)]="clusterForm.Is_Online_Buyer"><option [value]="1">Oui — boutique en ligne</option><option [value]="0">Non — point de vente</option></select></div></div>
             </div>
           </div>
-          <div class="result-icon-big">{{ getSegment(clusterResult()!.cluster).icon }}</div>
-        </div>
-        <p class="result-desc">{{ getSegment(clusterResult()!.cluster).desc }}</p>
-        <div class="action-block">
-          <span class="action-label">💡 Action recommandée</span>
-          <p class="action-text">{{ getSegment(clusterResult()!.cluster).action }}</p>
         </div>
 
-        <!-- Récap chiffres clés -->
-        <div class="recap-row">
-          <div class="recap-chip">
-            <span class="rc-key">Total dépensé</span>
-            <span class="rc-val">{{ clusterForm.Monetary | number:'1.0-0' }} TND</span>
+        <div class="action-bar">
+          <button class="btn-luxe btn-luxe--orange" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🏷️ Identifier le segment</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="clusterResult()" class="result-reveal" [ngClass]="getSegment(clusterResult()!.cluster).color">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Segment identifié</div>
+              <div class="result-headline">{{ getSegment(clusterResult()!.cluster).icon }} {{ getSegment(clusterResult()!.cluster).label }}</div>
+            </div>
+            <div class="result-emoji">{{ getSegment(clusterResult()!.cluster).icon }}</div>
           </div>
-          <div class="recap-chip">
-            <span class="rc-key">Commandes</span>
-            <span class="rc-val">{{ clusterForm.Frequency }}</span>
+          <p class="result-explain">{{ getSegment(clusterResult()!.cluster).desc }}</p>
+          <div class="action-block">
+            <span class="action-label">💡 Action recommandée</span>
+            <p class="action-text">{{ getSegment(clusterResult()!.cluster).action }}</p>
           </div>
-          <div class="recap-chip">
-            <span class="rc-key">Panier moyen</span>
-            <span class="rc-val">{{ clusterForm.Avg_Order_Value | number:'1.0-0' }} TND</span>
-          </div>
-          <div class="recap-chip">
-            <span class="rc-key">Catégories</span>
-            <span class="rc-val">{{ clusterForm.Nb_Categories }}</span>
+          <div class="recap-chips">
+            <span class="chip">💰 {{ clusterForm.Monetary | number:'1.0-0' }} TND</span>
+            <span class="chip">📦 {{ clusterForm.Frequency }} commandes</span>
+            <span class="chip">🛒 {{ clusterForm.Avg_Order_Value | number:'1.0-0' }} TND/panier</span>
+            <span class="chip">🏷️ {{ clusterForm.Nb_Categories }} catégories</span>
           </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-
-  <!-- ════════════════════════════════════════════════════════════
-       VÉRIFICATION COMMANDE
-  ════════════════════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTab() === 'anomaly'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Vérification d'une commande suspecte</h2>
-        <p class="card-desc">
-          Détecte si une commande sort des habitudes normales de Sougui.
-          Seuil de détection : <strong>5% des commandes les plus atypiques</strong>.
-        </p>
-      </div>
-
-      <!-- Explication visuelle -->
-      <div class="anomaly-explication">
-        <div class="anex-item anex--green">
-          <span>✅</span>
+    <!-- ========= VÉRIFICATION COMMANDE ========= -->
+    <ng-container *ngIf="activeTab() === 'anomaly'">
+      <div class="luxury-card">
+        <div class="card-crown">
           <div>
-            <div class="anex-title">Commande normale</div>
-            <div class="anex-desc">Prix, quantité et montant cohérents avec l'historique Sougui</div>
+            <h2>Vérification d'une commande suspecte</h2>
+            <p>Détecte si une commande sort des habitudes normales de Sougui (seuil 5% des commandes les plus atypiques).</p>
+          </div>
+          <div class="crown-badge crown-badge--gold">Anomalie</div>
+        </div>
+
+        <div class="info-message info--green"><span>✅</span><div><strong>Commande normale</strong> — Prix, quantité et montant cohérents avec l'historique</div></div>
+        <div class="info-message info--red"><span>🚨</span><div><strong>Commande suspecte</strong> — Valeurs inhabituelles — vérification manuelle recommandée</div></div>
+
+        <div class="fields-layout">
+          <div class="fields-section">
+            <div class="section-label"><span class="section-num">01</span> Détails de la commande</div>
+            <div class="fields-row">
+              <div class="field-wrap"><label>Prix unitaire (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="anomalyForm.prix_unitaire" (ngModelChange)="syncMontant()"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Quantité commandée</label><div class="input-shell"><input type="number" min="1" [(ngModel)]="anomalyForm.quantite" (ngModelChange)="syncMontant()"></div></div>
+              <div class="field-wrap field-wrap--highlight"><label>Montant total (TND)</label><div class="input-shell"><input type="number" min="0" step="0.01" [(ngModel)]="anomalyForm.montant_total"><span class="input-suffix">TND</span></div></div>
+              <div class="field-wrap"><label>Mois</label><div class="input-shell"><select [(ngModel)]="anomalyForm.mois"><option *ngFor="let m of moisLabels; let i = index" [value]="i+1">{{ m }}</option></select></div></div>
+              <div class="field-wrap"><label>Passée le week-end ?</label><div class="input-shell"><select [(ngModel)]="anomalyForm.est_weekend"><option [value]="0">Non — jour ouvré</option><option [value]="1">Oui — week-end</option></select></div></div>
+            </div>
           </div>
         </div>
-        <div class="anex-item anex--red">
-          <span>🚨</span>
-          <div>
-            <div class="anex-title">Commande suspecte</div>
-            <div class="anex-desc">Valeurs inhabituelles — vérification manuelle recommandée</div>
+
+        <div class="action-bar">
+          <button class="btn-luxe btn-luxe--gold" (click)="submit()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🔎 Vérifier cette commande</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Vérification...</ng-container>
+          </button>
+        </div>
+
+        <div *ngIf="anomalyResult()" class="result-reveal" [class.result-reveal--amber]="anomalyResult()!.is_anomaly" [class.result-reveal--green]="!anomalyResult()!.is_anomaly">
+          <div class="result-top">
+            <div class="result-main">
+              <div class="result-eyebrow">Résultat de la vérification</div>
+              <div class="result-headline">{{ anomalyResult()!.is_anomaly ? '🚨 Commande suspecte' : '✅ Commande normale' }}</div>
+            </div>
+            <div class="result-emoji">{{ anomalyResult()!.is_anomaly ? '🔴' : '🟢' }}</div>
+          </div>
+          <p class="result-explain">{{ anomalyResult()!.is_anomaly ? 'Cette commande présente des caractéristiques inhabituelles. Une vérification manuelle est recommandée.' : 'Cette commande est conforme aux habitudes observées sur Sougui.' }}</p>
+          <div class="score-block">
+            <div class="score-labels"><span>Très suspect</span><span>Normal</span></div>
+            <div class="score-bar-bg">
+              <div class="score-bar-fill" [class.fill--red]="anomalyResult()!.is_anomaly" [class.fill--green]="!anomalyResult()!.is_anomaly" [style.width.%]="scoreBar(anomalyResult()!.anomaly_score)"></div>
+              <div class="score-cursor" [style.left.%]="scoreBar(anomalyResult()!.anomaly_score)"></div>
+            </div>
+          </div>
+          <div class="action-block" *ngIf="anomalyResult()!.is_anomaly">
+            <span class="action-label">💡 Action recommandée</span>
+            <p class="action-text">Contactez l'équipe commerciale pour confirmer la commande avant traitement. Vérifiez le prix unitaire et la quantité avec le client ou le fournisseur.</p>
           </div>
         </div>
       </div>
+    </ng-container>
 
-      <form (ngSubmit)="submit()">
-        <div class="section-label">Détails de la commande à vérifier</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Prix unitaire <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="anomalyForm.prix_unitaire" name="pu"
-                   (ngModelChange)="syncMontant()">
-          </div>
-          <div class="field">
-            <label>Quantité commandée</label>
-            <input type="number" min="1" [(ngModel)]="anomalyForm.quantite" name="qty"
-                   (ngModelChange)="syncMontant()">
-          </div>
-          <div class="field field--highlight">
-            <label>Montant total <span class="unit-label">TND</span></label>
-            <input type="number" min="0" step="0.01" [(ngModel)]="anomalyForm.montant_total" name="mt">
-            <span class="field-hint">Calculé automatiquement ou ajustable</span>
-          </div>
-          <div class="field">
-            <label>Mois de la commande</label>
-            <select [(ngModel)]="anomalyForm.mois" name="mois">
-              <option *ngFor="let m of moisLabels; let i = index" [value]="i+1">{{ m }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Passée le week-end ?</label>
-            <select [(ngModel)]="anomalyForm.est_weekend" name="wkd">
-              <option [value]="0">Non — jour ouvré</option>
-              <option [value]="1">Oui — week-end</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary btn-danger" [disabled]="loading()">
-          <span *ngIf="!loading()">🔎 Vérifier cette commande</span>
-          <span *ngIf="loading()">⏳ Vérification…</span>
-        </button>
-      </form>
-
-      <!-- Résultat vérification -->
-      <div *ngIf="anomalyResult()" class="result-box"
-           [class.box--red]="anomalyResult()!.is_anomaly"
-           [class.box--green]="!anomalyResult()!.is_anomaly">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Résultat de la vérification</div>
-            <div class="result-value">
-              {{ anomalyResult()!.is_anomaly ? '🚨 Commande suspecte' : '✅ Commande normale' }}
-            </div>
-          </div>
-          <div class="result-icon-big">
-            {{ anomalyResult()!.is_anomaly ? '🔴' : '🟢' }}
-          </div>
-        </div>
-
-        <p class="result-desc">
-          {{ anomalyResult()!.is_anomaly
-             ? 'Cette commande présente des caractéristiques inhabituelles. Une vérification manuelle est recommandée avant validation.'
-             : 'Cette commande est conforme aux habitudes observées sur Sougui. Aucune action nécessaire.' }}
-        </p>
-
-        <!-- Score visuel simplifié -->
-        <div class="score-block">
-          <div class="score-labels-top">
-            <span>Très suspect</span>
-            <span>Normal</span>
-          </div>
-          <div class="score-bar-bg">
-            <div class="score-bar-fill"
-                 [class.fill--red]="anomalyResult()!.is_anomaly"
-                 [class.fill--green]="!anomalyResult()!.is_anomaly"
-                 [style.width.%]="scoreBar(anomalyResult()!.anomaly_score)">
-            </div>
-            <div class="score-cursor"
-                 [style.left.%]="scoreBar(anomalyResult()!.anomaly_score)">
-            </div>
-          </div>
-          <div class="score-labels-bottom">
-            <span>← Hors norme</span>
-            <span>Dans la norme →</span>
-          </div>
-        </div>
-
-        <div class="action-block" *ngIf="anomalyResult()!.is_anomaly">
-          <span class="action-label">💡 Action recommandée</span>
-          <p class="action-text">
-            Contactez l'équipe commerciale pour confirmer la commande avant traitement.
-            Vérifiez le prix unitaire et la quantité avec le client ou le fournisseur.
-          </p>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Erreur globale -->
-  <div *ngIf="errorMsg()" class="error-box">
-    <strong>⚠️ Erreur de connexion</strong> — {{ errorMsg() }}
   </div>
 
-  <!-- Loading fixe -->
-  <div *ngIf="loading()" class="loading-toast">
-    <div class="spinner"></div>
-    <span>Analyse en cours…</span>
+  <!-- POPUP ERREUR GLOBAL -->
+  <div *ngIf="errorMsg()" class="toast-error">
+    <span class="toast-icon">⚠️</span>
+    <div class="toast-body"><strong>Erreur de connexion</strong><p>{{ errorMsg() }}</p></div>
+    <button class="toast-close" (click)="errorMsg.set(null)">✕</button>
   </div>
 
 </div>

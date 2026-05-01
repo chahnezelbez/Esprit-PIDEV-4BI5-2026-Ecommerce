@@ -1,294 +1,392 @@
-<div class="purchase-page">
+<div class="sougui-page">
 
-  <!-- En-tête Sougui -->
-  <div class="page-header">
-    <div class="header-brand">
-      <span class="header-badge">IA</span>
-      <div>
-        <h1>Décideur Purchase</h1>
-        <p class="subtitle">Analyse intelligente de vos achats artisanaux</p>
+  <!-- HERO SECTION avec motif Zellige -->
+  <div class="hero-full">
+    <div class="hero-content">
+      <!-- Titre principal à gauche -->
+      <div class="hero-title">
+        <h1>Décideur<span>Achat</span></h1>
+        <div class="hero-script">Analyse fiscale & intelligence fournisseur</div>
       </div>
+
+      <!-- Logo + ornements à droite -->
+      <div class="hero-brand">
+        <div class="hero-ornament">
+          <span class="diamond">⬩</span>
+          <span class="diamond">⬩</span>
+          <span class="diamond">⬩</span>
+        </div>
+       
+      </div>
+    </div>
+    <!-- Motif décoratif marocain/tunisien -->
+    <div class="zellige-pattern"></div>
+  </div>
+
+  <!-- ONGLETS MODERNES AVEC INDICATEUR -->
+  <div class="tab-rail">
+    <div class="tab-track">
+      <button class="tab-btn" 
+              [class.active]="activeTask() === 'classification'" 
+              (click)="setTask('classification')">
+        <span class="tab-icon">🔍</span>
+        <span>Analyse fiscale</span>
+      </button>
+      <button class="tab-btn" 
+              [class.active]="activeTask() === 'regression'" 
+              (click)="setTask('regression')">
+        <span class="tab-icon">💰</span>
+        <span>Estimation TTC</span>
+      </button>
+      <button class="tab-btn" 
+              [class.active]="activeTask() === 'clustering'" 
+              (click)="setTask('clustering')">
+        <span class="tab-icon">🏷️</span>
+        <span>Typologie fournisseur</span>
+      </button>
+      <div class="tab-indicator" [style.transform]="'translateX(' + getTabOffset() + ')'"></div>
     </div>
   </div>
 
-  <!-- Onglets -->
-  <div class="task-tabs">
-    <button [class.active]="activeTask() === 'classification'" (click)="setTask('classification')">
-      <span class="tab-icon">🔍</span> Classification
-    </button>
-    <button [class.active]="activeTask() === 'regression'"     (click)="setTask('regression')">
-      <span class="tab-icon">📈</span> Régression
-    </button>
-    <button [class.active]="activeTask() === 'clustering'"     (click)="setTask('clustering')">
-      <span class="tab-icon">🗂️</span> Clustering
-    </button>
+  <!-- CONTENEUR CARTES -->
+  <div class="cards-container">
+
+    <!-- ========= CLASSIFICATION ========= -->
+    <ng-container *ngIf="activeTask() === 'classification'">
+      <div class="luxury-card">
+        <div class="card-header">
+          <div class="header-badge">🔖 Conseil fiscal</div>
+          <h2>Régime de TVA applicable</h2>
+          <p>Déterminez si votre achat relève du taux normal ou réduit</p>
+        </div>
+
+        <div class="fields-grid">
+          <!-- Bloc 1 : Financier -->
+          <div class="field-block">
+            <div class="block-title"><span class="num">01</span> Montants clés</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['Montant_HT']">
+                <label>Montant HT (TND)</label>
+                <div class="input-wrapper">
+                  <input type="number" [(ngModel)]="classifForm.Montant_HT" 
+                         (blur)="validateField('Montant_HT', classifForm.Montant_HT, {required:true, min:0})" 
+                         step="50" placeholder="ex: 1500">
+                  <span class="suffix">TND</span>
+                </div>
+                <small class="error-msg" *ngIf="errors['Montant_HT']">{{ errors['Montant_HT'] }}</small>
+              </div>
+              <div class="field" [class.error]="errors['Taux_TVA']">
+                <label>Taux de TVA</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.Taux_TVA" (change)="clearError('Taux_TVA')">
+                    <option [ngValue]="0">0% – Exonéré</option>
+                    <option [ngValue]="0.07">7% – Réduit</option>
+                    <option [ngValue]="0.13">13% – Intermédiaire</option>
+                    <option [ngValue]="0.19">19% – Normal</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['Taux_TVA']">{{ errors['Taux_TVA'] }}</small>
+              </div>
+              <div class="field" [class.error]="errors['Marge_TVA']">
+                <label>Marge TVA</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.Marge_TVA" (change)="clearError('Marge_TVA')">
+                    <option [ngValue]="0.02">Très faible (2%)</option>
+                    <option [ngValue]="0.05">Faible (5%)</option>
+                    <option [ngValue]="0.10">Modérée (10%)</option>
+                    <option [ngValue]="0.15">Élevée (15%)</option>
+                    <option [ngValue]="0.20">Très élevée (20%)</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['Marge_TVA']">{{ errors['Marge_TVA'] }}</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloc 2 : Période -->
+          <div class="field-block">
+            <div class="block-title"><span class="num">02</span> Période d'achat</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['Mois']">
+                <label>Mois</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.Mois" (change)="clearError('Mois')">
+                    <option *ngFor="let m of moisList; let i = index" [ngValue]="i+1">{{ m }}</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['Mois']">{{ errors['Mois'] }}</small>
+              </div>
+              <div class="field" [class.error]="errors['Annee']">
+                <label>Année</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.Annee" (change)="clearError('Annee')">
+                    <option *ngFor="let a of anneeList" [ngValue]="a">{{ a }}</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['Annee']">{{ errors['Annee'] }}</small>
+              </div>
+              <div class="field">
+                <label>Semaine</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.Semaine">
+                    <option *ngFor="let s of semaineList" [ngValue]="s">Semaine {{ s }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Week-end</label>
+                <div class="toggle-group">
+                  <button class="toggle" [class.active]="classifForm.Est_weekend === 0" (click)="classifForm.Est_weekend = 0">Non</button>
+                  <button class="toggle" [class.active]="classifForm.Est_weekend === 1" (click)="classifForm.Est_weekend = 1">Oui</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloc 3 : Fournisseur -->
+          <div class="field-block">
+            <div class="block-title"><span class="num">03</span> Identité fournisseur</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['fournisseur']">
+                <label>Fournisseur</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.fournisseur" (change)="clearError('fournisseur')">
+                    <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['fournisseur']">{{ errors['fournisseur'] }}</small>
+              </div>
+              <div class="field" [class.error]="errors['categorie']">
+                <label>Catégorie</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="classifForm.categorie" (change)="clearError('categorie')">
+                    <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+                  </select>
+                </div>
+                <small class="error-msg" *ngIf="errors['categorie']">{{ errors['categorie'] }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-area">
+          <button class="btn-primary" (click)="submitClassification()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🔍 Analyser l’achat</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+          <span class="note">Résultat en temps réel</span>
+        </div>
+
+        <!-- Résultat -->
+        <div class="result-card" *ngIf="classifResult()" [@fadeIn]>
+          <div class="result-icon">{{ getClassifMeta(classifResult()!.prediction).icon }}</div>
+          <div class="result-content">
+            <div class="result-title">{{ getClassifMeta(classifResult()!.prediction).label }}</div>
+            <div class="result-desc">{{ getClassifMeta(classifResult()!.prediction).desc }}</div>
+            <div class="confidence" *ngIf="classifResult()!.probabilities">
+              <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="conf-bar">
+                <span>{{ getClassifMeta(i).label }}</span>
+                <div class="bar-bg"><div class="bar-fill" [style.width]="probPercent(p)"></div></div>
+                <span>{{ probPercent(p) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ========= RÉGRESSION ========= -->
+    <ng-container *ngIf="activeTask() === 'regression'">
+      <div class="luxury-card">
+        <div class="card-header">
+          <div class="header-badge">📈 Prévision financière</div>
+          <h2>Estimation du montant TTC</h2>
+          <p>Anticipez le coût final toutes taxes comprises</p>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field-block">
+            <div class="block-title"><span class="num">01</span> Période</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['rMois']">
+                <label>Mois</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.Mois" (change)="clearError('rMois')">
+                    <option *ngFor="let m of moisList; let i = index" [ngValue]="i+1">{{ m }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field" [class.error]="errors['rAnnee']">
+                <label>Année</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.Annee" (change)="clearError('rAnnee')">
+                    <option *ngFor="let a of anneeList" [ngValue]="a">{{ a }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Semaine</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.Semaine">
+                    <option *ngFor="let s of semaineList" [ngValue]="s">{{ s }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Week-end</label>
+                <div class="toggle-group">
+                  <button class="toggle" [class.active]="regrForm.Est_weekend === 0" (click)="regrForm.Est_weekend = 0">Non</button>
+                  <button class="toggle" [class.active]="regrForm.Est_weekend === 1" (click)="regrForm.Est_weekend = 1">Oui</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <div class="block-title"><span class="num">02</span> Acheteur & paramètres</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['rFournisseur']">
+                <label>Fournisseur</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.fournisseur" (change)="clearError('rFournisseur')">
+                    <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field" [class.error]="errors['rCategorie']">
+                <label>Catégorie</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.categorie" (change)="clearError('rCategorie')">
+                    <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Méthode de paiement</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.methode">
+                    <option *ngFor="let m of methodesPaiement" [value]="m">{{ m }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Taux TVA</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="regrForm.Taux_TVA">
+                    <option [ngValue]="0">0%</option><option [ngValue]="0.07">7%</option>
+                    <option [ngValue]="0.13">13%</option><option [ngValue]="0.19">19%</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-area">
+          <button class="btn-primary gold" (click)="submitRegression()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">💰 Estimer le TTC</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Calcul...</ng-container>
+          </button>
+        </div>
+
+        <div class="result-card" *ngIf="regrResult()">
+          <div class="result-icon">💎</div>
+          <div class="result-content">
+            <div class="result-title">Montant TTC estimé</div>
+            <div class="result-value">{{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} <span>TND</span></div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ========= CLUSTERING ========= -->
+    <ng-container *ngIf="activeTask() === 'clustering'">
+      <div class="luxury-card">
+        <div class="card-header">
+          <div class="header-badge">📊 Segmentation avancée</div>
+          <h2>Typologie de fournisseur</h2>
+          <p>Découvrez le profil stratégique de vos partenaires</p>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field-block">
+            <div class="block-title"><span class="num">01</span> Historique d’activité</div>
+            <div class="field-row">
+              <div class="field" [class.error]="errors['Nb_Factures']">
+                <label>Nb factures</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="clustForm.Nb_Factures" (change)="clearError('Nb_Factures')">
+                    <option [ngValue]="5">1 – 10</option><option [ngValue]="20">11 – 30</option>
+                    <option [ngValue]="50">31 – 70</option><option [ngValue]="100">71 – 130</option>
+                    <option [ngValue]="200">131+</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field" [class.error]="errors['Montant_Total']">
+                <label>Montant total (TND)</label>
+                <div class="input-wrapper">
+                  <input type="number" [(ngModel)]="clustForm.Montant_Total" (blur)="validateField('Montant_Total', clustForm.Montant_Total, {required:true, min:0})" />
+                  <span class="suffix">TND</span>
+                </div>
+              </div>
+              <div class="field" [class.error]="errors['Montant_Moyen']">
+                <label>Moyenne / facture</label>
+                <div class="input-wrapper">
+                  <input type="number" [(ngModel)]="clustForm.Montant_Moyen" step="50" />
+                  <span class="suffix">TND</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Facture max</label>
+                <div class="input-wrapper">
+                  <input type="number" [(ngModel)]="clustForm.Montant_Max" step="100" />
+                  <span class="suffix">TND</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>TVA moyenne</label>
+                <div class="input-wrapper select">
+                  <select [(ngModel)]="clustForm.TVA_Moy">
+                    <option [ngValue]="0">0%</option><option [ngValue]="0.07">7%</option>
+                    <option [ngValue]="0.13">13%</option><option [ngValue]="0.19">19%</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-area">
+          <button class="btn-primary terra" (click)="submitClustering()" [disabled]="loading()">
+            <ng-container *ngIf="!loading()">🏷️ Classifier le fournisseur</ng-container>
+            <ng-container *ngIf="loading()"><span class="spinner"></span> Analyse...</ng-container>
+          </button>
+        </div>
+
+        <div class="result-card" *ngIf="clustResult()">
+          <div class="result-icon">{{ getClusterMeta(clustResult()!.cluster).icon }}</div>
+          <div class="result-content">
+            <div class="result-title">{{ getClusterMeta(clustResult()!.cluster).label }}</div>
+            <div class="result-desc">{{ getClusterMeta(clustResult()!.cluster).desc }}</div>
+            <div class="recap-stats">
+              <span>📄 {{ clustForm.Nb_Factures }} factures</span>
+              <span>💰 {{ clustForm.Montant_Total | number:'1.0-0' }} TND</span>
+              <span>📊 Moy. {{ clustForm.Montant_Moyen | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-       CLASSIFICATION
-  ═══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTask() === 'classification'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Classification de l'achat</h2>
-        <p class="card-desc">
-          Détermine si l'achat est soumis au régime TVA standard ou à un régime réduit/exonéré.<br>
-          <em>Les deux variables clés : <strong>Taux TVA</strong> (52%) et <strong>Marge TVA</strong> (44%)</em>
-        </p>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Montant HT <span class="unit-label">TND</span></label>
-          <input type="number" [(ngModel)]="classifForm.Montant_HT" step="50" />
-        </div>
-        <div class="field field--highlight">
-          <label>Taux TVA <span class="importance-badge">52% importance</span></label>
-          <input type="number" [(ngModel)]="classifForm.Taux_TVA" step="0.01" min="0" max="1" />
-          <span class="field-hint">ex: 0.18 = 18%</span>
-        </div>
-        <div class="field field--highlight">
-          <label>Marge TVA <span class="importance-badge">44% importance</span></label>
-          <input type="number" [(ngModel)]="classifForm.Marge_TVA" step="0.01" />
-          <span class="field-hint">ex: 0.05 = 5%</span>
-        </div>
-        <div class="field">
-          <label>Mois</label>
-          <input type="number" [(ngModel)]="classifForm.Mois" min="1" max="12" />
-        </div>
-        <div class="field">
-          <label>Année</label>
-          <input type="number" [(ngModel)]="classifForm.Annee" />
-        </div>
-        <div class="field">
-          <label>Semaine</label>
-          <input type="number" [(ngModel)]="classifForm.Semaine" min="1" max="53" />
-        </div>
-        <div class="field">
-          <label>Week-end ?</label>
-          <select [(ngModel)]="classifForm.Est_weekend">
-            <option [ngValue]="0">Non</option>
-            <option [ngValue]="1">Oui</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Fournisseur</label>
-          <select [(ngModel)]="classifForm.fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Catégorie</label>
-          <select [(ngModel)]="classifForm.categorie">
-            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="btn-primary" (click)="submitClassification()" [disabled]="loading()">
-        <span *ngIf="!loading()">🔍 Lancer la classification</span>
-        <span *ngIf="loading()">⏳ Analyse en cours…</span>
-      </button>
-
-      <!-- Résultat -->
-      <div *ngIf="classifResult()" class="result-box"
-           [ngClass]="getClassifMeta(classifResult()!.prediction).color">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Résultat de classification</div>
-            <div class="result-value">{{ getClassifMeta(classifResult()!.prediction).label }}</div>
-            <div class="result-badge">Classe {{ classifResult()!.prediction }}</div>
-          </div>
-          <div class="result-icon-big">
-            {{ classifResult()!.prediction === 1 ? '✅' : '🔶' }}
-          </div>
-        </div>
-        <p class="result-desc">{{ getClassifMeta(classifResult()!.prediction).desc }}</p>
-
-        <!-- Barres de probabilité -->
-        <div *ngIf="classifResult()!.probabilities" class="prob-section">
-          <div class="prob-section-title">Confiance du modèle</div>
-          <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="prob-row">
-            <span class="prob-name">{{ getClassifMeta(i).label }}</span>
-            <div class="prob-track">
-              <div class="prob-fill" [style.width]="probPercent(p)"></div>
-            </div>
-            <span class="prob-pct">{{ probPercent(p) }}</span>
-          </div>
-        </div>
-      </div>
+  <!-- Toast erreur flottant -->
+  <div class="toast-notification" *ngIf="errorMsg()">
+    <div class="toast-content">
+      <span class="toast-icon">⚠️</span>
+      <div class="toast-text">{{ errorMsg() }}</div>
+      <button class="toast-close" (click)="clearErrorMsg()">✕</button>
     </div>
-  </ng-container>
-
-  <!-- ═══════════════════════════════════════════════
-       RÉGRESSION
-  ═══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTask() === 'regression'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Estimation du montant TTC</h2>
-        <p class="card-desc">Prédit le montant TTC d'un achat futur selon le fournisseur, la catégorie et la période.</p>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Mois</label>
-          <input type="number" [(ngModel)]="regrForm.Mois" min="1" max="12" />
-        </div>
-        <div class="field">
-          <label>Année</label>
-          <input type="number" [(ngModel)]="regrForm.Annee" />
-        </div>
-        <div class="field">
-          <label>Semaine</label>
-          <input type="number" [(ngModel)]="regrForm.Semaine" min="1" max="53" />
-        </div>
-        <div class="field">
-          <label>Week-end ?</label>
-          <select [(ngModel)]="regrForm.Est_weekend">
-            <option [ngValue]="0">Non</option>
-            <option [ngValue]="1">Oui</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Fournisseur</label>
-          <select [(ngModel)]="regrForm.fournisseur">
-            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Catégorie</label>
-          <select [(ngModel)]="regrForm.categorie">
-            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Méthode de paiement</label>
-          <input type="text" [(ngModel)]="regrForm.methode" placeholder="ex: Virement, Chèque…" />
-        </div>
-        <div class="field">
-          <label>Taux TVA</label>
-          <input type="number" [(ngModel)]="regrForm.Taux_TVA" step="0.01" />
-        </div>
-      </div>
-
-      <button class="btn-primary" (click)="submitRegression()" [disabled]="loading()">
-        <span *ngIf="!loading()">📈 Estimer le montant TTC</span>
-        <span *ngIf="loading()">⏳ Calcul en cours…</span>
-      </button>
-
-      <div *ngIf="regrResult()" class="result-box result-box--blue">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Montant TTC prédit</div>
-            <div class="result-value result-value--large">
-              {{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-              <span class="result-unit">TND</span>
-            </div>
-          </div>
-          <div class="result-icon-big">💰</div>
-        </div>
-        <p class="result-desc">
-          Estimation basée sur le profil du fournisseur
-          <strong>{{ regrForm.fournisseur }}</strong>
-          pour la catégorie <strong>{{ regrForm.categorie }}</strong>.
-        </p>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- ═══════════════════════════════════════════════
-       CLUSTERING
-  ═══════════════════════════════════════════════════ -->
-  <ng-container *ngIf="activeTask() === 'clustering'">
-    <div class="card">
-      <div class="card-header">
-        <h2>Segmentation du fournisseur</h2>
-        <p class="card-desc">
-          Classe un fournisseur dans un segment (Petit / Régulier / Stratégique)
-          selon son historique de volume et de facturation.
-        </p>
-      </div>
-
-      <!-- Légende des clusters -->
-      <div class="cluster-legend">
-        <div class="cluster-legend-item" *ngFor="let key of [0, 1, 2]">
-          <span class="cl-icon">{{ getClusterMeta(key).icon }}</span>
-          <div>
-            <div class="cl-name">{{ getClusterMeta(key).label }}</div>
-            <div class="cl-desc">{{ getClusterMeta(key).desc }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Nombre de factures</label>
-          <input type="number" [(ngModel)]="clustForm.Nb_Factures" />
-        </div>
-        <div class="field">
-          <label>Montant total <span class="unit-label">TND</span></label>
-          <input type="number" [(ngModel)]="clustForm.Montant_Total" />
-        </div>
-        <div class="field">
-          <label>Montant moyen <span class="unit-label">TND</span></label>
-          <input type="number" [(ngModel)]="clustForm.Montant_Moyen" />
-        </div>
-        <div class="field">
-          <label>Montant max <span class="unit-label">TND</span></label>
-          <input type="number" [(ngModel)]="clustForm.Montant_Max" />
-        </div>
-        <div class="field">
-          <label>TVA moyenne</label>
-          <input type="number" [(ngModel)]="clustForm.TVA_Moy" step="0.01" />
-          <span class="field-hint">ex: 0.18 = 18%</span>
-        </div>
-      </div>
-
-      <button class="btn-primary" (click)="submitClustering()" [disabled]="loading()">
-        <span *ngIf="!loading()">🗂️ Segmenter ce fournisseur</span>
-        <span *ngIf="loading()">⏳ Segmentation…</span>
-      </button>
-
-      <div *ngIf="clustResult()" class="result-box result-box--amber">
-        <div class="result-header">
-          <div>
-            <div class="result-label">Segment détecté</div>
-            <div class="result-value">
-              {{ getClusterMeta(clustResult()!.cluster).icon }}
-              {{ getClusterMeta(clustResult()!.cluster).label }}
-            </div>
-            <div class="result-badge">Cluster n° {{ clustResult()!.cluster }}</div>
-          </div>
-        </div>
-        <p class="result-desc">{{ getClusterMeta(clustResult()!.cluster).desc }}</p>
-
-        <!-- Mini récap des inputs -->
-        <div class="cluster-recap">
-          <div class="recap-item">
-            <span class="recap-key">Factures</span>
-            <span class="recap-val">{{ clustForm.Nb_Factures }}</span>
-          </div>
-          <div class="recap-item">
-            <span class="recap-key">Total</span>
-            <span class="recap-val">{{ clustForm.Montant_Total | number:'1.0-0' }} TND</span>
-          </div>
-          <div class="recap-item">
-            <span class="recap-key">Moyen</span>
-            <span class="recap-val">{{ clustForm.Montant_Moyen | number:'1.0-0' }} TND</span>
-          </div>
-          <div class="recap-item">
-            <span class="recap-key">Max</span>
-            <span class="recap-val">{{ clustForm.Montant_Max | number:'1.0-0' }} TND</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Erreur globale -->
-  <div *ngIf="errorMsg()" class="error-box">
-    <strong>⚠️ Erreur</strong> — {{ errorMsg() }}
   </div>
 
 </div>

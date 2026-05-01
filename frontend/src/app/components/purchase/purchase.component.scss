@@ -1,471 +1,456 @@
-// ═══════════════════════════════════════════════════════════════
-// PALETTE SOUGUI — Bleu & Blanc artisanal
-// Bleu principal : #1B4FD8  (bleu méditerranéen)
-// Bleu foncé     : #1038A6
-// Bleu clair     : #EEF2FF
-// Accent doré    : #C9891A  (rappel artisanat)
-// ═══════════════════════════════════════════════════════════════
+/* =============================================
+   SOUGUI.TN - DESIGN BLEU & BLANC
+   Couleurs : #1E3A8A (bleu profond) + blanc
+============================================= */
 
-$blue-900 : #0F2B7A;
-$blue-700 : #1B4FD8;
-$blue-600 : #2563EB;
-$blue-100 : #DBEAFE;
-$blue-50  : #EFF6FF;
-$white    : #FFFFFF;
-$gray-50  : #F8FAFC;
-$gray-100 : #F1F5F9;
-$gray-200 : #E2E8F0;
-$gray-400 : #94A3B8;
-$gray-600 : #475569;
-$gray-900 : #0F172A;
+$sougui-blue: #1E3A8A;
+$sougui-blue-dark: #0F2A6B;
+$sougui-blue-light: #EFF3FC;
+$white: #FFFFFF;
+$gray-light: #F8FAFC;
+$gray-border: #E2E8F0;
+$text-dark: #1E293B;
+$text-muted: #64748B;
 
-$amber-600 : #C9891A;
-$amber-100 : #FEF3C7;
-$amber-50  : #FFFBEB;
-$green-700 : #0F6E56;
-$green-100 : #D1FAE5;
-$green-50  : #ECFDF5;
-$red-700   : #B91C1C;
-$red-50    : #FEF2F2;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-// ─── Page ────────────────────────────────────────────────────
-.purchase-page {
-  max-width: 900px;
+body, html {
+  background: $white;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  color: $text-dark;
+}
+
+.sougui-page {
+  min-height: 100vh;
+  background: $white;
+  position: relative;
+}
+
+/* ============ HERO BLEU ============ */
+.hero-full {
+  background: $sougui-blue;
+  padding: 2rem 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
-// ─── En-tête ─────────────────────────────────────────────────
-.page-header {
-  margin-bottom: 1.75rem;
+.hero-title h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 700;
+  color: $white;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
-.header-brand {
+.hero-script {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+  margin-top: 0.5rem;
+}
+
+.hero-brand {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.header-badge {
+.logo-container {
+  background: rgba(255,255,255,0.1);
+  border-radius: 60px;
+  padding: 6px 18px 6px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: 0.2s;
+  &:hover {
+    background: rgba(255,255,255,0.2);
+  }
+}
+
+.logo-sougui {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
+/* ============ ONGLETS ============ */
+.tab-rail {
+  max-width: 980px;
+  margin: -1.2rem auto 2rem;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.tab-track {
+  background: $white;
+  border-radius: 60px;
+  padding: 6px;
+  display: flex;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  border: 1px solid $gray-border;
+}
+
+.tab-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: $blue-700;
-  color: $white;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-}
-
-h1 {
-  font-size: 20px;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 50px;
   font-weight: 600;
-  color: $gray-900;
-  margin: 0 0 3px;
-}
+  font-size: 0.9rem;
+  background: transparent;
+  border: none;
+  color: $text-muted;
+  cursor: pointer;
+  transition: 0.2s;
 
-.subtitle {
-  font-size: 13px;
-  color: $gray-400;
-  margin: 0;
-}
+  .tab-icon { font-size: 1.2rem; }
 
-// ─── Onglets ─────────────────────────────────────────────────
-.task-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 1.5rem;
-  border-bottom: 1.5px solid $gray-200;
-  padding-bottom: 0;
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border: none;
-    background: none;
-    font-size: 13.5px;
-    color: $gray-600;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1.5px;
-    border-radius: 6px 6px 0 0;
-    transition: color 0.15s, background 0.15s;
-
-    .tab-icon { font-size: 15px; }
-
-    &:hover {
-      color: $blue-700;
-      background: $blue-50;
-    }
-
-    &.active {
-      color: $blue-700;
-      border-bottom-color: $blue-700;
-      font-weight: 600;
-      background: $blue-50;
-    }
+  &:hover { color: $sougui-blue; background: $sougui-blue-light; }
+  &.active {
+    background: $sougui-blue;
+    color: $white;
+    box-shadow: 0 4px 12px rgba($sougui-blue, 0.3);
   }
 }
 
-// ─── Card ────────────────────────────────────────────────────
-.card {
+/* Indicateur animé (optionnel mais chic) */
+.tab-indicator {
+  display: none;
+}
+
+/* ============ CARTES ============ */
+.cards-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.luxury-card {
   background: $white;
-  border: 1px solid $gray-200;
-  border-radius: 14px;
-  padding: 1.75rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  border-radius: 32px;
+  padding: 2rem 2rem;
+  box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+  border: 1px solid $gray-border;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 40px -12px rgba($sougui-blue, 0.2);
+  }
 }
 
 .card-header {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid $gray-100;
+  margin-bottom: 1.8rem;
   padding-bottom: 1rem;
+  border-bottom: 2px solid $sougui-blue-light;
 
-  h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: $gray-900;
-    margin: 0 0 5px;
+  .header-badge {
+    display: inline-block;
+    background: $sougui-blue-light;
+    color: $sougui-blue;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    margin-bottom: 0.8rem;
   }
-
-  .card-desc {
-    font-size: 13px;
-    color: $gray-600;
-    margin: 0;
-    line-height: 1.6;
-
-    em { color: $gray-400; font-style: normal; }
-    strong { color: $blue-700; }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: $sougui-blue;
+  }
+  p {
+    color: $text-muted;
+    font-size: 0.9rem;
   }
 }
 
-// ─── Grille de champs ────────────────────────────────────────
-.form-grid {
+/* ============ FORMULAIRES ============ */
+.fields-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.field-block {
+  background: $gray-light;
+  border-radius: 24px;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid $gray-border;
+}
+
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: $sougui-blue;
+  margin-bottom: 1rem;
+
+  .num {
+    background: $sougui-blue;
+    color: $white;
+    width: 26px;
+    height: 26px;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+}
+
+.field-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-  gap: 14px;
-  margin-bottom: 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  position: relative;
-
+  gap: 0.3rem;
   label {
-    font-size: 12px;
-    font-weight: 500;
-    color: $gray-600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .unit-label {
-    font-size: 10px;
-    background: $blue-100;
-    color: $blue-700;
-    padding: 1px 5px;
-    border-radius: 4px;
+    font-size: 0.75rem;
     font-weight: 600;
+    color: $text-dark;
   }
+  &.error label { color: #DC2626; }
+}
 
-  .field-hint {
-    font-size: 11px;
-    color: $gray-400;
-    margin-top: 2px;
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: $white;
+  border: 1px solid $gray-border;
+  border-radius: 16px;
+  transition: 0.2s;
+
+  &:focus-within {
+    border-color: $sougui-blue;
+    box-shadow: 0 0 0 3px rgba($sougui-blue, 0.1);
   }
+  input, select {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .suffix {
+    padding-right: 1rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+  &.select select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+  }
+}
 
-  &--highlight {
-    label { color: $blue-700; }
-
-    input, select {
-      border-color: $blue-700;
-      background: $blue-50;
+.toggle-group {
+  display: flex;
+  background: $white;
+  border: 1px solid $gray-border;
+  border-radius: 30px;
+  overflow: hidden;
+  .toggle {
+    flex: 1;
+    border: none;
+    background: $white;
+    padding: 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    &.active {
+      background: $sougui-blue;
+      color: $white;
     }
   }
 }
 
-.importance-badge {
-  font-size: 10px;
-  background: $blue-700;
-  color: $white;
-  padding: 2px 7px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-style: normal;
+.error-msg {
+  font-size: 0.7rem;
+  color: #DC2626;
+  margin-top: 0.2rem;
 }
 
-input, select {
-  height: 38px;
-  border: 1px solid $gray-200;
-  border-radius: 8px;
-  padding: 0 12px;
-  font-size: 14px;
-  color: $gray-900;
-  background: $white;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  width: 100%;
-  box-sizing: border-box;
-
-  &:focus {
-    border-color: $blue-600;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
-  }
+/* ============ BOUTONS ============ */
+.action-area {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
-// ─── Bouton ──────────────────────────────────────────────────
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 42px;
-  padding: 0 28px;
-  background: $blue-700;
+  gap: 10px;
+  padding: 0.8rem 2rem;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: $sougui-blue;
   color: $white;
   border: none;
-  border-radius: 9px;
-  font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba($sougui-blue, 0.3);
   &:hover:not(:disabled) {
-    background: $blue-900;
-    transform: translateY(-1px);
+    background: $sougui-blue-dark;
+    transform: translateY(-2px);
   }
-
-  &:active:not(:disabled) { transform: scale(0.98); }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
+  &:disabled { opacity: 0.6; cursor: default; }
 }
 
-// ─── Result boxes ─────────────────────────────────────────────
-.result-box {
-  margin-top: 1.5rem;
-  padding: 1.4rem;
-  border-radius: 12px;
-  border: 1px solid;
-  animation: fadeSlideIn 0.3s ease;
-
-  &--blue {
-    background: $blue-50;
-    border-color: $blue-100;
-    .result-label { color: $blue-900; }
-    .result-value { color: $blue-700; }
-    .result-badge { background: $blue-700; }
-    .prob-fill    { background: $blue-700; }
-    .prob-track   { background: rgba(27,79,216,0.12); }
-    .prob-pct     { color: $blue-900; }
-  }
-
-  &--green {
-    background: $green-50;
-    border-color: $green-100;
-    .result-label { color: $green-700; }
-    .result-value { color: $green-700; }
-    .result-badge { background: $green-700; }
-    .prob-fill    { background: $green-700; }
-    .prob-track   { background: rgba(15,110,86,0.12); }
-    .prob-pct     { color: $green-700; }
-  }
-
-  &--amber {
-    background: $amber-50;
-    border-color: $amber-100;
-    .result-label { color: $amber-600; }
-    .result-value { color: darken($amber-600, 15%); }
-    .result-badge { background: $amber-600; }
-    .prob-fill    { background: $amber-600; }
-  }
-}
-
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-}
-
-.result-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 5px;
-}
-
-.result-value {
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 6px;
-
-  &--large { font-size: 28px; }
-}
-
-.result-unit {
-  font-size: 16px;
-  font-weight: 400;
-  margin-left: 6px;
-  opacity: 0.65;
-}
-
-.result-badge {
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
   display: inline-block;
-  font-size: 11px;
-  color: $white;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-weight: 500;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.note {
+  font-size: 0.7rem;
+  color: $text-muted;
 }
 
-.result-icon-big {
-  font-size: 28px;
-  flex-shrink: 0;
-}
-
-.result-desc {
-  font-size: 13px;
-  color: $gray-600;
-  margin: 0;
-  line-height: 1.6;
-  strong { color: $gray-900; }
-}
-
-// ─── Barres de probabilité ───────────────────────────────────
-.prob-section {
-  margin-top: 1.1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0,0,0,0.06);
-}
-
-.prob-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: $gray-400;
-  margin-bottom: 0.75rem;
-}
-
-.prob-row {
+/* ============ RÉSULTATS ============ */
+.result-card {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: $sougui-blue-light;
+  border-radius: 28px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 1.2rem;
+  border-left: 5px solid $sougui-blue;
+  animation: fadeUp 0.5s ease;
 
-  .prob-name {
-    font-size: 12px;
-    min-width: 190px;
-    color: $gray-600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .result-icon { font-size: 2.8rem; }
+  .result-content { flex: 1; }
+  .result-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: $sougui-blue;
   }
-
-  .prob-track {
-    flex: 1;
-    height: 7px;
-    border-radius: 4px;
-    overflow: hidden;
-
-    .prob-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.45s ease;
+  .result-value {
+    font-size: 2rem;
+    font-weight: 800;
+    span { font-size: 0.9rem; font-weight: normal; }
+  }
+  .confidence {
+    margin-top: 0.8rem;
+    .conf-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      margin-top: 6px;
+      .bar-bg {
+        flex: 1;
+        height: 6px;
+        background: #E2E8F0;
+        border-radius: 10px;
+        overflow: hidden;
+        .bar-fill {
+          height: 100%;
+          background: $sougui-blue;
+          width: 0%;
+          transition: width 1s ease;
+        }
+      }
     }
   }
-
-  .prob-pct {
-    font-size: 12px;
-    font-weight: 600;
-    min-width: 44px;
-    text-align: right;
-  }
 }
 
-// ─── Légende clusters ────────────────────────────────────────
-.cluster-legend {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
-}
-
-.cluster-legend-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px;
-  background: $gray-50;
-  border: 1px solid $gray-200;
-  border-radius: 10px;
-
-  .cl-icon { font-size: 18px; flex-shrink: 0; }
-  .cl-name { font-size: 12px; font-weight: 600; color: $gray-900; margin-bottom: 2px; }
-  .cl-desc { font-size: 11px; color: $gray-400; line-height: 1.4; }
-}
-
-// ─── Récap clustering ────────────────────────────────────────
-.cluster-recap {
+.recap-stats {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0,0,0,0.06);
   flex-wrap: wrap;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  background: rgba($sougui-blue, 0.08);
+  padding: 0.6rem 1rem;
+  border-radius: 60px;
+  color: $sougui-blue;
+}
 
-  .recap-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .recap-key {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: $amber-600;
-    font-weight: 600;
-  }
-
-  .recap-val {
-    font-size: 13px;
-    font-weight: 500;
-    color: $gray-900;
+/* ============ TOAST ERREUR ============ */
+.toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 2000;
+  animation: slideIn 0.3s ease;
+}
+.toast-content {
+  background: $sougui-blue;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  .toast-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
   }
 }
 
-// ─── Erreur ──────────────────────────────────────────────────
-.error-box {
-  margin-top: 1rem;
-  padding: 1rem 1.25rem;
-  background: $red-50;
-  border: 1px solid #FCA5A5;
-  border-radius: 10px;
-  font-size: 13px;
-  color: $red-700;
-  strong { font-weight: 600; }
+/* ============ ANIMATIONS ============ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 760px) {
+  .hero-content { flex-direction: column; text-align: center; }
+  .hero-brand { margin-top: 0.5rem; }
+  .tab-track { flex-wrap: wrap; border-radius: 40px; }
+  .tab-btn { padding: 10px; font-size: 0.8rem; }
+  .luxury-card { padding: 1.5rem; }
+  .field-row { grid-template-columns: 1fr; }
+  .result-card { flex-direction: column; align-items: center; text-align: center; }
+  .toast-notification { left: 1rem; right: 1rem; bottom: 1rem; }
 }
