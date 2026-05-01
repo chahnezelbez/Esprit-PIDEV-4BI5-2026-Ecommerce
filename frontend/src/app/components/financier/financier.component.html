@@ -1,27 +1,304 @@
-<div class="feature-page">
+<div class="finance-page">
+  <!-- Header -->
   <div class="page-header">
-    <h1>Décideur Financier</h1>
-    <p class="subtitle">Prévision financière et suivi des flux.</p>
+    <div class="header-brand">
+      <span class="header-badge">💰</span>
+      <div>
+        <h1>Décideur Financier</h1>
+        <p class="subtitle">Analyse intelligente de votre portefeuille clients</p>
+      </div>
+    </div>
   </div>
 
-  <app-result-card title="Horizon de prévision">
-    <label>
-      Nombre de périodes
-      <input type="number" [(ngModel)]="request.periods" min="1" />
-    </label>
-    <button class="btn-primary" (click)="submit()" [disabled]="loading()">
-      {{ loading() ? 'Prévision en cours…' : 'Obtenir une prévision' }}
+  <!-- Task Tabs -->
+  <div class="task-tabs">
+    <button 
+      [class.active]="selectedTask() === 'clustering'" 
+      (click)="setTask('clustering')"
+      class="tab-btn"
+    >
+      <span class="tab-icon">👥</span> Segments Clients
     </button>
-  </app-result-card>
+    <button 
+      [class.active]="selectedTask() === 'forecast'" 
+      (click)="setTask('forecast')"
+      class="tab-btn"
+    >
+      <span class="tab-icon">📊</span> Prévisions
+    </button>
+  </div>
 
-  <app-result-card *ngIf="result()" title="Prévision financière">
-    <p><strong>Périodes :</strong> {{ result()!.periods }}</p>
-    <ul>
-      <li *ngFor="let value of result()!.forecast; let i = index">
-        Période {{ i + 1 }} : {{ value | number:'1.0-0' }}
-      </li>
-    </ul>
-  </app-result-card>
+  <!-- ═══════════════════════════════════════════════════════════════
+       CLUSTERING - CUSTOMER SEGMENTATION
+  ═══════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="selectedTask() === 'clustering'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Identifier le Profil Client</h2>
+        <p class="card-desc">
+          Classifiez votre client selon ses habitudes d'achat et son historique.
+          Cela aide à personnaliser votre approche commerciale.
+        </p>
+      </div>
 
-  <div class="error-box" *ngIf="errorMsg()">Erreur — {{ errorMsg() }}</div>
+      <!-- Customer Profile Form -->
+      <div class="form-container">
+        <div class="section-label">📋 Données Client</div>
+
+        <div class="form-grid">
+          <!-- Row 1: Order & Revenue Metrics -->
+          <div class="field">
+            <label>Nombre de commandes</label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.nb_commandes" 
+              placeholder="Ex: 25"
+            />
+            <span class="field-hint">Total des commandes passées</span>
+          </div>
+
+          <div class="field">
+            <label>Chiffre d'affaires total <span class="unit">DT</span></label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.ca_total" 
+              placeholder="Ex: 5000"
+            />
+            <span class="field-hint">Montant total dépensé</span>
+          </div>
+
+          <div class="field">
+            <label>Panier moyen <span class="unit">DT</span></label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.panier_moyen" 
+              placeholder="Ex: 200"
+            />
+            <span class="field-hint">Montant moyen par commande</span>
+          </div>
+
+          <!-- Row 2: Discounts & Returns -->
+          <div class="field">
+            <label>Remises accordées <span class="unit">DT</span></label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.total_remise" 
+              placeholder="Ex: 500"
+            />
+            <span class="field-hint">Total des réductions appliquées</span>
+          </div>
+
+          <div class="field">
+            <label>Remboursements <span class="unit">DT</span></label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.total_remboursement" 
+              placeholder="Ex: 200"
+            />
+            <span class="field-hint">Montant remboursé</span>
+          </div>
+
+          <div class="field">
+            <label>Frais de livraison moyen <span class="unit">DT</span></label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.livraison_moyenne" 
+              placeholder="Ex: 7.50"
+            />
+            <span class="field-hint">Coût moyen de livraison</span>
+          </div>
+
+          <!-- Row 3: Product & Activity -->
+          <div class="field">
+            <label>Nombre d'articles</label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.total_articles" 
+              placeholder="Ex: 150"
+            />
+            <span class="field-hint">Quantité totale d'articles achetés</span>
+          </div>
+
+          <div class="field">
+            <label>Catégories explorées</label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.nb_categories" 
+              placeholder="Ex: 8"
+            />
+            <span class="field-hint">Nombre de catégories de produits</span>
+          </div>
+
+          <div class="field">
+            <label>Produits différents</label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.nb_produits" 
+              placeholder="Ex: 45"
+            />
+            <span class="field-hint">Variété de produits achetés</span>
+          </div>
+
+          <!-- Row 4: Engagement & Recency -->
+          <div class="field">
+            <label>Taux de finalisation <span class="unit">%</span></label>
+            <input 
+              type="number" 
+              min="0"
+              max="100"
+              [(ngModel)]="clusteringForm.taux_finalisation" 
+              placeholder="Ex: 85"
+            />
+            <span class="field-hint">% de paniers finalisés</span>
+          </div>
+
+          <div class="field">
+            <label>Jours depuis dernier achat</label>
+            <input 
+              type="number" 
+              [(ngModel)]="clusteringForm.recence" 
+              placeholder="Ex: 30"
+            />
+            <span class="field-hint">Activité récente (nombre de jours)</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" (click)="submitClustering()" [disabled]="loading()">
+          <span *ngIf="!loading()">👥 Identifier le Segment</span>
+          <span *ngIf="loading()">⏳ Analyse en cours…</span>
+        </button>
+      </div>
+
+      <!-- Clustering Result -->
+      <ng-container *ngIf="clusteringResult()">
+        <div class="result-box" [ngClass]="getSegmentClass(clusteringResult()!.cluster)">
+          <div class="result-header">
+            <div>
+              <div class="result-label">Profil Identifié</div>
+              <div class="result-value">
+                {{ getSegmentIcon(clusteringResult()!.cluster) }}
+                {{ getSegmentLabel(clusteringResult()!.cluster) }}
+              </div>
+            </div>
+            <div class="result-icon-big">{{ getSegmentIcon(clusteringResult()!.cluster) }}</div>
+          </div>
+          <p class="result-desc">{{ getSegmentDescription(clusteringResult()!.cluster) }}</p>
+
+          <!-- Recommendation -->
+          <div class="recommendation">
+            <span class="rec-icon">💡</span>
+            <span class="rec-text">{{ getSegmentRecommendation(clusteringResult()!.cluster) }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FORECASTING - REVENUE PREDICTION
+  ═══════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="selectedTask() === 'forecast'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Prévisions de Chiffre d'Affaires</h2>
+        <p class="card-desc">
+          Obtenez une prévision du chiffre d'affaires pour les prochains mois.
+          Basé sur les tendances historiques.
+        </p>
+      </div>
+
+      <!-- Forecast Info -->
+      <div class="info-box">
+        <span class="info-icon">📈</span>
+        <span class="info-text">Prévisions mensuelles basées sur les 24 derniers mois d'historique</span>
+      </div>
+
+      <!-- Forecast Period Selector -->
+      <div class="form-container">
+        <div class="section-label">⏱️ Horizon de Prévision</div>
+
+        <div class="slider-block">
+          <label class="slider-label">
+            Nombre de mois : <strong>{{ forecastPeriods }}</strong>
+            <span class="unit">1 – 36 mois</span>
+          </label>
+          <div class="slider-row">
+            <span class="slider-min">1</span>
+            <input type="range" min="1" max="36" [(ngModel)]="forecastPeriods" class="slider">
+            <span class="slider-max">36</span>
+            <input type="number" min="1" max="36" [(ngModel)]="forecastPeriods" class="slider-num">
+          </div>
+        </div>
+
+        <button class="btn-primary btn-teal" (click)="submitForecast()" [disabled]="loading()">
+          <span *ngIf="!loading()">📊 Générer la Prévision</span>
+          <span *ngIf="loading()">⏳ Calcul en cours…</span>
+        </button>
+      </div>
+
+      <!-- Forecast Results -->
+      <ng-container *ngIf="forecastResult()">
+        <div class="forecast-result">
+          <!-- KPI Summary -->
+          <div class="kpi-row">
+            <div class="kpi">
+              <span class="kpi-label">Période</span>
+              <span class="kpi-val">{{ forecastResult()!.periods }} mois</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Moyenne mensuelle</span>
+              <span class="kpi-val">{{ getForecastAvg(forecastResult()!.forecast) | number:'1.0-0' }} <small>DT</small></span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Montant maximum</span>
+              <span class="kpi-val">{{ getForecastMax(forecastResult()!.forecast) | number:'1.0-0' }} <small>DT</small></span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Montant minimum</span>
+              <span class="kpi-val">{{ getForecastMin(forecastResult()!.forecast) | number:'1.0-0' }} <small>DT</small></span>
+            </div>
+          </div>
+
+          <!-- Mini Bar Chart -->
+          <div class="bar-chart">
+            <div *ngFor="let v of forecastResult()!.forecast; let i = index" class="bar-col">
+              <div class="bar-fill"
+                   [style.height.%]="(v / getForecastMax(forecastResult()!.forecast)) * 100"
+                   [title]="'Mois ' + (i+1) + ' : ' + v.toFixed(0) + ' DT'">
+              </div>
+              <span class="bar-label">M{{ i + 1 }}</span>
+            </div>
+          </div>
+
+          <!-- Detailed Table -->
+          <div class="forecast-table-header">
+            <span>Mois</span><span>CA Prévu (DT)</span>
+          </div>
+          <div class="forecast-list">
+            <div *ngFor="let v of forecastResult()!.forecast; let i = index" 
+                 class="forecast-row"
+                 [class.forecast-row--max]="v === getForecastMax(forecastResult()!.forecast)">
+              <span class="forecast-month">Mois {{ i + 1 }}</span>
+              <span class="forecast-val">{{ v | number:'1.0-0' }}</span>
+              <span class="forecast-bar-inline">
+                <span [style.width.%]="(v / getForecastMax(forecastResult()!.forecast)) * 100"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <!-- Error Message -->
+  <div class="error-box" *ngIf="errorMsg()">
+    <span class="error-icon">❌</span>
+    <span>{{ errorMsg() }}</span>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-overlay" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Traitement en cours…</p>
+  </div>
 </div>

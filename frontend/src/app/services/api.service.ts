@@ -36,6 +36,7 @@ import {
   B2bClassificationResponse,
   B2bClusteringResponse,
   B2bRegressionResponse,
+  B2bForecastResponse,
   B2bAnomalyResponse,
   FinClusteringRequest,
   FinClusteringResponse,

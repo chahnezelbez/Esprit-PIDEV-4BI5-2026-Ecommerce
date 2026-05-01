@@ -13,6 +13,43 @@ import {
 
 type ActiveTask = 'classification' | 'regression' | 'clustering';
 
+// ─── Labels métier basés sur l'analyse du modèle ──────────────────
+// Le RandomForest est piloté à 96% par Taux_TVA (52%) + Marge_TVA (44%)
+// Classe 0 = profil TVA faible → achat exonéré ou à régime réduit
+// Classe 1 = profil TVA standard → achat courant validé
+const CLASSIF_LABELS: Record<number, { label: string; desc: string; color: string }> = {
+  0: {
+    label: 'Achat exonéré / TVA réduite',
+    desc: 'Cet achat présente un profil TVA faible. Il est classé hors TVA standard ou à régime réduit.',
+    color: 'result-box--amber',
+  },
+  1: {
+    label: 'Achat soumis TVA standard',
+    desc: 'Cet achat suit le régime TVA courant. Il peut être validé normalement.',
+    color: 'result-box--green',
+  },
+};
+
+// ─── Segments de clustering fournisseurs ──────────────────────────
+// KMeans sur : Nb_Factures, Montant_Total, Montant_Moyen, Montant_Max, TVA_Moy
+const CLUSTER_LABELS: Record<number, { label: string; desc: string; icon: string }> = {
+  0: {
+    label: 'Petit fournisseur',
+    desc: 'Volume faible, faible nombre de factures. Relation occasionnelle.',
+    icon: '🏪',
+  },
+  1: {
+    label: 'Fournisseur régulier',
+    desc: 'Volume et fréquence modérés. Partenaire de confiance établi.',
+    icon: '🤝',
+  },
+  2: {
+    label: 'Fournisseur stratégique',
+    desc: 'Grand volume, montants élevés. Partenaire clé à fidéliser.',
+    icon: '⭐',
+  },
+};
+
 @Component({
   selector: 'app-purchase',
   standalone: true,
@@ -25,12 +62,24 @@ export class PurchaseComponent {
   loading = signal(false);
   errorMsg = signal<string | null>(null);
 
-  // ─── Résultats ───────────────────────────────────────────────────
   classifResult = signal<PurchaseClassificationResponse | null>(null);
   regrResult    = signal<PurchaseRegressionResponse | null>(null);
   clustResult   = signal<PurchaseClusteringResponse | null>(null);
 
-  // ─── Valeurs des formulaires ─────────────────────────────────────
+  // ─── Fournisseurs connus (extraits de l'encodeur) ─────────────
+  readonly fournisseurs = [
+    'ASCOM','STEG','SONEDE','ORANGE','Tunisie Telecom',
+    'KERAMOS','HAMILA CERAMIQUE','ENNAIM Céramique','Zouba Ceramic',
+    'Zitoun Artisanat','Yassin Calligraphie','Fabripierre',
+    'DJELASSI','KAMTRADE','KACO SA','PROSCOM','SMPA',
+    'Quincaillerie Générale','Quincaillerie Zormani',
+    'La Quincaillerie du Sahel','Delta Distribution',
+    'META (FACEBOOK)','Elementor Ltd.','Oxahost',
+    'Vivo Energy','NATBAG','TRANSAF','Transport Fehri',
+    'My Print Tunisia','SNAPRINT','My Print Tunisia',
+    'INCONNU'
+  ];
+  readonly categories = ['MATERIAUX', 'SERVICE'];
 
   classifForm: PurchaseClassificationRequest = {
     Montant_HT: 1500,
@@ -74,16 +123,9 @@ export class PurchaseComponent {
     this.loading.set(true);
     this.errorMsg.set(null);
     this.classifResult.set(null);
-
     this.api.purchaseClassify(this.classifForm).subscribe({
-      next: (res) => {
-        this.classifResult.set(res);
-        this.loading.set(false);
-      },
-      error: (err: Error) => {
-        this.errorMsg.set(err.message);
-        this.loading.set(false);
-      },
+      next: (res) => { this.classifResult.set(res); this.loading.set(false); },
+      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
     });
   }
 
@@ -91,16 +133,9 @@ export class PurchaseComponent {
     this.loading.set(true);
     this.errorMsg.set(null);
     this.regrResult.set(null);
-
     this.api.purchaseRegress(this.regrForm).subscribe({
-      next: (res) => {
-        this.regrResult.set(res);
-        this.loading.set(false);
-      },
-      error: (err: Error) => {
-        this.errorMsg.set(err.message);
-        this.loading.set(false);
-      },
+      next: (res) => { this.regrResult.set(res); this.loading.set(false); },
+      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
     });
   }
 
@@ -108,41 +143,29 @@ export class PurchaseComponent {
     this.loading.set(true);
     this.errorMsg.set(null);
     this.clustResult.set(null);
-
     this.api.purchaseCluster(this.clustForm).subscribe({
-      next: (res) => {
-        this.clustResult.set(res);
-        this.loading.set(false);
-      },
-      error: (err: Error) => {
-        this.errorMsg.set(err.message);
-        this.loading.set(false);
-      },
+      next: (res) => { this.clustResult.set(res); this.loading.set(false); },
+      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
     });
   }
 
-  // Helper pour afficher le % de probabilité
   probPercent(val: number): string {
     return (val * 100).toFixed(1) + '%';
   }
 
-  // Label lisible pour la classification
-  classifLabel(pred: number): string {
-    const labels: Record<number, string> = {
-      0: 'Classe 0',
-      1: 'Classe 1',
-      2: 'Classe 2',
+  getClassifMeta(pred: number) {
+    return CLASSIF_LABELS[pred] ?? {
+      label: `Classe ${pred}`,
+      desc: 'Classe non documentée.',
+      color: 'result-box--blue',
     };
-    return labels[pred] ?? `Classe ${pred}`;
   }
 
-  // Label lisible pour le cluster
-  clusterLabel(cluster: number): string {
-    const labels: Record<number, string> = {
-      0: 'Petit fournisseur',
-      1: 'Fournisseur moyen',
-      2: 'Grand fournisseur',
+  getClusterMeta(cluster: number) {
+    return CLUSTER_LABELS[cluster] ?? {
+      label: `Segment ${cluster}`,
+      desc: 'Segment non documenté.',
+      icon: '📦',
     };
-    return labels[cluster] ?? `Segment ${cluster}`;
   }
 }

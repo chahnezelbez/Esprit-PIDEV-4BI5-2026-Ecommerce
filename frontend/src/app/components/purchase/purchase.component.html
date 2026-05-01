@@ -1,50 +1,56 @@
 <div class="purchase-page">
 
-  <!-- En-tête -->
+  <!-- En-tête Sougui -->
   <div class="page-header">
-    <h1>Décideur Purchase</h1>
-    <p class="subtitle">Classification · Régression · Clustering des achats</p>
+    <div class="header-brand">
+      <span class="header-badge">IA</span>
+      <div>
+        <h1>Décideur Purchase</h1>
+        <p class="subtitle">Analyse intelligente de vos achats artisanaux</p>
+      </div>
+    </div>
   </div>
 
-  <!-- Sélecteur de tâche -->
+  <!-- Onglets -->
   <div class="task-tabs">
-    <button
-      [class.active]="activeTask() === 'classification'"
-      (click)="setTask('classification')">
-      Classification
+    <button [class.active]="activeTask() === 'classification'" (click)="setTask('classification')">
+      <span class="tab-icon">🔍</span> Classification
     </button>
-    <button
-      [class.active]="activeTask() === 'regression'"
-      (click)="setTask('regression')">
-      Régression
+    <button [class.active]="activeTask() === 'regression'"     (click)="setTask('regression')">
+      <span class="tab-icon">📈</span> Régression
     </button>
-    <button
-      [class.active]="activeTask() === 'clustering'"
-      (click)="setTask('clustering')">
-      Clustering
+    <button [class.active]="activeTask() === 'clustering'"     (click)="setTask('clustering')">
+      <span class="tab-icon">🗂️</span> Clustering
     </button>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════════
        CLASSIFICATION
-  ════════════════════════════════════════════════════ -->
+  ═══════════════════════════════════════════════════ -->
   <ng-container *ngIf="activeTask() === 'classification'">
     <div class="card">
-      <h2>Prédiction de classification</h2>
-      <p class="card-desc">Prédit la classe d'un achat selon ses caractéristiques.</p>
+      <div class="card-header">
+        <h2>Classification de l'achat</h2>
+        <p class="card-desc">
+          Détermine si l'achat est soumis au régime TVA standard ou à un régime réduit/exonéré.<br>
+          <em>Les deux variables clés : <strong>Taux TVA</strong> (52%) et <strong>Marge TVA</strong> (44%)</em>
+        </p>
+      </div>
 
       <div class="form-grid">
         <div class="field">
-          <label>Montant HT (TND)</label>
+          <label>Montant HT <span class="unit-label">TND</span></label>
           <input type="number" [(ngModel)]="classifForm.Montant_HT" step="50" />
         </div>
-        <div class="field">
-          <label>Taux TVA</label>
+        <div class="field field--highlight">
+          <label>Taux TVA <span class="importance-badge">52% importance</span></label>
           <input type="number" [(ngModel)]="classifForm.Taux_TVA" step="0.01" min="0" max="1" />
+          <span class="field-hint">ex: 0.18 = 18%</span>
         </div>
-        <div class="field">
-          <label>Marge TVA</label>
+        <div class="field field--highlight">
+          <label>Marge TVA <span class="importance-badge">44% importance</span></label>
           <input type="number" [(ngModel)]="classifForm.Marge_TVA" step="0.01" />
+          <span class="field-hint">ex: 0.05 = 5%</span>
         </div>
         <div class="field">
           <label>Mois</label>
@@ -67,26 +73,43 @@
         </div>
         <div class="field">
           <label>Fournisseur</label>
-          <input type="text" [(ngModel)]="classifForm.fournisseur" />
+          <select [(ngModel)]="classifForm.fournisseur">
+            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+          </select>
         </div>
         <div class="field">
           <label>Catégorie</label>
-          <input type="text" [(ngModel)]="classifForm.categorie" />
+          <select [(ngModel)]="classifForm.categorie">
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
         </div>
       </div>
 
       <button class="btn-primary" (click)="submitClassification()" [disabled]="loading()">
-        {{ loading() ? 'Analyse en cours…' : 'Lancer la classification' }}
+        <span *ngIf="!loading()">🔍 Lancer la classification</span>
+        <span *ngIf="loading()">⏳ Analyse en cours…</span>
       </button>
 
-      <div *ngIf="classifResult()" class="result-box result-classif">
-        <div class="result-label">Résultat</div>
-        <div class="result-value">{{ classifLabel(classifResult()!.prediction) }}</div>
-        <div class="result-sub">Classe : {{ classifResult()!.prediction }}</div>
+      <!-- Résultat -->
+      <div *ngIf="classifResult()" class="result-box"
+           [ngClass]="getClassifMeta(classifResult()!.prediction).color">
+        <div class="result-header">
+          <div>
+            <div class="result-label">Résultat de classification</div>
+            <div class="result-value">{{ getClassifMeta(classifResult()!.prediction).label }}</div>
+            <div class="result-badge">Classe {{ classifResult()!.prediction }}</div>
+          </div>
+          <div class="result-icon-big">
+            {{ classifResult()!.prediction === 1 ? '✅' : '🔶' }}
+          </div>
+        </div>
+        <p class="result-desc">{{ getClassifMeta(classifResult()!.prediction).desc }}</p>
 
-        <div *ngIf="classifResult()!.probabilities" class="prob-bars">
+        <!-- Barres de probabilité -->
+        <div *ngIf="classifResult()!.probabilities" class="prob-section">
+          <div class="prob-section-title">Confiance du modèle</div>
           <div *ngFor="let p of classifResult()!.probabilities; let i = index" class="prob-row">
-            <span class="prob-name">Classe {{ i }}</span>
+            <span class="prob-name">{{ getClassifMeta(i).label }}</span>
             <div class="prob-track">
               <div class="prob-fill" [style.width]="probPercent(p)"></div>
             </div>
@@ -97,13 +120,15 @@
     </div>
   </ng-container>
 
-  <!-- ═══════════════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════════
        RÉGRESSION
-  ════════════════════════════════════════════════════════════ -->
+  ═══════════════════════════════════════════════════ -->
   <ng-container *ngIf="activeTask() === 'regression'">
     <div class="card">
-      <h2>Prédiction de valeur (régression)</h2>
-      <p class="card-desc">Prédit la valeur montant TTC d'un achat futur.</p>
+      <div class="card-header">
+        <h2>Estimation du montant TTC</h2>
+        <p class="card-desc">Prédit le montant TTC d'un achat futur selon le fournisseur, la catégorie et la période.</p>
+      </div>
 
       <div class="form-grid">
         <div class="field">
@@ -127,15 +152,19 @@
         </div>
         <div class="field">
           <label>Fournisseur</label>
-          <input type="text" [(ngModel)]="regrForm.fournisseur" />
+          <select [(ngModel)]="regrForm.fournisseur">
+            <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
+          </select>
         </div>
         <div class="field">
           <label>Catégorie</label>
-          <input type="text" [(ngModel)]="regrForm.categorie" />
+          <select [(ngModel)]="regrForm.categorie">
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
         </div>
         <div class="field">
-          <label>Méthode paiement</label>
-          <input type="text" [(ngModel)]="regrForm.methode" />
+          <label>Méthode de paiement</label>
+          <input type="text" [(ngModel)]="regrForm.methode" placeholder="ex: Virement, Chèque…" />
         </div>
         <div class="field">
           <label>Taux TVA</label>
@@ -144,26 +173,53 @@
       </div>
 
       <button class="btn-primary" (click)="submitRegression()" [disabled]="loading()">
-        {{ loading() ? 'Calcul en cours…' : 'Prédire la valeur' }}
+        <span *ngIf="!loading()">📈 Estimer le montant TTC</span>
+        <span *ngIf="loading()">⏳ Calcul en cours…</span>
       </button>
 
-      <div *ngIf="regrResult()" class="result-box result-regression">
-        <div class="result-label">Valeur prédite</div>
-        <div class="result-value">
-          {{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-          <span class="result-unit">TND</span>
+      <div *ngIf="regrResult()" class="result-box result-box--blue">
+        <div class="result-header">
+          <div>
+            <div class="result-label">Montant TTC prédit</div>
+            <div class="result-value result-value--large">
+              {{ regrResult()!.predicted_value.toLocaleString('fr-TN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              <span class="result-unit">TND</span>
+            </div>
+          </div>
+          <div class="result-icon-big">💰</div>
         </div>
+        <p class="result-desc">
+          Estimation basée sur le profil du fournisseur
+          <strong>{{ regrForm.fournisseur }}</strong>
+          pour la catégorie <strong>{{ regrForm.categorie }}</strong>.
+        </p>
       </div>
     </div>
   </ng-container>
 
-  <!-- ═══════════════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════════
        CLUSTERING
-  ════════════════════════════════════════════════════ -->
+  ═══════════════════════════════════════════════════ -->
   <ng-container *ngIf="activeTask() === 'clustering'">
     <div class="card">
-      <h2>Segmentation fournisseur (clustering)</h2>
-      <p class="card-desc">Classe un fournisseur dans un segment selon son historique d'achats.</p>
+      <div class="card-header">
+        <h2>Segmentation du fournisseur</h2>
+        <p class="card-desc">
+          Classe un fournisseur dans un segment (Petit / Régulier / Stratégique)
+          selon son historique de volume et de facturation.
+        </p>
+      </div>
+
+      <!-- Légende des clusters -->
+      <div class="cluster-legend">
+        <div class="cluster-legend-item" *ngFor="let key of [0, 1, 2]">
+          <span class="cl-icon">{{ getClusterMeta(key).icon }}</span>
+          <div>
+            <div class="cl-name">{{ getClusterMeta(key).label }}</div>
+            <div class="cl-desc">{{ getClusterMeta(key).desc }}</div>
+          </div>
+        </div>
+      </div>
 
       <div class="form-grid">
         <div class="field">
@@ -171,38 +227,68 @@
           <input type="number" [(ngModel)]="clustForm.Nb_Factures" />
         </div>
         <div class="field">
-          <label>Montant total (TND)</label>
+          <label>Montant total <span class="unit-label">TND</span></label>
           <input type="number" [(ngModel)]="clustForm.Montant_Total" />
         </div>
         <div class="field">
-          <label>Montant moyen (TND)</label>
+          <label>Montant moyen <span class="unit-label">TND</span></label>
           <input type="number" [(ngModel)]="clustForm.Montant_Moyen" />
         </div>
         <div class="field">
-          <label>Montant max (TND)</label>
+          <label>Montant max <span class="unit-label">TND</span></label>
           <input type="number" [(ngModel)]="clustForm.Montant_Max" />
         </div>
         <div class="field">
           <label>TVA moyenne</label>
           <input type="number" [(ngModel)]="clustForm.TVA_Moy" step="0.01" />
+          <span class="field-hint">ex: 0.18 = 18%</span>
         </div>
       </div>
 
       <button class="btn-primary" (click)="submitClustering()" [disabled]="loading()">
-        {{ loading() ? 'Segmentation…' : 'Segmenter ce fournisseur' }}
+        <span *ngIf="!loading()">🗂️ Segmenter ce fournisseur</span>
+        <span *ngIf="loading()">⏳ Segmentation…</span>
       </button>
 
-      <div *ngIf="clustResult()" class="result-box result-cluster">
-        <div class="result-label">Segment détecté</div>
-        <div class="result-value">{{ clusterLabel(clustResult()!.cluster) }}</div>
-        <div class="result-sub">Cluster n° {{ clustResult()!.cluster }}</div>
+      <div *ngIf="clustResult()" class="result-box result-box--amber">
+        <div class="result-header">
+          <div>
+            <div class="result-label">Segment détecté</div>
+            <div class="result-value">
+              {{ getClusterMeta(clustResult()!.cluster).icon }}
+              {{ getClusterMeta(clustResult()!.cluster).label }}
+            </div>
+            <div class="result-badge">Cluster n° {{ clustResult()!.cluster }}</div>
+          </div>
+        </div>
+        <p class="result-desc">{{ getClusterMeta(clustResult()!.cluster).desc }}</p>
+
+        <!-- Mini récap des inputs -->
+        <div class="cluster-recap">
+          <div class="recap-item">
+            <span class="recap-key">Factures</span>
+            <span class="recap-val">{{ clustForm.Nb_Factures }}</span>
+          </div>
+          <div class="recap-item">
+            <span class="recap-key">Total</span>
+            <span class="recap-val">{{ clustForm.Montant_Total | number:'1.0-0' }} TND</span>
+          </div>
+          <div class="recap-item">
+            <span class="recap-key">Moyen</span>
+            <span class="recap-val">{{ clustForm.Montant_Moyen | number:'1.0-0' }} TND</span>
+          </div>
+          <div class="recap-item">
+            <span class="recap-key">Max</span>
+            <span class="recap-val">{{ clustForm.Montant_Max | number:'1.0-0' }} TND</span>
+          </div>
+        </div>
       </div>
     </div>
   </ng-container>
 
-  <!-- Message d'erreur global -->
+  <!-- Erreur globale -->
   <div *ngIf="errorMsg()" class="error-box">
-    <strong>Erreur</strong> — {{ errorMsg() }}
+    <strong>⚠️ Erreur</strong> — {{ errorMsg() }}
   </div>
 
 </div>

@@ -300,6 +300,11 @@ export interface B2bRegressionResponse {
   task: string;
   predicted_value: number;
 }
+export interface B2bForecastResponse {
+  decideur: string;
+  task: string;
+  predicted_value: number;
+}
 export interface B2bAnomalyResponse {
   decideur: string;
   task: string;

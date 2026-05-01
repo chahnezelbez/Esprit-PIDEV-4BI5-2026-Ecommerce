@@ -1,0 +1,62 @@
+Structure du dossier pour le volume ADATA SC740
+Le numéro de série du volume est 00D1-17BC
+D:\SOUGUI-FRONT\SRC
+|   main.ts
+|   index.html
+|   styles.scss
+|   main.server.ts
+|   
++---app
+|   |   app.component.html
+|   |   app.component.spec.ts
+|   |   app.component.ts
+|   |   app.component.scss
+|   |   app.config.ts
+|   |   app.routes.ts
+|   |   app.config.server.ts
+|   |   
+|   +---models
+|   |       api.models.ts
+|   |       
+|   +---services
+|   |       api.service.ts
+|   |       
+|   +---shared
+|   |   \---result-card
+|   |           result-card.component.ts
+|   |           result-card.component.scss
+|   |           
+|   \---components
+|       +---commercial
+|       |       commercial.component.ts
+|       |       commercial.component.html
+|       |       commercial.component.scss
+|       |       
+|       +---marketing
+|       |       marketing.component.ts
+|       |       marketing.component.html
+|       |       marketing.component.scss
+|       |       
+|       +---gm
+|       |       gm.component.ts
+|       |       gm.component.html
+|       |       gm.component.scss
+|       |       
+|       +---b2b
+|       |       b2b.component.ts
+|       |       b2b.component.html
+|       |       b2b.component.scss
+|       |       
+|       +---financier
+|       |       financier.component.ts
+|       |       financier.component.html
+|       |       financier.component.scss
+|       |       
+|       \---purchase
+|               purchase.component.ts
+|               purchase.component.html
+|               purchase.component.scss
+|               
+\---environments
+        environment.ts
+        
