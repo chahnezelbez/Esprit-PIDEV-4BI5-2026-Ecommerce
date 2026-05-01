@@ -1,0 +1,38 @@
+groups:
+  - name: api_alerts
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence élevée détectée"
+          description: "La latence 95ème percentile est de {{ $value }}s"
+          
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Taux d'erreur élevé"
+          description: "Le taux d'erreur est de {{ $value | humanizePercentage }}"
+          
+      - alert: ConfidenceDrop
+        expr: model_confidence < 0.65
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Baisse de confiance du modèle"
+          description: "La confiance du modèle {{ $labels.decideur }} est tombée à {{ $value }}"
+          
+      - alert: HighCPU
+        expr: cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Utilisation CPU élevée"
+          description: "Le CPU est à {{ $value }}%"

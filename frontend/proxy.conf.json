@@ -1,11 +1,48 @@
 {
-  "/api": {
+  "/decideur-purchase": {
     "target": "http://localhost:8000",
     "secure": false,
-    "pathRewrite": {
-      "^/api": ""
-    },
-    "changeOrigin": true,
+    "changeOrigin": false,
     "logLevel": "debug"
+  },
+  "/decideur-commercial": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "debug"
+  },
+  "/decideur-marketing": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "debug"
+  },
+  "/decideur-gm": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "debug"
+  },
+  "/decideur-b2b": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "debug"
+  },
+  "/decideur-fin": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "debug"
+  },
+  "/health": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false
+  },
+  "/metrics": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "changeOrigin": false
   }
 }
