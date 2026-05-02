@@ -14,6 +14,7 @@ import json
 from typing import List, Dict, Any
 import time
 from monitoring import setup_monitoring, drift_detector, PREDICTION_TIME, MODEL_PREDICTIONS, BASELINES
+from logger_config import mlops_logger, log_prediction, log_anomaly, log_drift, log_error
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -622,9 +623,11 @@ async def predict_classif_purchase(features: ClassificationFeaturesP):
         proba_arr = models["purchase_classif"].predict_proba(X)[0]
         confidence = float(max(proba_arr))
         drift_detector.update_prediction("purchase", "classification", confidence)
+        log_prediction("purchase", "classification", confidence, time.time() - start, prediction)
         logger.info(f"Purchase classification - confiance: {confidence:.3f}")
         proba = proba_arr.tolist()
     except Exception as e:
+        
         logger.warning(f"Confiance purchase classification indisponible: {e}")
         proba = None
 
@@ -698,9 +701,11 @@ async def predict_classif_commercial(features: ClassificationFeaturesC):
         proba_arr = models["commercial_classif"].predict_proba(X)[0]
         confidence = float(max(proba_arr))
         drift_detector.update_prediction("commercial", "classification", confidence)
+        log_prediction("commercial", "classification", confidence, time.time() - start, prediction)
         logger.info(f"Commercial classification - confiance: {confidence:.3f}")
         proba = proba_arr.tolist()
     except Exception as e:
+        
         logger.warning(f"Confiance commercial classification indisponible: {e}")
         proba = None
 
@@ -729,7 +734,7 @@ async def detect_anomaly_commercial(features: AnomalyDetectionFeaturesC):
                               prediction_class=str(anomaly_prediction)).inc()
 
     if int(anomaly_prediction) == -1:
-        logger.warning(f"🚨 Anomalie COMMERCIAL détectée - score: {anomaly_score:.3f}")
+        log_anomaly("commercial", "anomaly_detection", anomaly_score)
 
     logger.info(f"Commercial anomaly detection terminée en {time.time()-start:.3f}s")
     return {"decideur": "commercial_b2c", "task": "anomaly_detection",
@@ -841,10 +846,11 @@ async def predict_classif_marketing(features: ClassificationFeaturesM):
         proba_arr = models["marketing_classif"].predict_proba(df)[0]
         confidence = float(max(proba_arr))
         drift_detector.update_prediction("marketing", "classification", confidence)
-        logger.info(f"Marketing classification - confiance: {confidence:.3f}")
+        log_prediction("marketing", "classification", confidence, time.time() - start, prediction) 
         proba = proba_arr.tolist()
     except Exception as e:
         logger.warning(f"Confiance marketing classification indisponible: {e}")
+        log_error("/decideur-marketing/classification/predict", type(e).__name__, str(e))
         proba = None
 
     logger.info(f"Marketing classification terminée en {time.time()-start:.3f}s")
@@ -872,9 +878,11 @@ async def predict_classif_gm(features: ClassificationFeaturesGM):
         proba_arr = models["gm_classif"].predict_proba(X)[0]
         confidence = float(max(proba_arr))
         drift_detector.update_prediction("gm", "classification", confidence)
+        log_prediction("gm", "classification", confidence, time.time() - start, prediction)
         logger.info(f"GM classification - confiance: {confidence:.3f}")
         proba = proba_arr.tolist()
     except Exception as e:
+       
         logger.warning(f"Confiance GM classification indisponible: {e}")
         proba = None
 
@@ -933,6 +941,7 @@ async def detect_anomaly_gm(features: AnomalyFeaturesGM):
                               prediction_class=str(anomaly_pred)).inc()
 
     if int(anomaly_pred) == -1:
+        log_anomaly("gm", "anomaly_detection", anomaly_score)  
         logger.warning(f"🚨 Anomalie GM détectée - score: {anomaly_score:.3f}")
 
     logger.info(f"GM anomaly detection terminée en {time.time()-start:.3f}s")
@@ -964,7 +973,7 @@ async def detect_anomaly_b2b(features: B2BFeaturesArray):
     MODEL_PREDICTIONS.labels(decideur="b2b", task="anomaly_detection", prediction_class=str(pred)).inc()
 
     if int(pred) == -1:
-        logger.warning(f"🚨 Anomalie B2B détectée - score: {score:.3f}")
+        log_anomaly("b2b", "anomaly_detection", score)
 
     logger.info(f"B2B anomaly detection terminée en {time.time()-start:.3f}s")
     return {"decideur": "b2b", "task": "anomaly_detection",
@@ -990,6 +999,7 @@ async def predict_classif_b2b(features: B2BFeaturesArray):
         proba_arr  = models["b2b_classif"].predict_proba(X)[0]
         confidence = float(max(proba_arr))
         drift_detector.update_prediction("b2b", "classification", confidence)
+        log_prediction("b2b", "classification", confidence, time.time() - start, prediction)
         logger.info(f"B2B classification - confiance: {confidence:.3f}")
         proba = proba_arr.tolist()
     except Exception as e:
@@ -1023,6 +1033,7 @@ async def predict_risk_b2b(features: B2BFeaturesArray):
         logger.info(f"B2B risks - confiance: {confidence:.3f}")
         proba = proba_arr.tolist()
     except Exception as e:
+        log_error("/decideur-b2b/classification-risks/predict", type(e).__name__, str(e))
         logger.warning(f"Confiance B2B risks indisponible: {e}")
         proba = None
 

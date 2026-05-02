@@ -1,0 +1,170 @@
+================================================================================
+                     GUIDE DE DÉMARRAGE - MONITORING MLOPS
+================================================================================
+
+📁 PROJET : D:\mon_projetgitsougui\backend
+📅 DATE : 2026-05-02
+
+================================================================================
+1. LANCER L'API FASTAPI (Terminal 1)
+================================================================================
+
+Commande :
+---------
+cd D:\mon_projetgitsougui\backend
+venv\Scripts\activate
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+À garder ouvert : ✅ OUI (toujours)
+Fermeture : Ctrl+C
+
+Liens à consulter :
+-------------------
+http://localhost:8000          → Accueil API
+http://localhost:8000/metrics  → Métriques Prometheus
+http://localhost:8000/health   → Statut santé
+http://localhost:8000/info     → Info modèles
+
+
+================================================================================
+2. LANCER PROMETHEUS (Terminal 2)
+================================================================================
+
+Commande :
+---------
+cd D:\prometheus-3.11.3.windows-amd64\prometheus-3.11.3.windows-amd64
+prometheus.exe
+
+À garder ouvert : ✅ OUI (toujours)
+Fermeture : Ctrl+C
+
+Liens à consulter :
+-------------------
+http://localhost:9090          → Interface Prometheus
+http://localhost:9090/targets  → Vérifier API = UP (vert)
+http://localhost:9090/alerts   → Voir les règles d'alerte
+http://localhost:9090/graph    → Tester des requêtes PromQL
+
+
+================================================================================
+3. LANCER GRAFANA (Terminal 3)
+================================================================================
+
+Commande :
+---------
+cd D:\grafana-enterprise-11.6.0.windows-amd64\grafana-v11.6.0\bin
+grafana-server.exe
+
+À garder ouvert : ✅ OUI (toujours)
+Fermeture : Ctrl+C
+
+Liens à consulter :
+-------------------
+http://localhost:3000          → Interface Grafana
+Login : admin / admin
+
+Ensuite :
+- Data sources → Vérifier Prometheus (http://localhost:9090)
+- Dashboards → Votre dashboard MLOps Monitoring
+
+
+================================================================================
+4. LANCER LA SIMULATION (Terminal 4 - Optionnel)
+================================================================================
+
+Commande :
+---------
+cd D:\mon_projetgitsougui\backend
+venv\Scripts\activate
+python simulation.py
+
+Menu :
+------
+1 → Trafic élevé (100 requêtes parallèles)
+2 → Erreurs API (requêtes malformées)
+3 → Drift modèle (données hors distribution)
+4 → TOUS (recommandé pour la démo)
+0 → Quitter
+
+À garder ouvert : ❌ NON (se ferme après exécution)
+
+
+================================================================================
+RÉSUMÉ DES LIENS (Tous en accès direct)
+================================================================================
+
+SERVICE                              | URL
+-------------------------------------|--------------------------------
+API FastAPI                          | http://localhost:8000
+Métriques Prometheus                 | http://localhost:8000/metrics
+Santé API                            | http://localhost:8000/health
+Info API                             | http://localhost:8000/info
+Prometheus UI                        | http://localhost:9090
+Prometheus Targets                   | http://localhost:9090/targets
+Prometheus Alerts                    | http://localhost:9090/alerts
+Grafana                              | http://localhost:3000 (admin/admin)
+
+
+================================================================================
+ORDRE DE LANCEMENT À RESPECTER
+================================================================================
+
+Étape 1 : LANCER L'API (Terminal 1)
+   ↓ attendre que l'API soit prête
+Étape 2 : LANCER PROMETHEUS (Terminal 2)
+   ↓ attendre 5 secondes
+Étape 3 : LANCER GRAFANA (Terminal 3)
+   ↓
+Étape 4 : Ouvrir Grafana dans navigateur
+   ↓ ajouter Prometheus si pas déjà fait
+Étape 5 : (Optionnel) LANCER SIMULATION (Terminal 4)
+
+
+================================================================================
+VÉRIFICATIONS À FAIRE AVANT SIMULATION
+================================================================================
+
+1. Vérifier que l'API répond :
+   → http://localhost:8000 (doit afficher un JSON)
+
+2. Vérifier que Prometheus voit l'API (Targets) :
+   → http://localhost:9090/targets (fastapi_app = UP en vert)
+
+3. Vérifier que Grafana a la source Prometheus :
+   → http://localhost:3000 → Data sources → Prometheus → Save & Test
+
+
+================================================================================
+OÙ TROUVER LES LOGS
+================================================================================
+
+Logs structurés JSON :
+   D:\mon_projetgitsougui\backend\logs\mlops.json
+
+Logs d'erreurs :
+   D:\mon_projetgitsougui\backend\logs\errors.log
+
+
+================================================================================
+ARRÊT COMPLET DES SERVICES
+================================================================================
+
+1. Simulation : Ctrl+C dans le terminal simulation
+2. API : Ctrl+C dans Terminal 1
+3. Prometheus : Ctrl+C dans Terminal 2
+4. Grafana : Ctrl+C dans Terminal 3
+
+Ou fermer tous les terminaux.
+
+
+================================================================================
+RÉINITIALISATION (si tout est bloqué)
+================================================================================
+
+1. Redémarrer le PC
+2. Refaire l'ordre de lancement ci-dessus
+
+
+================================================================================
+FIN DU GUIDE
+================================================================================
