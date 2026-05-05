@@ -24,6 +24,8 @@
     "express": "^4.18.2",
     "keycloak-angular": "^16.1.0",
     "keycloak-js": "^26.2.4",
+    "powerbi-client": "^2.23.10",
+    "powerbi-client-angular": "^6.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

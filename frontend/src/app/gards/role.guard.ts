@@ -19,8 +19,6 @@ export function roleGuard(allowedRoles: string[]): CanActivateFn {
     const hasRole = allowedRoles.some(role => userRoles.includes(role));
 
     if (!hasRole) {
-      // Rediriger vers la page d'accueil (purchase)
-      router.navigate(['/purchase']);
       return false;
     }
     return true;

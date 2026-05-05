@@ -3,8 +3,8 @@ import { KeycloakService } from 'keycloak-angular';
 export function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
-     config: {
-  url: 'http://localhost:8180',   // ← modifiez le port ici
+   config: {
+  url: 'http://localhost:8180',
   realm: 'sougui-realm',
   clientId: 'angular-app'
 },

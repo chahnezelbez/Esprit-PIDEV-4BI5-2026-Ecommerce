@@ -1,4 +1,3 @@
-// purchase.component.ts
 import { Component, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -66,7 +65,9 @@ export class PurchaseComponent {
   moisList = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   anneeList = [2023, 2024, 2025, 2026];
   semaineList = Array.from({ length: 53 }, (_, i) => i + 1);
-  methodesPaiement = ['Virement', 'Chèque', 'Espèces', 'Carte bancaire', 'Traite'];
+  
+  // Liste des méthodes de paiement - Utiliser des valeurs qui fonctionnent avec le backend
+  methodesPaiement = ['CB', 'VIREMENT', 'CHEQUE', 'ESPECES', 'TRAITE'];
 
   readonly fournisseurs = [
     'ASCOM','STEG','SONEDE','ORANGE','Tunisie Telecom',
@@ -102,7 +103,7 @@ export class PurchaseComponent {
     Est_weekend: 0,
     fournisseur: 'STEG',
     categorie: 'SERVICE',
-    methode: 'Virement',
+    methode: 'CB',  // Valeur par défaut modifiée
     Taux_TVA: 0.19,
   };
 
@@ -119,11 +120,10 @@ export class PurchaseComponent {
 
   constructor(@Inject(ApiService) private api: ApiService) {}
 
-  // ⭐ METHODE MANQUANTE AJOUTÉE
+  // Méthode pour changer d'onglet
   setTask(task: ActiveTask): void {
     this.activeTask.set(task);
     this.errorMsg.set(null);
-    // Optionnel : réinitialiser les résultats pour plus de propreté
     this.classifResult.set(null);
     this.regrResult.set(null);
     this.clustResult.set(null);
@@ -163,6 +163,8 @@ export class PurchaseComponent {
     if (!this.validateField('Marge_TVA', this.classifForm.Marge_TVA, { required: true })) ok = false;
     if (!this.validateField('Mois', this.classifForm.Mois, { required: true, min: 1, max: 12 })) ok = false;
     if (!this.validateField('Annee', this.classifForm.Annee, { required: true })) ok = false;
+    if (!this.validateField('Semaine', this.classifForm.Semaine, { required: true, min: 1, max: 53 })) ok = false;
+    if (!this.validateField('Est_weekend', this.classifForm.Est_weekend, { required: true, min: 0, max: 1 })) ok = false;
     if (!this.validateField('fournisseur', this.classifForm.fournisseur, { required: true })) ok = false;
     if (!this.validateField('categorie', this.classifForm.categorie, { required: true })) ok = false;
     if (!ok) this.errorMsg.set('Veuillez corriger les champs en erreur avant de continuer.');
@@ -173,8 +175,12 @@ export class PurchaseComponent {
     let ok = true;
     if (!this.validateField('rMois', this.regrForm.Mois, { required: true, min: 1, max: 12 })) ok = false;
     if (!this.validateField('rAnnee', this.regrForm.Annee, { required: true })) ok = false;
+    if (!this.validateField('rSemaine', this.regrForm.Semaine, { required: true, min: 1, max: 53 })) ok = false;
+    if (!this.validateField('rEst_weekend', this.regrForm.Est_weekend, { required: true, min: 0, max: 1 })) ok = false;
     if (!this.validateField('rFournisseur', this.regrForm.fournisseur, { required: true })) ok = false;
     if (!this.validateField('rCategorie', this.regrForm.categorie, { required: true })) ok = false;
+    if (!this.validateField('rMethode', this.regrForm.methode, { required: true })) ok = false;
+    if (!this.validateField('rTaux_TVA', this.regrForm.Taux_TVA, { required: true, min: 0, max: 0.19 })) ok = false;
     if (!ok) this.errorMsg.set('Veuillez corriger les champs en erreur.');
     return ok;
   }
@@ -184,6 +190,8 @@ export class PurchaseComponent {
     if (!this.validateField('Nb_Factures', this.clustForm.Nb_Factures, { required: true, min: 1 })) ok = false;
     if (!this.validateField('Montant_Total', this.clustForm.Montant_Total, { required: true, min: 0 })) ok = false;
     if (!this.validateField('Montant_Moyen', this.clustForm.Montant_Moyen, { required: true, min: 0 })) ok = false;
+    if (!this.validateField('Montant_Max', this.clustForm.Montant_Max, { required: true, min: 0 })) ok = false;
+    if (!this.validateField('TVA_Moy', this.clustForm.TVA_Moy, { required: true, min: 0, max: 0.19 })) ok = false;
     if (!ok) this.errorMsg.set('Veuillez renseigner correctement l’historique du fournisseur.');
     return ok;
   }
@@ -195,19 +203,38 @@ export class PurchaseComponent {
     this.errorMsg.set(null);
     this.classifResult.set(null);
     this.api.purchaseClassify(this.classifForm).subscribe({
-      next: (res) => { this.classifResult.set(res); this.loading.set(false); },
-      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
+      next: (res) => { 
+        this.classifResult.set(res); 
+        this.loading.set(false); 
+      },
+      error: (err: Error) => { 
+        this.errorMsg.set(err.message); 
+        this.loading.set(false); 
+      },
     });
   }
 
   submitRegression(): void {
     if (!this.validateRegression()) return;
+    
+    console.log('Données envoyées pour régression:', this.regrForm);
+    
     this.loading.set(true);
     this.errorMsg.set(null);
     this.regrResult.set(null);
+    
     this.api.purchaseRegress(this.regrForm).subscribe({
-      next: (res) => { this.regrResult.set(res); this.loading.set(false); },
-      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
+      next: (res) => { 
+        console.log('Résultat régression reçu:', res);
+        this.regrResult.set(res); 
+        this.loading.set(false); 
+      },
+      error: (err: any) => { 
+        console.error('Erreur régression:', err);
+        const message = err.error?.detail || err.message || 'Erreur lors de la prédiction';
+        this.errorMsg.set(message); 
+        this.loading.set(false); 
+      },
     });
   }
 
@@ -217,8 +244,14 @@ export class PurchaseComponent {
     this.errorMsg.set(null);
     this.clustResult.set(null);
     this.api.purchaseCluster(this.clustForm).subscribe({
-      next: (res) => { this.clustResult.set(res); this.loading.set(false); },
-      error: (err: Error) => { this.errorMsg.set(err.message); this.loading.set(false); },
+      next: (res) => { 
+        this.clustResult.set(res); 
+        this.loading.set(false); 
+      },
+      error: (err: Error) => { 
+        this.errorMsg.set(err.message); 
+        this.loading.set(false); 
+      },
     });
   }
 

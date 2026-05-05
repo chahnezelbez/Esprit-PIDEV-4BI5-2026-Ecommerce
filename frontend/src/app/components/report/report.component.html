@@ -1,0 +1,15 @@
+<div class="report-wrapper">
+
+  <div *ngIf="errorMessage" class="error-box">
+    {{ errorMessage }}
+  </div>
+
+  <iframe
+    *ngIf="reportUrl"
+    [src]="reportUrl"
+    class="report-frame"
+    frameborder="0"
+    allowfullscreen="true">
+  </iframe>
+
+</div>

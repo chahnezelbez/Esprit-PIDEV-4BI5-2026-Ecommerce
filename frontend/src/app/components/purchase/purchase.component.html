@@ -178,7 +178,7 @@
         </div>
 
         <!-- Résultat -->
-        <div class="result-card" *ngIf="classifResult()" [@fadeIn]>
+        <div class="result-card" *ngIf="classifResult()">
           <div class="result-icon">{{ getClassifMeta(classifResult()!.prediction).icon }}</div>
           <div class="result-content">
             <div class="result-title">{{ getClassifMeta(classifResult()!.prediction).label }}</div>
@@ -215,6 +215,7 @@
                     <option *ngFor="let m of moisList; let i = index" [ngValue]="i+1">{{ m }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rMois']">{{ errors['rMois'] }}</small>
               </div>
               <div class="field" [class.error]="errors['rAnnee']">
                 <label>Année</label>
@@ -223,14 +224,16 @@
                     <option *ngFor="let a of anneeList" [ngValue]="a">{{ a }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rAnnee']">{{ errors['rAnnee'] }}</small>
               </div>
-              <div class="field">
+              <div class="field" [class.error]="errors['rSemaine']">
                 <label>Semaine</label>
                 <div class="input-wrapper select">
-                  <select [(ngModel)]="regrForm.Semaine">
-                    <option *ngFor="let s of semaineList" [ngValue]="s">{{ s }}</option>
+                  <select [(ngModel)]="regrForm.Semaine" (change)="clearError('rSemaine')">
+                    <option *ngFor="let s of semaineList" [ngValue]="s">Semaine {{ s }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rSemaine']">{{ errors['rSemaine'] }}</small>
               </div>
               <div class="field">
                 <label>Week-end</label>
@@ -252,6 +255,7 @@
                     <option *ngFor="let f of fournisseurs" [value]="f">{{ f }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rFournisseur']">{{ errors['rFournisseur'] }}</small>
               </div>
               <div class="field" [class.error]="errors['rCategorie']">
                 <label>Catégorie</label>
@@ -260,23 +264,28 @@
                     <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rCategorie']">{{ errors['rCategorie'] }}</small>
               </div>
-              <div class="field">
+              <div class="field" [class.error]="errors['rMethode']">
                 <label>Méthode de paiement</label>
                 <div class="input-wrapper select">
-                  <select [(ngModel)]="regrForm.methode">
+                  <select [(ngModel)]="regrForm.methode" (change)="clearError('rMethode')">
                     <option *ngFor="let m of methodesPaiement" [value]="m">{{ m }}</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rMethode']">{{ errors['rMethode'] }}</small>
               </div>
-              <div class="field">
+              <div class="field" [class.error]="errors['rTaux_TVA']">
                 <label>Taux TVA</label>
                 <div class="input-wrapper select">
-                  <select [(ngModel)]="regrForm.Taux_TVA">
-                    <option [ngValue]="0">0%</option><option [ngValue]="0.07">7%</option>
-                    <option [ngValue]="0.13">13%</option><option [ngValue]="0.19">19%</option>
+                  <select [(ngModel)]="regrForm.Taux_TVA" (change)="clearError('rTaux_TVA')">
+                    <option [ngValue]="0">0%</option>
+                    <option [ngValue]="0.07">7%</option>
+                    <option [ngValue]="0.13">13%</option>
+                    <option [ngValue]="0.19">19%</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['rTaux_TVA']">{{ errors['rTaux_TVA'] }}</small>
               </div>
             </div>
           </div>
@@ -316,11 +325,14 @@
                 <label>Nb factures</label>
                 <div class="input-wrapper select">
                   <select [(ngModel)]="clustForm.Nb_Factures" (change)="clearError('Nb_Factures')">
-                    <option [ngValue]="5">1 – 10</option><option [ngValue]="20">11 – 30</option>
-                    <option [ngValue]="50">31 – 70</option><option [ngValue]="100">71 – 130</option>
+                    <option [ngValue]="5">1 – 10</option>
+                    <option [ngValue]="20">11 – 30</option>
+                    <option [ngValue]="50">31 – 70</option>
+                    <option [ngValue]="100">71 – 130</option>
                     <option [ngValue]="200">131+</option>
                   </select>
                 </div>
+                <small class="error-msg" *ngIf="errors['Nb_Factures']">{{ errors['Nb_Factures'] }}</small>
               </div>
               <div class="field" [class.error]="errors['Montant_Total']">
                 <label>Montant total (TND)</label>
@@ -328,6 +340,7 @@
                   <input type="number" [(ngModel)]="clustForm.Montant_Total" (blur)="validateField('Montant_Total', clustForm.Montant_Total, {required:true, min:0})" />
                   <span class="suffix">TND</span>
                 </div>
+                <small class="error-msg" *ngIf="errors['Montant_Total']">{{ errors['Montant_Total'] }}</small>
               </div>
               <div class="field" [class.error]="errors['Montant_Moyen']">
                 <label>Moyenne / facture</label>
@@ -335,6 +348,7 @@
                   <input type="number" [(ngModel)]="clustForm.Montant_Moyen" step="50" />
                   <span class="suffix">TND</span>
                 </div>
+                <small class="error-msg" *ngIf="errors['Montant_Moyen']">{{ errors['Montant_Moyen'] }}</small>
               </div>
               <div class="field">
                 <label>Facture max</label>
@@ -347,8 +361,10 @@
                 <label>TVA moyenne</label>
                 <div class="input-wrapper select">
                   <select [(ngModel)]="clustForm.TVA_Moy">
-                    <option [ngValue]="0">0%</option><option [ngValue]="0.07">7%</option>
-                    <option [ngValue]="0.13">13%</option><option [ngValue]="0.19">19%</option>
+                    <option [ngValue]="0">0%</option>
+                    <option [ngValue]="0.07">7%</option>
+                    <option [ngValue]="0.13">13%</option>
+                    <option [ngValue]="0.19">19%</option>
                   </select>
                 </div>
               </div>
